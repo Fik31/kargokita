@@ -19,6 +19,19 @@ class DriverCockpit extends Component
 
     public $activeTrip;
 
+    public $activeTab = 'loading';
+
+    // Loading photos
+    public $photo_arrival;
+    public $photo_loading;
+    public $photo_loaded;
+    public $document_loading;
+
+    // Unloading photos
+    public $photo_destination;
+    public $photo_unloading;
+    public $document_unloading;
+
     // Report properties
     public $showStopForm = false;
 
@@ -30,18 +43,21 @@ class DriverCockpit extends Component
 
     public $deviationReason = '';
 
+    public $activeTrips;
+
     public function mount()
     {
         // 1. Cek trip yang sedang berjalan
-        $this->activeTrip = Trip::with(['cargo.merchant', 'photos'])->where('driver_id', Auth::id())
-            ->whereIn('status', ['loading', 'in_transit'])
-            ->latest()
-            ->first();
+        $this->activeTrips = Trip::with(['cargo.merchant', 'photos'])->where('driver_id', Auth::id())
+            ->whereIn('status', ['loading', 'in_transit', 'unloading'])
+            ->get();
+
+        $this->activeTrip = $this->activeTrips->first();
 
         // 2. Jika tidak ada trip berjalan, cek apakah ada bid yang diterima dan belum dibuatkan trip
         if (! $this->activeTrip) {
             $acceptedBids = Auth::user()->bids()->where('status', 'accepted')->whereHas('cargo', function ($q) {
-                $q->where('status', 'in_transit');
+                $q->whereIn('status', ['in_transit', 'open', 'assigned']);
             })->get();
 
             $newBidToProcess = null;
@@ -69,40 +85,169 @@ class DriverCockpit extends Component
                 ->latest()
                 ->first();
         }
-    }
 
-    public function startDriving()
-    {
         if ($this->activeTrip) {
-            $this->activeTrip->update(['status' => 'in_transit']);
-            session()->flash('message', 'Perjalanan dimulai. Tracking aktif.');
+            $this->activeTab = $this->activeTrip->status;
+            if ($this->activeTab === 'completed') {
+                $this->activeTab = 'loading'; // Default to first tab just in case
+            }
         }
     }
 
-    public function uploadPhoto($type)
+    public function setTab($tab)
     {
-        $this->validate([
-            'photo' => 'image|max:5120', // 5MB Max
-        ]);
+        $this->activeTab = $tab;
+    }
 
-        $path = $this->photo->store('trip-photos', 'public');
-
+    private function storeAndWatermark($photo, $type)
+    {
+        $path = $photo->store('trip-photos', 'public');
+        // $this->processWatermark($path); // Disabled because watermark is now generated on client canvas
+        
         TripPhoto::create([
             'trip_id' => $this->activeTrip->id,
             'type' => $type,
             'path' => $path,
         ]);
+    }
 
-        if ($type === 'loading') {
-            session()->flash('message', 'Foto muat berhasil diunggah.');
+    private function processWatermark($path)
+    {
+        $fullPath = storage_path('app/public/' . $path);
+        if (!file_exists($fullPath)) return $path;
+
+        $mime = mime_content_type($fullPath);
+        if ($mime == 'image/jpeg') {
+            $image = @imagecreatefromjpeg($fullPath);
+        } elseif ($mime == 'image/png') {
+            $image = @imagecreatefrompng($fullPath);
         } else {
-            $this->activeTrip->update(['status' => 'completed']);
-            $this->activeTrip->cargo->update(['status' => 'done']);
-            session()->flash('message', 'Foto bongkar berhasil diunggah. Trip Selesai.');
+            return $path;
         }
 
-        $this->photo = null;
-        $this->activeTrip->refresh();
+        if (!$image) return $path;
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        // Resize to 800px max width for readability of built-in font
+        $maxWidth = 800;
+        if ($width > $maxWidth) {
+            $newWidth = $maxWidth;
+            $newHeight = floor($height * ($maxWidth / $width));
+            $newImage = imagecreatetruecolor($newWidth, $newHeight);
+            // preserve transparency for png
+            if ($mime == 'image/png') {
+                imagealphablending($newImage, false);
+                imagesavealpha($newImage, true);
+            }
+            imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            imagedestroy($image);
+            $image = $newImage;
+            $width = $newWidth;
+            $height = $newHeight;
+        }
+
+        $white = imagecolorallocate($image, 255, 255, 255);
+        $black = imagecolorallocatealpha($image, 0, 0, 0, 50);
+
+        $lat = $this->activeTrip->current_lat ?? 'Menunggu GPS';
+        $lng = $this->activeTrip->current_lng ?? 'Menunggu GPS';
+        $timestamp = now()->format('Y-m-d H:i:s');
+        $text1 = "Waktu : " . $timestamp;
+        $text2 = "Lokasi: " . $lat . ", " . $lng;
+        $text3 = "Driver: " . Auth::user()->name;
+
+        $boxWidth = 350;
+        $boxHeight = 65;
+        
+        imagefilledrectangle($image, 10, $height - $boxHeight - 10, 10 + $boxWidth, $height - 10, $black);
+        imagestring($image, 5, 20, $height - $boxHeight, $text1, $white);
+        imagestring($image, 5, 20, $height - $boxHeight + 20, $text2, $white);
+        imagestring($image, 5, 20, $height - $boxHeight + 40, $text3, $white);
+
+        if ($mime == 'image/jpeg') {
+            imagejpeg($image, $fullPath, 90);
+        } elseif ($mime == 'image/png') {
+            imagepng($image, $fullPath);
+        }
+
+        imagedestroy($image);
+        return $path;
+    }
+
+    public function submitLoadingPhotos()
+    {
+        $this->validate([
+            'photo_arrival' => 'required|image|max:5120',
+            'photo_loading' => 'required|image|max:5120',
+            'photo_loaded' => 'required|image|max:5120',
+            'document_loading' => 'nullable|image|max:5120',
+        ]);
+
+        if ($this->photo_arrival) $this->storeAndWatermark($this->photo_arrival, 'arrival');
+        if ($this->photo_loading) $this->storeAndWatermark($this->photo_loading, 'loading_process');
+        if ($this->photo_loaded) $this->storeAndWatermark($this->photo_loaded, 'loading_completed');
+        if ($this->document_loading) $this->storeAndWatermark($this->document_loading, 'document_loading');
+
+        $this->activeTrip->update(['status' => 'in_transit']);
+        
+        // Also update all loading trips to in_transit if LTL
+        foreach ($this->activeTrips as $trip) {
+            if ($trip->status === 'loading') {
+                $trip->update(['status' => 'in_transit']);
+            }
+        }
+
+        $this->activeTab = 'in_transit';
+        session()->flash('message', 'Perjalanan dimulai. Tracking aktif.');
+    }
+
+    public function arriveAtDestination()
+    {
+        if ($this->activeTrip && $this->activeTrip->status === 'in_transit') {
+            $this->activeTrip->update(['status' => 'unloading']);
+            
+            // Update all to unloading if they were in transit
+            foreach ($this->activeTrips as $trip) {
+                if ($trip->status === 'in_transit') {
+                    $trip->update(['status' => 'unloading']);
+                }
+            }
+
+            $this->activeTab = 'unloading';
+            session()->flash('message', 'Tiba di tujuan. Silakan lakukan proses bongkar.');
+        }
+    }
+
+    public function submitUnloadingPhotos()
+    {
+        $this->validate([
+            'photo_destination' => 'required|image|max:5120',
+            'photo_unloading' => 'required|image|max:5120',
+            'document_unloading' => 'nullable|image|max:5120',
+        ]);
+
+        if ($this->photo_destination) $this->storeAndWatermark($this->photo_destination, 'destination');
+        if ($this->photo_unloading) $this->storeAndWatermark($this->photo_unloading, 'unloading_process');
+        if ($this->document_unloading) $this->storeAndWatermark($this->document_unloading, 'document_unloading');
+
+        $this->activeTrip->update(['status' => 'completed']);
+        if ($this->activeTrip->cargo) {
+            $this->activeTrip->cargo->update(['status' => 'done']);
+        }
+        
+        // Update all unloading to completed
+        foreach ($this->activeTrips as $trip) {
+            if ($trip->status === 'unloading') {
+                $trip->update(['status' => 'completed']);
+                if ($trip->cargo) {
+                    $trip->cargo->update(['status' => 'done']);
+                }
+            }
+        }
+
+        session()->flash('message', 'Foto bongkar berhasil diunggah. Trip Selesai.');
     }
 
     public function updateLocation($lat, $lng)
@@ -191,7 +336,7 @@ class DriverCockpit extends Component
         $this->validate([
             'stopReason' => 'required|string',
             'stopDuration' => 'required|numeric|min:1',
-            'photo' => 'nullable|image|max:5120',
+            'photo' => 'required|image|max:5120',
         ]);
 
         if ($this->activeTrip) {
@@ -206,12 +351,7 @@ class DriverCockpit extends Component
             ]);
 
             if ($this->photo) {
-                $path = $this->photo->store('trip-photos', 'public');
-                TripPhoto::create([
-                    'trip_id' => $this->activeTrip->id,
-                    'type' => 'checkin',
-                    'path' => $path,
-                ]);
+                $this->storeAndWatermark($this->photo, 'checkin');
                 $this->photo = null;
             }
 
@@ -226,6 +366,7 @@ class DriverCockpit extends Component
     {
         $this->validate([
             'deviationReason' => 'required|string',
+            'photo' => 'required|image|max:5120',
         ]);
 
         if ($this->activeTrip) {
@@ -238,6 +379,11 @@ class DriverCockpit extends Component
                 'lng' => $this->activeTrip->current_lng,
                 'notes' => $this->deviationReason,
             ]);
+
+            if ($this->photo) {
+                $this->storeAndWatermark($this->photo, 'deviation');
+                $this->photo = null;
+            }
 
             session()->flash('message', 'Laporan deviasi jalur berhasil dicatat.');
             $this->showDeviationForm = false;
