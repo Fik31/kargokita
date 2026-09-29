@@ -67,7 +67,7 @@ class SubscriptionPayment extends Component
             DB::commit();
 
             $this->hasActiveSubscription = true;
-            session()->flash('message', 'Pembayaran berhasil! Anda sekarang adalah member VIP Cargo Ekosistem.');
+            session()->flash('message', 'Pembayaran deposit berhasil! Anda sekarang adalah Member Resmi Cargo Ekosistem.');
 
         } catch (\Exception $e) {
             DB::rollBack();

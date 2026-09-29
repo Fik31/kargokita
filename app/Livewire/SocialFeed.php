@@ -111,11 +111,11 @@ class SocialFeed extends Component
     public function likePost($postId)
     {
         if (!Auth::user()->is_subscribed) {
-            session()->flash('error', 'Fitur Like (Apresiasi) hanya tersedia untuk Member VIP (Langganan).');
+            session()->flash('error', 'Fitur Like (Apresiasi) hanya tersedia untuk Member Resmi (telah deposit).');
             return;
         }
 
-        session()->flash('message', 'Anda menyukai postingan ini (Fitur VIP).');
+        session()->flash('message', 'Anda menyukai postingan ini.');
     }
 
     public function render()

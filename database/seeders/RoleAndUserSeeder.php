@@ -53,6 +53,13 @@ class RoleAndUserSeeder extends Seeder
         );
         $merchantVip->assignRole('merchant');
 
+        $merchantDeposit = User::firstOrCreate(
+            ['email' => 'merchant.deposit@kargokita.com'],
+            ['name' => 'Merchant Sample (Telah Deposit)', 'password' => Hash::make('password'), 'is_subscribed' => true]
+        );
+        $merchantDeposit->assignRole('merchant');
+
+
         // Create Dummy Drivers
         $driverKosong = User::firstOrCreate(
             ['email' => 'driver.kosong@kargokita.com'],
@@ -65,6 +72,12 @@ class RoleAndUserSeeder extends Seeder
             ['name' => 'Driver VIP (Aktif)', 'password' => Hash::make('password')]
         );
         $driverVip->assignRole('driver');
+
+        $driverDeposit = User::firstOrCreate(
+            ['email' => 'driver.deposit@kargokita.com'],
+            ['name' => 'Driver Sample (Telah Deposit)', 'password' => Hash::make('password'), 'is_subscribed' => true]
+        );
+        $driverDeposit->assignRole('driver');
 
         // Create Dummy Posts for Feed
         if (Post::count() == 0) {

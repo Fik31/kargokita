@@ -78,8 +78,8 @@ class MerchantSelfAssessmentForm extends Component
             $user->assignRole('merchant');
         }
 
-        session()->flash('message', 'Data Registrasi Merchant berhasil dikirim! Tim Administrator kami akan memverifikasi data Anda untuk penentuan Tier.');
-        return redirect()->route('feed'); 
+        session()->flash('message', 'Data Registrasi Merchant berhasil dikirim! Langkah terakhir, silakan selesaikan Deposit Jaminan untuk mengaktifkan akun Anda.');
+        return redirect()->route('subscription'); 
     }
 
     public function render()

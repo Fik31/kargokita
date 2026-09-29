@@ -20,7 +20,7 @@ class DriverBranding extends Component
         $user = Auth::user();
         
         if (!$user->is_subscribed) {
-            session()->flash('error', 'Hanya Member VIP yang dapat mengajukan branding.');
+            session()->flash('error', 'Hanya Member Resmi (telah deposit) yang dapat mengajukan branding.');
             return;
         }
 

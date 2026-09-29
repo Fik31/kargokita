@@ -23,7 +23,7 @@
         <!-- Referral Info -->
         <div class="md:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center">
             <h4 class="text-lg font-bold text-gray-900 mb-2">Program Referral Ekosistem</h4>
-            <p class="text-sm text-gray-600 mb-6">Ajak rekan Anda bergabung ke ekosistem Kargokita menggunakan kode referral Anda. Dapatkan komisi langsung ke dompet Anda saat mereka mengaktifkan langganan VIP!</p>
+            <p class="text-sm text-gray-600 mb-6">Ajak rekan Anda bergabung ke ekosistem Kargokita menggunakan kode referral Anda. Dapatkan komisi langsung ke dompet Anda saat mereka menyelesaikan Deposit Jaminan!</p>
             
             <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 flex items-center justify-between">
                 <div>

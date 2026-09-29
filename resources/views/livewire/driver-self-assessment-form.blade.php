@@ -1,8 +1,11 @@
-<div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-    <div class="bg-white shadow rounded-lg p-6 mb-6 text-center border-t-4 border-brand-blue">
-        <h2 class="text-2xl font-bold text-gray-800">Form Pendaftaran & Verifikasi Driver</h2>
-        <p class="text-sm text-gray-500 mt-2">Lengkapi data diri dan kendaraan Anda untuk diverifikasi oleh tim HSE. Semakin lengkap dokumen yang Anda unggah, semakin besar peluang mendapatkan Tier Gold/Silver.</p>
-    </div>
+<div class="max-w-[90rem] mx-auto p-4 sm:p-6 lg:p-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Form Column -->
+        <div class="lg:col-span-2">
+            <div class="bg-white shadow rounded-lg p-6 mb-6 text-center border-t-4 border-brand-blue">
+                <h2 class="text-2xl font-bold text-gray-800">Form Pendaftaran & Verifikasi Driver</h2>
+                <p class="text-sm text-gray-500 mt-2">Lengkapi data diri dan kendaraan Anda untuk diverifikasi oleh tim HSE. Semakin lengkap dokumen yang Anda unggah, semakin besar peluang mendapatkan Tier Gold/Silver.</p>
+            </div>
 
     <!-- Basic Vehicle Info -->
     <div class="bg-white shadow rounded-lg p-6 mb-6">
@@ -133,5 +136,47 @@
                 </button>
             </div>
         </form>
+    </div>
+        </div>
+
+        <!-- Sidebar Deposit Jaminan -->
+        <div class="lg:col-span-1">
+            <div class="bg-gradient-to-br from-brand-blue to-blue-900 shadow-xl rounded-2xl p-6 text-white sticky top-6">
+                <h3 class="text-xl font-bold mb-2">Informasi Penting</h3>
+                <p class="text-blue-100 text-sm mb-6">Wajib bagi semua Driver untuk menyetor Deposit Jaminan. Menjamin keseriusan Anda di ekosistem Kargokita.</p>
+                
+                <div class="mb-6 border-b border-white/20 pb-6">
+                    <span class="text-3xl font-extrabold">Rp 1.000.000</span>
+                    <span class="text-sm text-blue-200 block mt-2 leading-relaxed">Deposit ini dibayarkan <strong>setelah</strong> Anda mengirimkan form ini. Akun Anda baru akan aktif setelah lunas.</span>
+                </div>
+                
+                <div class="bg-white/10 rounded-xl p-4 mb-6 border border-white/20">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-yellow-300 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p class="text-sm font-medium leading-relaxed">Garansi 100% uang kembali jika selama 1 tahun berturut-turut Anda tidak mendapatkan order muatan di platform ini.</p>
+                    </div>
+                </div>
+
+                <h4 class="font-bold mb-3 text-sm uppercase tracking-wider text-blue-200">Benefit Member Resmi:</h4>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-yellow-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Akses Bidding LTL & Prioritas Muatan
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-yellow-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Komisi Referral / Agen Langsung
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-yellow-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Klaim Biaya Branding (Stiker & Pajak)
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-yellow-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Akses Fitur Rating & Sosial
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>

@@ -55,7 +55,7 @@ class TripHistory extends Component
     public function openRatingModal($tripId, $targetId)
     {
         if (!Auth::user()->is_subscribed) {
-            session()->flash('error', 'Fitur Penilaian (Rating) hanya tersedia untuk Member VIP.');
+            session()->flash('error', 'Fitur Penilaian (Rating) hanya tersedia untuk Member Resmi (telah deposit).');
             return;
         }
 
