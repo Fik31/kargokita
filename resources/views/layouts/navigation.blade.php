@@ -158,8 +158,10 @@
                  x-transition:leave-end="transform opacity-0 scale-95"
                  class="absolute bottom-full left-0 w-full mb-2 bg-white rounded-lg shadow-xl border border-gray-100 py-1 overflow-hidden z-50">
                 <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600">Profil Saya</a>
-                @if(Auth::user()->hasRole('merchant') || Auth::user()->hasRole('driver'))
+                @if(Auth::user()->hasRole('merchant'))
                     <a href="{{ route('verification') }}" class="block px-4 py-2.5 text-sm font-bold text-blue-600 hover:bg-blue-50">Verifikasi & Tier</a>
+                @elseif(Auth::user()->hasRole('driver'))
+                    <a href="{{ route('driver.verification') }}" class="block px-4 py-2.5 text-sm font-bold text-blue-600 hover:bg-blue-50">Verifikasi & Tier</a>
                 @endif
                 <div class="h-px bg-gray-100 my-1"></div>
                 <form method="POST" action="{{ route('logout') }}">

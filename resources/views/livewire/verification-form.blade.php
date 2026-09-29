@@ -1,8 +1,8 @@
 <div class="max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8 font-sans">
     
     <div class="text-center mb-12">
-        <h2 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-500 tracking-tight">Verifikasi & Lengkapi Profil</h2>
-        <p class="mt-3 text-lg text-gray-500 max-w-2xl mx-auto">Sistem Tiering akan menentukan akses fitur dan batas transaksi akun Anda. Semakin lengkap data Anda, semakin banyak keuntungan yang didapat.</p>
+        <h2 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-red-500 tracking-tight">Lengkapi Profil Anda</h2>
+        <p class="mt-3 text-lg text-gray-500 max-w-2xl mx-auto">Lengkapi data diri dan armada Anda. Data ini akan digunakan untuk proses verifikasi operasional dan penentuan Tier melalui Penilaian HSE.</p>
     </div>
 
     @if (session()->has('message'))
@@ -19,58 +19,6 @@
         </div>
     @endif
 
-    <!-- Tiering Explanation Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        <!-- Bronze -->
-        <div class="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col items-center text-center relative overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300">
-            <div class="absolute top-0 left-0 w-full h-1.5 bg-blue-800"></div>
-            <div class="w-20 h-20 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 shadow-inner">
-                <svg class="w-10 h-10 text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            </div>
-            <h3 class="text-2xl font-black text-gray-900 mb-2">Tier Bronze</h3>
-            <p class="text-sm text-gray-500 mb-6">Akses dasar aplikasi untuk menjelajahi fitur.</p>
-            <div class="mt-auto w-full">
-                <div class="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">Syarat untuk Bronze:</div>
-                <div class="text-sm font-medium text-gray-700 bg-gray-50 py-2 px-4 rounded-xl border border-gray-100">
-                    Isi <span class="text-blue-700 font-bold">Informasi Dasar</span><br/>(No HP & Alamat)
-                </div>
-            </div>
-        </div>
-
-        <!-- Silver -->
-        <div class="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col items-center text-center relative overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300">
-            <div class="absolute top-0 left-0 w-full h-1.5 bg-gray-400"></div>
-            <div class="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-200 rounded-full flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 shadow-inner">
-                <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-            </div>
-            <h3 class="text-2xl font-black text-gray-900 mb-2">Tier Silver</h3>
-            <p class="text-sm text-gray-500 mb-6">Membuka transaksi standar & fitur reguler.</p>
-            <div class="mt-auto w-full">
-                <div class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Jika mau ke Silver:</div>
-                <div class="text-sm font-medium text-gray-700 bg-gray-50 py-2 px-4 rounded-xl border border-gray-100">
-                    Tambahkan <span class="font-bold">Identitas Tambahan</span><br/>(KTP & NPWP)
-                </div>
-            </div>
-        </div>
-
-        <!-- Gold -->
-        <div class="bg-gradient-to-b from-white to-yellow-50/30 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-yellow-100 flex flex-col items-center text-center relative overflow-hidden group hover:-translate-y-2 transition-all duration-300">
-            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-yellow-400 to-yellow-500"></div>
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-yellow-400 opacity-10 rounded-full blur-2xl"></div>
-            <div class="w-20 h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 shadow-inner">
-                <svg class="w-10 h-10 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-            </div>
-            <h3 class="text-2xl font-black text-gray-900 mb-2">Tier Gold</h3>
-            <p class="text-sm text-gray-500 mb-6">Prioritas layanan, Flash Sale & Hak Eksklusif.</p>
-            <div class="mt-auto w-full">
-                <div class="text-xs font-bold text-yellow-700 uppercase tracking-wider mb-2">Jika mau ke Gold:</div>
-                <div class="text-sm font-medium text-yellow-900 bg-yellow-100/50 py-2 px-4 rounded-xl border border-yellow-200">
-                    Lengkapi <span class="font-bold text-yellow-700">Data Peran</span><br/>(Data Kendaraan / Usaha)
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Form -->
     <form wire:submit.prevent="submit" class="space-y-10 bg-white p-8 md:p-12 rounded-[2rem] shadow-[0_8px_40px_rgb(0,0,0,0.06)] border border-gray-100 relative overflow-hidden">
         
@@ -83,7 +31,7 @@
                 <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-lg mr-4 shadow-sm border border-blue-100">1</div>
                 <div>
                     <h3 class="font-extrabold text-2xl text-gray-900 tracking-tight">Informasi Dasar</h3>
-                    <p class="text-xs text-gray-500 font-medium">Syarat minimal Tier Bronze</p>
+                    <p class="text-xs text-gray-500 font-medium">Informasi kontak utama Anda</p>
                 </div>
             </div>
             <div class="md:pl-14 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -108,7 +56,7 @@
                 <div class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-700 flex items-center justify-center font-black text-lg mr-4 shadow-sm border border-gray-200">2</div>
                 <div>
                     <h3 class="font-extrabold text-2xl text-gray-900 tracking-tight">Identitas Tambahan</h3>
-                    <p class="text-xs text-gray-500 font-medium">Lengkapi untuk mencapai Tier Silver</p>
+                    <p class="text-xs text-gray-500 font-medium">Data legalitas dan administrasi</p>
                 </div>
             </div>
             <div class="md:pl-14 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -133,7 +81,7 @@
                 <div class="w-10 h-10 rounded-2xl bg-yellow-100 text-yellow-700 flex items-center justify-center font-black text-lg mr-4 shadow-sm border border-yellow-200">3</div>
                 <div>
                     <h3 class="font-extrabold text-2xl text-gray-900 tracking-tight">Data Peran (Role)</h3>
-                    <p class="text-xs text-gray-500 font-medium">Lengkapi untuk membuka Tier Gold & Fitur Eksklusif</p>
+                    <p class="text-xs text-gray-500 font-medium">Data spesifik sesuai operasional Anda</p>
                 </div>
             </div>
             
@@ -195,16 +143,24 @@
                                 <input type="text" wire:model="vehicle_plate" class="block w-full border-green-200 bg-white rounded-xl px-4 py-3 text-gray-800 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all uppercase font-mono" placeholder="B 1234 CD">
                                 @error('vehicle_plate') <span class="text-red-500 text-xs mt-1 block font-medium">{{ $message }}</span> @enderror
                             </div>
-                            <div>
+                            <div class="md:col-span-2">
                                 <label class="block font-semibold text-sm text-green-900 mb-2">Tipe Kendaraan</label>
                                 <select wire:model="vehicle_type" class="block w-full border-green-200 bg-white rounded-xl px-4 py-3 text-gray-800 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all cursor-pointer">
                                     <option value="">-- Pilih Tipe Armada --</option>
-                                    <option value="Engkel Bak">Engkel Bak</option>
-                                    <option value="Engkel Box">Engkel Box</option>
-                                    <option value="CDD Bak">CDD Bak</option>
-                                    <option value="CDD Box">CDD Box</option>
-                                    <option value="Fuso">Fuso</option>
+                                    <option value="Blindvan">Blindvan - Box (700–800 kg | 3–4 CBM)</option>
+                                    <option value="Granmax / L300 Box">Granmax / L300 Box - Bak & Box (800–1.000 kg | 4–6 CBM)</option>
+                                    <option value="CDE">CDE - Bak & Box (2.000–2.500 kg | 6–9 CBM)</option>
+                                    <option value="CDE Long">CDE Long - Bak & Box (2.000–2.500 kg | 10–14 CBM)</option>
+                                    <option value="CDD">CDD - Bak & Box (4.000–5.000 kg | 13–18 CBM)</option>
+                                    <option value="CDD Long">CDD Long - Bak & Box (5.000–6.000 kg | 22–28 CBM)</option>
+                                    <option value="Fuso">Fuso - Bak & Box (8.000–10.000 kg | 25–35 CBM)</option>
+                                    <option value="Fuso Long / Wingbox">Fuso Long / Wingbox - Bak & Box (8.000–10.000 kg | 35–40 CBM)</option>
+                                    <option value="Tronton">Tronton - Bak & Box (15.000–20.000 kg | 40–50 CBM)</option>
+                                    <option value="Tronton Wingbox">Tronton Wingbox - Box (18.000–25.000 kg | 45–55 CBM)</option>
+                                    <option value="Trailer 20">Trailer 20" - Container (25.000 - 27.000 kg | 20 Feet)</option>
+                                    <option value="Trailer 40">Trailer 40" - Container (30.000 - 32.000 kg | 40 Feet)</option>
                                 </select>
+                                <p class="text-xs text-green-700 mt-2 italic">*Kapasitas muatan dan volume merupakan estimasi rata-rata</p>
                                 @error('vehicle_type') <span class="text-red-500 text-xs mt-1 block font-medium">{{ $message }}</span> @enderror
                             </div>
                             <div class="md:col-span-2">
@@ -223,7 +179,7 @@
 
         <div class="flex justify-end pt-8 mt-4">
             <button type="submit" class="bg-gradient-to-r from-blue-800 to-blue-600 hover:from-blue-900 hover:to-blue-700 text-white font-bold py-4 px-10 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 text-lg flex items-center group">
-                <span>Simpan Profil & Update Tier</span>
+                <span>Simpan Profil</span>
                 <svg class="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </button>
         </div>

@@ -4,6 +4,37 @@
         <p class="text-sm text-gray-500 mt-2">Lengkapi data diri dan kendaraan Anda untuk diverifikasi oleh tim HSE. Semakin lengkap dokumen yang Anda unggah, semakin besar peluang mendapatkan Tier Gold/Silver.</p>
     </div>
 
+    <!-- Basic Vehicle Info -->
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Informasi Kendaraan Anda</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block font-semibold text-sm text-gray-700 mb-2">Plat Nomor Kendaraan</label>
+                <input type="text" wire:model="license_plate" class="block w-full border-gray-300 rounded-md px-4 py-2 text-gray-800 shadow-sm focus:border-brand-blue focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition uppercase font-mono" placeholder="B 1234 CD">
+                @error('license_plate') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+            </div>
+            <div>
+                <label class="block font-semibold text-sm text-gray-700 mb-2">Tipe Kendaraan</label>
+                <select wire:model="vehicle_type" class="block w-full border-gray-300 rounded-md px-4 py-2 text-gray-800 shadow-sm focus:border-brand-blue focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition cursor-pointer">
+                    <option value="">-- Pilih Tipe Armada --</option>
+                    <option value="Blindvan">Blindvan - Box (700–800 kg | 3–4 CBM)</option>
+                    <option value="Granmax / L300 Box">Granmax / L300 Box - Bak & Box (800–1.000 kg | 4–6 CBM)</option>
+                    <option value="CDE">CDE - Bak & Box (2.000–2.500 kg | 6–9 CBM)</option>
+                    <option value="CDE Long">CDE Long - Bak & Box (2.000–2.500 kg | 10–14 CBM)</option>
+                    <option value="CDD">CDD - Bak & Box (4.000–5.000 kg | 13–18 CBM)</option>
+                    <option value="CDD Long">CDD Long - Bak & Box (5.000–6.000 kg | 22–28 CBM)</option>
+                    <option value="Fuso">Fuso - Bak & Box (8.000–10.000 kg | 25–35 CBM)</option>
+                    <option value="Fuso Long / Wingbox">Fuso Long / Wingbox - Bak & Box (8.000–10.000 kg | 35–40 CBM)</option>
+                    <option value="Tronton">Tronton - Bak & Box (15.000–20.000 kg | 40–50 CBM)</option>
+                    <option value="Tronton Wingbox">Tronton Wingbox - Box (18.000–25.000 kg | 45–55 CBM)</option>
+                    <option value="Trailer 20">Trailer 20" - Container (25.000 - 27.000 kg | 20 Feet)</option>
+                    <option value="Trailer 40">Trailer 40" - Container (30.000 - 32.000 kg | 40 Feet)</option>
+                </select>
+                @error('vehicle_type') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+            </div>
+        </div>
+    </div>
+
     <!-- Tabs Navigation -->
     <div class="border-b border-gray-200 mb-6 bg-white shadow rounded-t-lg px-4">
         <nav class="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">

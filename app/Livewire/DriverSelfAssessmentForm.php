@@ -35,17 +35,34 @@ class DriverSelfAssessmentForm extends Component
         }
     }
 
+    public $vehicle_type = '';
+    public $license_plate = '';
+
     public function submit()
     {
         $this->validate([
+            'vehicle_type' => 'required|string',
+            'license_plate' => 'required|string',
             'answers.*.evidence' => 'nullable|image|max:5120', // Max 5MB
         ]);
 
         $user = Auth::user();
 
+        // Check if vehicle exists or create new
+        $vehicle = \App\Models\Vehicle::updateOrCreate(
+            ['license_plate' => $this->license_plate],
+            [
+                'owner_id' => $user->id,
+                'driver_id' => $user->id,
+                'type' => $this->vehicle_type,
+                'capacity_kg' => 0, // Default capacity, could be parsed from type later
+            ]
+        );
+
+        // Or we could just use the latest existing assessment if it's draft, but for now we create new
         $assessment = Assessment::create([
             'driver_id' => $user->id,
-            'vehicle_id' => null, // Placeholder, can be linked to a vehicle model later
+            'vehicle_id' => $vehicle->id,
             'date' => date('Y-m-d'),
             'status' => AssessmentStatus::SUBMITTED,
             'level' => AssessmentLevel::NOT_ELIGIBLE,
@@ -74,7 +91,7 @@ class DriverSelfAssessmentForm extends Component
         }
 
         session()->flash('message', 'Data Assessment berhasil dikirim! Tim HSE kami akan segera memverifikasi data Anda untuk penentuan Tier.');
-        return redirect()->route('dashboard'); 
+        return redirect()->route('feed'); 
     }
 
     public function render()
