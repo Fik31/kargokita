@@ -167,7 +167,7 @@
         @else
             <div class="text-center text-gray-500 p-12 bg-white border border-gray-300 rounded-2xl border-dashed mt-8">
                 <p class="font-bold text-lg text-gray-700">Tidak Ada Trip Aktif</p>
-                <a href="{{ route('driver.bidding') }}" class="mt-6 inline-block bg-brand-blue text-white font-bold py-2 px-6 rounded-xl">Cari Muatan</a>
+                <a href="{{ route('bidding') }}" class="mt-6 inline-block bg-brand-blue text-white font-bold py-2 px-6 rounded-xl">Cari Muatan</a>
             </div>
         @endif
     </div>

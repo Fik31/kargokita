@@ -9,6 +9,12 @@ class HseVerificationList extends Component
 {
     public function render()
     {
+        $pendingDataVerifications = \App\Models\VerificationRequest::with('user')
+            ->where('type', 'driver')
+            ->where('status', 'pending')
+            ->latest()
+            ->get();
+
         $pendingAssessments = Assessment::with('driver')
             ->whereHas('items.criterion', function ($query) {
                 $query->where('target_role', 'driver');
@@ -17,6 +23,9 @@ class HseVerificationList extends Component
             ->latest()
             ->get();
 
-        return view('livewire.hse-verification-list', ['pendingAssessments' => $pendingAssessments]);
+        return view('livewire.hse-verification-list', [
+            'pendingAssessments' => $pendingAssessments,
+            'pendingDataVerifications' => $pendingDataVerifications,
+        ]);
     }
 }

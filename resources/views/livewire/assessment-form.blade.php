@@ -105,10 +105,8 @@
                                     <td class="px-3 py-4 text-sm text-gray-500 align-top">
                                         <select wire:model.live="answers.{{ $criterion->id }}.status" class="block w-full pl-3 pr-8 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md font-bold
                                             {{ $answers[$criterion->id]['status'] == 'COMPLY' ? 'text-green-700 bg-green-50' : 
-                                              ($answers[$criterion->id]['status'] == 'NON-COMPLY' ? 'text-red-700 bg-red-50' : 
-                                              ($answers[$criterion->id]['status'] == 'PARTIAL' ? 'text-yellow-700 bg-yellow-50' : 'text-gray-700')) }}">
+                                              ($answers[$criterion->id]['status'] == 'NON-COMPLY' ? 'text-red-700 bg-red-50' : 'text-gray-700') }}">
                                             <option value="COMPLY">COMPLY</option>
-                                            <option value="PARTIAL">PARTIAL</option>
                                             <option value="NON-COMPLY">NON-COMPLY</option>
                                             <option value="N/A">N/A</option>
                                         </select>
@@ -116,7 +114,7 @@
                                     <td class="px-3 py-4 text-sm text-gray-500 align-top">
                                         <div class="space-y-3">
                                             <!-- Conditional Fields for Findings & Corrective Action -->
-                                            @if(in_array($answers[$criterion->id]['status'], ['NON-COMPLY', 'PARTIAL']))
+                                            @if($answers[$criterion->id]['status'] == 'NON-COMPLY')
                                                 <div class="bg-red-50 p-3 rounded-md border border-red-100 space-y-3">
                                                     <div>
                                                         <label class="block text-xs font-medium text-red-700 mb-1">Catatan Temuan HSE <span class="text-red-500">*</span></label>

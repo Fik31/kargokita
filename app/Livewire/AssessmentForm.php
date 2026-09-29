@@ -2,45 +2,47 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\AssessmentCriterion;
+use App\Enums\AssessmentStatus;
+use App\Enums\ComplianceStatus;
 use App\Models\Assessment;
+use App\Models\AssessmentCriterion;
 use App\Models\AssessmentItem;
 use App\Models\CorrectiveAction;
-use App\Enums\ComplianceStatus;
-use App\Enums\AssessmentStatus;
 use App\Services\AssessmentScoringService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class AssessmentForm extends Component
 {
     public $assessment_id;
+
     public $assessment;
-    
+
     public $criteriaGrouped = [];
-    public $answers = []; 
-    
+
+    public $answers = [];
+
     public $activeTab = 'DRIVER';
 
     public function mount($assessment_id = null)
     {
         $this->assessment_id = $assessment_id;
         $targetRole = 'driver';
-        
+
         if ($this->assessment_id) {
             $this->assessment = Assessment::with(['items.criterion'])->findOrFail($this->assessment_id);
-            
+
             if ($this->assessment->items->count() > 0) {
                 $targetRole = $this->assessment->items->first()->criterion->target_role;
             }
 
             // Map existing items
             $existingItems = $this->assessment->items->keyBy('criterion_id');
-            
+
             $criteria = AssessmentCriterion::where('target_role', $targetRole)->get();
             foreach ($criteria as $c) {
                 $this->criteriaGrouped[$c->category][] = $c;
-                
+
                 $item = $existingItems->get($c->id);
                 $this->answers[$c->id] = [
                     'item_id' => $item ? $item->id : null,
@@ -66,7 +68,7 @@ class AssessmentForm extends Component
                 ];
             }
         }
-        
+
         if (count($this->criteriaGrouped) > 0) {
             $this->activeTab = array_keys($this->criteriaGrouped)[0];
         }
@@ -74,7 +76,7 @@ class AssessmentForm extends Component
 
     public function submit(AssessmentScoringService $scoringService)
     {
-        if (!$this->assessment) {
+        if (! $this->assessment) {
             $this->assessment = Assessment::create([
                 'driver_id' => null,
                 'vehicle_id' => null,
@@ -105,14 +107,14 @@ class AssessmentForm extends Component
                 ]);
             }
 
-            if (in_array($answer['status'], [ComplianceStatus::NON_COMPLY->value, ComplianceStatus::PARTIAL->value])) {
+            if ($answer['status'] === ComplianceStatus::NON_COMPLY->value) {
                 CorrectiveAction::updateOrCreate(
                     ['assessment_item_id' => $item->id],
                     [
                         'pic_id' => $answer['pic_ca'] ?? null,
                         'due_date' => $answer['due_date'] ?? null,
                         'notes' => $answer['notes'] ?? 'Tindak lanjut dari verifikasi.',
-                        'status' => 'OPEN'
+                        'status' => 'OPEN',
                     ]
                 );
             }
@@ -120,8 +122,8 @@ class AssessmentForm extends Component
 
         $scoringService->calculateScore($this->assessment);
 
-        session()->flash('message', 'Assessment berhasil diverifikasi. Tier disinkronisasi. Hasil: ' . $this->assessment->level->value);
-        
+        session()->flash('message', 'Assessment berhasil diverifikasi. Tier disinkronisasi. Hasil: '.$this->assessment->level->value);
+
         $targetRole = 'driver';
         if ($this->assessment->items->count() > 0) {
             $targetRole = $this->assessment->items->first()->criterion->target_role;
@@ -130,8 +132,8 @@ class AssessmentForm extends Component
         if ($targetRole === 'merchant') {
             return redirect()->route('admin.merchant-assessment.verification-list');
         }
-        
-        return redirect()->route('admin.assessment.dashboard'); 
+
+        return redirect()->route('admin.assessment.dashboard');
     }
 
     public function render()

@@ -165,7 +165,8 @@
                 @if(Auth::user()->hasRole('merchant'))
                     <a href="{{ route('verification') }}" class="block px-4 py-2.5 text-sm font-bold text-blue-600 hover:bg-blue-50">Verifikasi & Tier</a>
                 @elseif(Auth::user()->hasRole('driver'))
-                    <a href="{{ route('driver.verification') }}" class="block px-4 py-2.5 text-sm font-bold text-blue-600 hover:bg-blue-50">Verifikasi & Tier</a>
+                    <a href="{{ route('driver.verification') }}" class="block px-4 py-2.5 text-sm font-bold text-blue-600 hover:bg-blue-50">Form Pendaftaran & Verifikasi</a>
+                    <a href="{{ route('driver.hse-assessment') }}" class="block px-4 py-2.5 text-sm font-bold text-blue-600 hover:bg-blue-50">HSE Audit Assessment</a>
                 @endif
                 <div class="h-px bg-gray-100 my-1"></div>
                 <form method="POST" action="{{ route('logout') }}">

@@ -37,8 +37,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureDeposit::class])->group(fu
     // Merchant Verification Form (Self Assessment)
     Route::get('/verification', \App\Livewire\MerchantSelfAssessmentForm::class)->name('verification');
 
-    // Driver Verification Form (Self Assessment)
-    Route::get('/driver-verification', \App\Livewire\DriverSelfAssessmentForm::class)->name('driver.verification');
+    // Driver Registration Form (Bundled Info)
+    Route::get('/driver-verification', \App\Livewire\DriverRegistrationForm::class)->name('driver.verification');
+
+    // Driver HSE Assessment Form (Detailed)
+    Route::get('/driver-hse-assessment', \App\Livewire\DriverSelfAssessmentForm::class)->name('driver.hse-assessment');
 
     // Tracking (Can be accessed by Merchant and Administrator)
     Route::get('/tracking', LiveTracking::class)
@@ -61,6 +64,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureDeposit::class])->group(fu
         Route::get('/admin/assessment/dashboard', \App\Livewire\AssessmentDashboard::class)->name('admin.assessment.dashboard');
         Route::get('/admin/assessment/verifications', \App\Livewire\HseVerificationList::class)->name('admin.assessment.verification-list');
         Route::get('/admin/assessment/verify/{assessment_id?}', \App\Livewire\AssessmentForm::class)->name('admin.assessment.form');
+        Route::get('/admin/assessment/driver-verify/{request_id}', \App\Livewire\HseDriverVerificationForm::class)->name('admin.assessment.driver-verify');
     });
 
     // Bidding Routes (Accessible by auth, handled inside component)

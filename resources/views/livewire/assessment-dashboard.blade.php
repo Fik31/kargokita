@@ -101,7 +101,7 @@
                     <li>Kriteria berlabel <span class="bg-red-100 text-red-800 px-1 rounded font-bold text-xs">Mandatory YES</span> jika bernilai NON-COMPLY = otomatis <b>NOT ELIGIBLE</b> (Downgrade Tier).</li>
                     <li>Status N/A (Tidak Berlaku) akan dikeluarkan dari perhitungan pembagi persentase akhir.</li>
                     <li>Tier ditentukan oleh persentase akhir: <b>Gold &ge; 90%</b>; <b>Silver &ge; 80%</b>; <b>Bronze &ge; 70%</b>.</li>
-                    <li>Temuan (PARTIAL / NON-COMPLY) wajib diterbitkan <i>Corrective Action</i> dengan PIC yang jelas.</li>
+                    <li>Temuan (NON-COMPLY) wajib diterbitkan <i>Corrective Action</i> dengan PIC yang jelas.</li>
                     <li>Skor Assessment akan langsung tersinkronisasi (*sync*) dengan Tier (Badge) milik akun Driver.</li>
                 </ol>
             </div>

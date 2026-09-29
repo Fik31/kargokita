@@ -3,8 +3,8 @@
         <!-- Main Form Column -->
         <div class="lg:col-span-2">
             <div class="bg-white shadow rounded-lg p-6 mb-6 text-center border-t-4 border-brand-blue">
-                <h2 class="text-2xl font-bold text-gray-800">Form Pendaftaran & Verifikasi Driver</h2>
-                <p class="text-sm text-gray-500 mt-2">Lengkapi data diri dan kendaraan Anda untuk diverifikasi oleh tim HSE. Semakin lengkap dokumen yang Anda unggah, semakin besar peluang mendapatkan Tier Gold/Silver.</p>
+                <h2 class="text-2xl font-bold text-gray-800">HSE Audit Assessment</h2>
+                <p class="text-sm text-gray-500 mt-2">Form ini digunakan untuk kebutuhan audit HSE secara mendalam.</p>
             </div>
 
     <!-- Basic Vehicle Info -->
