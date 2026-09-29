@@ -30,6 +30,26 @@
 
             <!-- Main Content Area -->
             <div class="flex-1 flex flex-col overflow-hidden">
+                @php
+                    $hasNewTrip = \App\Models\Trip::where('status', 'assigned')
+                        ->where(function($q) {
+                            $q->where('driver_id', auth()->id())
+                              ->orWhereHas('cargo', function($sq) {
+                                  $sq->where('merchant_id', auth()->id());
+                              });
+                        })->exists();
+                @endphp
+                @if($hasNewTrip && !request()->routeIs('chat'))
+                    <div class="bg-brand-blue text-white px-4 py-3 shadow-md flex justify-between items-center z-50 shrink-0">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="text-sm font-medium leading-tight">Selamat! Ada order yang disetujui. Segera bergabung ke kolom Chat untuk komunikasi lebih lanjut.</span>
+                        </div>
+                        <a href="{{ route('chat') }}" class="ml-3 whitespace-nowrap inline-flex items-center justify-center px-3 py-1.5 border border-transparent rounded-full shadow-sm text-xs font-bold text-brand-blue bg-white hover:bg-gray-50 transition">
+                            Buka Chat
+                        </a>
+                    </div>
+                @endif
                 <!-- Mobile Top Bar -->
                 <div class="md:hidden flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 z-20">
                     <div class="flex items-center gap-4">

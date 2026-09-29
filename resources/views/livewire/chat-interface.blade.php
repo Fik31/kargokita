@@ -15,7 +15,7 @@
         
         <div class="flex-1 overflow-y-auto">
             @foreach($contacts as $contact)
-            <div wire:click="selectContact({{ $contact['id'] }})" class="flex items-center p-4 border-b border-gray-100 cursor-pointer transition {{ $selectedContactId == $contact['id'] ? 'bg-blue-50' : 'hover:bg-gray-100' }}">
+            <div wire:click="selectContact('{{ $contact['id'] }}')" class="flex items-center p-4 border-b border-gray-100 cursor-pointer transition {{ $selectedContactId == $contact['id'] ? 'bg-blue-50' : 'hover:bg-gray-100' }}">
                 <div class="relative">
                     <img src="{{ $contact['avatar'] }}" alt="{{ $contact['name'] }}" class="w-12 h-12 rounded-full border border-gray-200">
                     @if($contact['unread'] > 0)
@@ -57,19 +57,56 @@
                     </div>
                 </div>
                 <div>
-                    <button class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
-                    </button>
+                    @if(isset($contact['is_admin_view']) && $contact['is_admin_view'])
+                        @if($contact['admin_assistance_requested'])
+                            <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs font-bold">Bantuan Diminta</span>
+                        @endif
+                    @elseif(isset($contact['is_read_only']) && !$contact['is_read_only'])
+                        @if(isset($contact['admin_assistance_requested']) && $contact['admin_assistance_requested'])
+                            <span class="text-xs font-bold text-red-500 px-3 py-1 bg-red-50 rounded-full border border-red-100">Bantuan Admin Aktif</span>
+                        @else
+                            <button wire:click="requestAdminAssistance" class="text-xs font-bold text-white bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded-full transition shadow-sm">
+                                Minta Bantuan Admin
+                            </button>
+                        @endif
+                    @endif
                 </div>
             </div>
 
             <!-- Chat Messages -->
             <div class="flex-1 overflow-y-auto p-4 space-y-4">
                 @forelse($activeMessages as $message)
-                    @if($message['sender'] == 'them')
+                    @if($message['sender'] == 'admin')
+                        @if(isset($contact['is_admin_view']) && $contact['is_admin_view'])
+                            <div class="flex items-end gap-2 justify-end">
+                                <div class="max-w-[70%] text-right">
+                                    <div class="bg-red-600 p-3 rounded-2xl rounded-br-none shadow-sm text-white text-sm text-left inline-block">
+                                        {{ $message['text'] }}
+                                    </div>
+                                    <span class="text-xs text-gray-400 mt-1 block">{{ $message['time'] }}</span>
+                                </div>
+                            </div>
+                        @else
+                            <div class="flex items-end gap-2">
+                                <div class="w-8 h-8 rounded-full border border-gray-200 flex-shrink-0 bg-red-100 flex items-center justify-center text-red-600 text-xs font-bold">ADM</div>
+                                <div class="max-w-[70%]">
+                                    <span class="text-xs font-bold text-red-600 mb-1 block">Administrator</span>
+                                    <div class="bg-red-50 p-3 rounded-2xl rounded-bl-none shadow-sm border border-red-200 text-red-900 text-sm">
+                                        {{ $message['text'] }}
+                                    </div>
+                                    <span class="text-xs text-gray-400 mt-1 block">{{ $message['time'] }}</span>
+                                </div>
+                            </div>
+                        @endif
+                    @elseif($message['sender'] == 'them' || $message['sender'] == 'driver' || $message['sender'] == 'merchant')
                         <div class="flex items-end gap-2">
-                            <img src="{{ $contact['avatar'] }}" class="w-8 h-8 rounded-full border border-gray-200 flex-shrink-0">
+                            @if(!isset($contact['is_admin_view']) || !$contact['is_admin_view'])
+                                <img src="{{ $contact['avatar'] }}" class="w-8 h-8 rounded-full border border-gray-200 flex-shrink-0">
+                            @endif
                             <div class="max-w-[70%]">
+                                @if(isset($contact['is_admin_view']) && $contact['is_admin_view'])
+                                    <span class="text-xs font-bold text-gray-500 mb-1 block">{{ $message['sender'] == 'driver' ? 'Driver' : 'Merchant' }}</span>
+                                @endif
                                 <div class="bg-white p-3 rounded-2xl rounded-bl-none shadow-sm border border-gray-100 text-gray-800 text-sm">
                                     {{ $message['text'] }}
                                 </div>
@@ -92,17 +129,38 @@
             </div>
 
             <!-- Chat Input -->
-            <div class="p-4 bg-white border-t border-gray-200">
-                <form wire:submit.prevent="sendMessage" class="flex gap-2">
-                    <button type="button" class="text-gray-400 hover:text-gray-600 p-2">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                    </button>
-                    <input type="text" wire:model="newMessage" placeholder="Ketik pesan..." class="flex-1 bg-gray-50 border border-gray-300 rounded-full px-4 py-2 text-sm focus:ring-brand-blue focus:border-brand-blue">
-                    <button type="submit" class="bg-brand-blue text-white p-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center w-10 h-10 shadow-sm">
-                        <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                    </button>
-                </form>
-            </div>
+            @if(isset($contact['is_admin_view']) && $contact['is_admin_view'])
+                @if(!$contact['admin_assistance_requested'])
+                    <div class="p-4 bg-gray-100 border-t border-gray-200 text-center text-gray-500 text-sm font-medium">
+                        Anda sedang memantau chat ini (Mode Administrator). Chat terkunci.
+                    </div>
+                @else
+                    <div class="p-4 bg-red-50 border-t border-red-200">
+                        <form wire:submit.prevent="sendMessage" class="flex gap-2">
+                            <input type="text" wire:model="newMessage" placeholder="Ketik pesan bantuan..." class="flex-1 bg-white border border-red-300 rounded-full px-4 py-2 text-sm focus:ring-red-500 focus:border-red-500">
+                            <button type="submit" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition flex items-center justify-center w-10 h-10 shadow-sm">
+                                <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                            </button>
+                        </form>
+                    </div>
+                @endif
+            @elseif($contact['is_read_only'])
+                <div class="p-4 bg-gray-100 border-t border-gray-200 text-center text-gray-500 text-sm font-medium">
+                    Sesi percakapan ini telah ditutup karena transaksi telah selesai.
+                </div>
+            @else
+                <div class="p-4 bg-white border-t border-gray-200">
+                    <form wire:submit.prevent="sendMessage" class="flex gap-2">
+                        <button type="button" class="text-gray-400 hover:text-gray-600 p-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                        </button>
+                        <input type="text" wire:model="newMessage" placeholder="Ketik pesan..." class="flex-1 bg-gray-50 border border-gray-300 rounded-full px-4 py-2 text-sm focus:ring-brand-blue focus:border-brand-blue">
+                        <button type="submit" class="bg-brand-blue text-white p-2 rounded-full hover:bg-blue-700 transition flex items-center justify-center w-10 h-10 shadow-sm">
+                            <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </button>
+                    </form>
+                </div>
+            @endif
         @else
             <!-- Placeholder -->
             <div class="flex-1 flex flex-col items-center justify-center text-gray-400 p-6 text-center">
