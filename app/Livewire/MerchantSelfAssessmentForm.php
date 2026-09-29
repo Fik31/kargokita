@@ -12,17 +12,20 @@ use App\Enums\AssessmentLevel;
 use App\Enums\ComplianceStatus;
 use Illuminate\Support\Facades\Auth;
 
-class DriverSelfAssessmentForm extends Component
+class MerchantSelfAssessmentForm extends Component
 {
     use WithFileUploads;
 
     public $criteriaGrouped = [];
     public $answers = []; 
-    public $activeTab = 'DRIVER';
+    public $activeTab = 'LEGAL IDENTITY';
+
+    public $company_name = '';
+    public $nib_number = '';
 
     public function mount()
     {
-        $criteria = AssessmentCriterion::where('target_role', 'driver')->get();
+        $criteria = AssessmentCriterion::where('target_role', 'merchant')->get();
         foreach ($criteria as $c) {
             $this->criteriaGrouped[$c->category][] = $c;
             $this->answers[$c->id] = [
@@ -35,34 +38,20 @@ class DriverSelfAssessmentForm extends Component
         }
     }
 
-    public $vehicle_type = '';
-    public $license_plate = '';
-
     public function submit()
     {
         $this->validate([
-            'vehicle_type' => 'required|string',
-            'license_plate' => 'required|string',
+            'company_name' => 'required|string',
+            'nib_number' => 'required|string',
             'answers.*.evidence' => 'nullable|image|max:5120', // Max 5MB
         ]);
 
         $user = Auth::user();
 
-        // Check if vehicle exists or create new
-        $vehicle = \App\Models\Vehicle::updateOrCreate(
-            ['license_plate' => $this->license_plate],
-            [
-                'owner_id' => $user->id,
-                'driver_id' => $user->id,
-                'type' => $this->vehicle_type,
-                'capacity_kg' => 0, // Default capacity, could be parsed from type later
-            ]
-        );
-
-        // Or we could just use the latest existing assessment if it's draft, but for now we create new
+        // Check if there is an existing draft/pending assessment, or just create new
         $assessment = Assessment::create([
-            'driver_id' => $user->id,
-            'vehicle_id' => $vehicle->id,
+            'driver_id' => $user->id, // Reusing driver_id as the user_id for assessment
+            'vehicle_id' => null,
             'date' => date('Y-m-d'),
             'status' => AssessmentStatus::SUBMITTED,
             'level' => AssessmentLevel::NOT_ELIGIBLE,
@@ -79,23 +68,22 @@ class DriverSelfAssessmentForm extends Component
             AssessmentItem::create([
                 'assessment_id' => $assessment->id,
                 'criterion_id' => $criterionId,
-                'status' => ComplianceStatus::NA, // Default status before HSE checks
+                'status' => ComplianceStatus::NA,
                 'notes' => $answer['notes'] ?? null,
                 'evidence_path' => $evidencePath,
             ]);
         }
 
-        // Assign the driver role tentatively (if they don't have it)
-        if (!$user->hasRole('driver')) {
-            $user->assignRole('driver');
+        if (!$user->hasRole('merchant')) {
+            $user->assignRole('merchant');
         }
 
-        session()->flash('message', 'Data Assessment berhasil dikirim! Tim HSE kami akan segera memverifikasi data Anda untuk penentuan Tier.');
+        session()->flash('message', 'Data Registrasi Merchant berhasil dikirim! Tim Administrator kami akan memverifikasi data Anda untuk penentuan Tier.');
         return redirect()->route('feed'); 
     }
 
     public function render()
     {
-        return view('livewire.driver-self-assessment-form')->layout('layouts.app');
+        return view('livewire.merchant-self-assessment-form')->layout('layouts.app');
     }
 }

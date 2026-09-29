@@ -34,8 +34,8 @@ Route::middleware('auth')->group(function () {
     // Chat
     Route::get('/chat', ChatInterface::class)->name('chat');
 
-    // Verification Form (User submits this to request merchant role)
-    Route::get('/verification', VerificationForm::class)->name('verification');
+    // Merchant Verification Form (Self Assessment)
+    Route::get('/verification', \App\Livewire\MerchantSelfAssessmentForm::class)->name('verification');
 
     // Driver Verification Form (Self Assessment)
     Route::get('/driver-verification', \App\Livewire\DriverSelfAssessmentForm::class)->name('driver.verification');
@@ -47,6 +47,10 @@ Route::middleware('auth')->group(function () {
 
     // Admin Routes
     Route::middleware('role:administrator')->group(function () {
+        Route::get('/admin/merchant-assessment/dashboard', \App\Livewire\MerchantAssessmentDashboard::class)->name('admin.merchant-assessment.dashboard');
+        Route::get('/admin/merchant-verifications', \App\Livewire\MerchantVerificationList::class)->name('admin.merchant-assessment.verification-list');
+        Route::get('/admin/merchant-verify/{assessment_id?}', \App\Livewire\AssessmentForm::class)->name('admin.merchant-assessment.form');
+        
         Route::get('/admin/verification', AdminVerification::class)->name('admin.verification');
         Route::get('/admin/bidding', AdminBidding::class)->name('admin.bidding');
         Route::get('/admin/bidding-settings', \App\Livewire\AdminBiddingSettings::class)->name('admin.bidding-settings');

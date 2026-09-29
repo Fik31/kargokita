@@ -25,14 +25,19 @@ class AssessmentForm extends Component
     public function mount($assessment_id = null)
     {
         $this->assessment_id = $assessment_id;
+        $targetRole = 'driver';
         
         if ($this->assessment_id) {
-            $this->assessment = Assessment::with('items')->findOrFail($this->assessment_id);
+            $this->assessment = Assessment::with(['items.criterion'])->findOrFail($this->assessment_id);
             
+            if ($this->assessment->items->count() > 0) {
+                $targetRole = $this->assessment->items->first()->criterion->target_role;
+            }
+
             // Map existing items
             $existingItems = $this->assessment->items->keyBy('criterion_id');
             
-            $criteria = AssessmentCriterion::all();
+            $criteria = AssessmentCriterion::where('target_role', $targetRole)->get();
             foreach ($criteria as $c) {
                 $this->criteriaGrouped[$c->category][] = $c;
                 
@@ -48,7 +53,7 @@ class AssessmentForm extends Component
             }
         } else {
             // For manual creation if needed
-            $criteria = AssessmentCriterion::all();
+            $criteria = AssessmentCriterion::where('target_role', $targetRole)->get();
             foreach ($criteria as $c) {
                 $this->criteriaGrouped[$c->category][] = $c;
                 $this->answers[$c->id] = [
@@ -116,6 +121,16 @@ class AssessmentForm extends Component
         $scoringService->calculateScore($this->assessment);
 
         session()->flash('message', 'Assessment berhasil diverifikasi. Tier disinkronisasi. Hasil: ' . $this->assessment->level->value);
+        
+        $targetRole = 'driver';
+        if ($this->assessment->items->count() > 0) {
+            $targetRole = $this->assessment->items->first()->criterion->target_role;
+        }
+
+        if ($targetRole === 'merchant') {
+            return redirect()->route('admin.merchant-assessment.verification-list');
+        }
+        
         return redirect()->route('admin.assessment.dashboard'); 
     }
 
