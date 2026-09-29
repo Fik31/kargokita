@@ -80,4 +80,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Rating::class, 'ratee_id');
     }
+
+    public function getSuccessfulDeliveryPercentageAttribute()
+    {
+        $total = $this->trips_count ?? $this->trips()->count();
+        if ($total == 0) return 0;
+
+        $completed = $this->completed_trips_count ?? $this->trips()->where('status', 'completed')->count();
+        return round(($completed / $total) * 100);
+    }
 }

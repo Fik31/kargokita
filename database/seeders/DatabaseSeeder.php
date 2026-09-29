@@ -21,6 +21,9 @@ class DatabaseSeeder extends Seeder
             RoleAndUserSeeder::class,
             PresentationSeeder::class,
             AssessmentCriteriaSeeder::class,
+            MerchantAssessmentCriteriaSeeder::class,
+            CargoFlowDemoSeeder::class,
+            WaybillSeeder::class,
         ]);
     }
 }

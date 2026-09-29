@@ -30,4 +30,9 @@ class Trip extends Model
     {
         return $this->hasMany(TripEvent::class);
     }
+
+    public function waybill()
+    {
+        return $this->hasOne(Waybill::class);
+    }
 }

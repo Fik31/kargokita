@@ -42,7 +42,14 @@
                 @if($activeTab === 'loading')
                     <div class="border border-gray-200 p-6 rounded-2xl bg-white text-gray-800 shadow-sm">
                         <h3 class="font-bold mb-2 text-lg text-brand-blue">Instruksi Muat (Loading)</h3>
-                        <p class="text-sm text-gray-500 mb-6">Silakan unggah foto barang saat dimuat ke truk untuk keperluan manifes Lion Parcel.</p>
+                        <p class="text-sm text-gray-500 mb-4">Silakan unggah foto barang saat dimuat ke truk untuk keperluan manifes Lion Parcel.</p>
+
+                        <div class="mb-6">
+                            <a href="{{ route('waybill', ['trip_id' => $activeTrip->id]) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border border-yellow-200 font-bold py-2.5 px-4 rounded-xl transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                Lihat / Tanda Tangan Surat Jalan
+                            </a>
+                        </div>
                         
                         <form wire:submit.prevent="submitLoadingPhotos" class="flex flex-col space-y-4">
                             <x-camera-input modelName="photo_arrival" title="Bukti Kedatangan" requiredStatus="loading" :activeTrip="$activeTrip" :photoVar="$photo_arrival" />
@@ -92,7 +99,13 @@
                     <div class="mt-8">
                         <div class="flex justify-between items-end mb-4">
                             <h3 class="font-bold text-gray-800">Muatan di Dalam Bak Truk:</h3>
-                            <span class="text-brand-blue font-bold text-sm">Total 2.95 Ton</span>
+                            <div class="flex items-center gap-3">
+                                <a href="{{ route('waybill', ['trip_id' => $activeTrip->id]) }}" target="_blank" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 text-xs font-bold px-3 py-1.5 rounded-full flex items-center shadow-sm">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    Surat Jalan
+                                </a>
+                                <span class="text-brand-blue font-bold text-sm">Total 2.95 Ton</span>
+                            </div>
                         </div>
                         <div class="space-y-3">
                             <div class="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center shadow-sm">
@@ -147,7 +160,14 @@
                 @if($activeTab === 'unloading')
                     <div class="border border-gray-200 p-6 rounded-2xl bg-white text-gray-800 shadow-sm">
                         <h3 class="font-bold mb-2 text-lg text-brand-blue">Form Penyelesaian (Bongkar)</h3>
-                        <p class="text-sm text-gray-500 mb-6">Silakan unggah foto barang saat dibongkar sebelum menyelesaikan perjalanan.</p>
+                        <p class="text-sm text-gray-500 mb-4">Silakan unggah foto barang saat dibongkar sebelum menyelesaikan perjalanan.</p>
+
+                        <div class="mb-6">
+                            <a href="{{ route('waybill', ['trip_id' => $activeTrip->id]) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border border-yellow-200 font-bold py-2.5 px-4 rounded-xl transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                Lihat / Tanda Tangan Surat Jalan
+                            </a>
+                        </div>
                         
                         <form wire:submit.prevent="submitUnloadingPhotos" class="flex flex-col space-y-4">
                             <x-camera-input modelName="photo_destination" title="Bukti Sampai di Tujuan" requiredStatus="unloading" :activeTrip="$activeTrip" :photoVar="$photo_destination" />

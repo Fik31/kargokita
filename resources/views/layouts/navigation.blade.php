@@ -45,15 +45,21 @@
             <div class="pt-5 pb-2">
                 <p class="px-3 text-[0.7rem] font-bold text-gray-400 uppercase tracking-wider">Pasar Muatan</p>
             </div>
-            <a href="{{ route('bidding') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('bidding') ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-                @if(Auth::user()->hasRole('merchant'))
-                    <svg class="w-5 h-5 {{ request()->routeIs('bidding') ? 'text-blue-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                    Bidding Muatan
-                @else
+            @if(Auth::user()->hasRole('merchant'))
+                <a href="{{ route('merchant.loads') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('merchant.loads') ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="w-5 h-5 {{ request()->routeIs('merchant.loads') ? 'text-blue-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    Daftar Order
+                </a>
+                <a href="{{ route('bidding') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('bidding') ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <svg class="w-5 h-5 {{ request()->routeIs('bidding') ? 'text-blue-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Buat Order Baru
+                </a>
+            @else
+                <a href="{{ route('bidding') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('bidding') ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                     <svg class="w-5 h-5 {{ request()->routeIs('bidding') ? 'text-blue-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     Cari Muatan
-                @endif
-            </a>
+                </a>
+            @endif
         @endif
 
         <!-- Tracking & Operasional -->
@@ -146,7 +152,12 @@
                     {{ substr(Auth::user()->name, 0, 1) }}
                 </div>
                 <div class="flex flex-col text-left truncate flex-1">
-                    <span class="text-sm font-bold text-gray-900 truncate">{{ Auth::user()->name }}</span>
+                    <div class="flex items-center gap-1">
+                        <span class="text-sm font-bold text-gray-900 truncate">{{ Auth::user()->name }}</span>
+                        @if(Auth::user()->tier && !Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse'))
+                            <x-tier-badge :tier="Auth::user()->tier" class="scale-[0.8] origin-left" />
+                        @endif
+                    </div>
                     <span class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</span>
                 </div>
                 <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>

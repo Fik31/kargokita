@@ -11,6 +11,7 @@ class HseDriverVerificationForm extends Component
 {
     public $request_id;
     public $verificationRequest;
+    public $tier_adjustment = 'auto';
 
     // We will let HSE check each bundle
     public $verify_identity = false;
@@ -47,6 +48,16 @@ class HseDriverVerificationForm extends Component
             $tier = 'silver';
         } elseif ($totalScore >= 70) {
             $tier = 'bronze';
+        }
+
+        // Apply HSE adjustment
+        $tierOrder = ['not_eligible', 'bronze', 'silver', 'gold'];
+        $currentIndex = array_search($tier, $tierOrder);
+        
+        if ($this->tier_adjustment === 'bump_up' && $currentIndex < count($tierOrder) - 1) {
+            $tier = $tierOrder[$currentIndex + 1];
+        } elseif ($this->tier_adjustment === 'bump_down' && $currentIndex > 0) {
+            $tier = $tierOrder[$currentIndex - 1];
         }
 
         // Update user tier

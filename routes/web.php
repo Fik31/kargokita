@@ -48,6 +48,9 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureDeposit::class])->group(fu
         ->middleware('role:merchant|administrator')
         ->name('tracking');
 
+    // Electronic Waybill (Surat Jalan Elektronik)
+    Route::get('/waybill/{trip_id}', \App\Livewire\WaybillView::class)->name('waybill');
+
     // Admin Routes
     Route::middleware('role:administrator')->group(function () {
         Route::get('/admin/merchant-assessment/dashboard', \App\Livewire\MerchantAssessmentDashboard::class)->name('admin.merchant-assessment.dashboard');
@@ -73,6 +76,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureDeposit::class])->group(fu
     // Merchant Routes
     Route::middleware('role:merchant')->group(function () {
         Route::get('/merchant/ad-apply', \App\Livewire\MerchantAdApply::class)->name('merchant.ad-apply');
+        Route::get('/merchant/loads', \App\Livewire\MerchantLoadList::class)->name('merchant.loads');
     });
 
     // Driver Routes

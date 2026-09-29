@@ -29,78 +29,78 @@ class RoleAndUserSeeder extends Seeder
         // Create Admin user
         $admin = User::firstOrCreate(
             ['email' => 'admin@kargokita.com'],
-            ['name' => 'Administrator', 'password' => Hash::make('password')]
+            ['name' => 'Administrator', 'password' => Hash::make('password'), 'tier' => 'common']
         );
         $admin->assignRole('administrator');
 
         // Create HSE user
         $hse = User::firstOrCreate(
             ['email' => 'hse@kargokita.com'],
-            ['name' => 'HSE Officer', 'password' => Hash::make('password')]
+            ['name' => 'HSE Officer', 'password' => Hash::make('password'), 'tier' => 'common']
         );
         $hse->assignRole('hse');
 
         // Create Dummy Merchants
         $merchantKosong = User::firstOrCreate(
-            ['email' => 'merchant.kosong@kargokita.com'],
-            ['name' => 'Merchant Baru (Kosong)', 'password' => Hash::make('password')]
+            ['email' => 'budi.merchant@kargokita.com'],
+            ['name' => 'Toko Sembako Budi', 'password' => Hash::make('password'), 'tier' => 'basic']
         );
         $merchantKosong->assignRole('merchant');
 
-        $merchantVip = User::firstOrCreate(
-            ['email' => 'merchant.vip@kargokita.com'],
-            ['name' => 'Merchant VIP (Aktif)', 'password' => Hash::make('password')]
+        $merchantTrusted = User::firstOrCreate(
+            ['email' => 'maju.logistik@kargokita.com'],
+            ['name' => 'PT. Maju Logistik', 'password' => Hash::make('password'), 'tier' => 'trusted']
         );
-        $merchantVip->assignRole('merchant');
+        $merchantTrusted->assignRole('merchant');
 
         $merchantDeposit = User::firstOrCreate(
-            ['email' => 'merchant.deposit@kargokita.com'],
-            ['name' => 'Merchant Sample (Telah Deposit)', 'password' => Hash::make('password'), 'is_subscribed' => true]
+            ['email' => 'makmur.abadi@kargokita.com'],
+            ['name' => 'CV. Makmur Abadi', 'password' => Hash::make('password'), 'tier' => 'verified', 'is_subscribed' => true]
         );
         $merchantDeposit->assignRole('merchant');
 
 
         // Create Dummy Drivers
         $driverKosong = User::firstOrCreate(
-            ['email' => 'driver.kosong@kargokita.com'],
-            ['name' => 'Driver Baru (Kosong)', 'password' => Hash::make('password')]
+            ['email' => 'adi@kargokita.com'],
+            ['name' => 'Adi Setiawan', 'password' => Hash::make('password'), 'tier' => 'bronze']
         );
         $driverKosong->assignRole('driver');
 
-        $driverVip = User::firstOrCreate(
-            ['email' => 'driver.vip@kargokita.com'],
-            ['name' => 'Driver VIP (Aktif)', 'password' => Hash::make('password')]
+        $driverGold = User::firstOrCreate(
+            ['email' => 'dodi@kargokita.com'],
+            ['name' => 'Dodi Prakoso', 'password' => Hash::make('password'), 'tier' => 'gold']
         );
-        $driverVip->assignRole('driver');
+        $driverGold->assignRole('driver');
 
         $driverDeposit = User::firstOrCreate(
-            ['email' => 'driver.deposit@kargokita.com'],
-            ['name' => 'Driver Sample (Telah Deposit)', 'password' => Hash::make('password'), 'is_subscribed' => true]
+            ['email' => 'bambang@kargokita.com'],
+            ['name' => 'Bambang Pamungkas', 'password' => Hash::make('password'), 'tier' => 'silver', 'is_subscribed' => true]
         );
         $driverDeposit->assignRole('driver');
 
         // Create Dummy Posts for Feed
         if (Post::count() == 0) {
             Post::create([
-                'user_id' => $driverVip->id,
+                'user_id' => $driverGold->id,
                 'content' => 'Lagi kosong nih di area Tanjung Priok, ada muatan arah Bandung?',
                 'type' => 'seeking_load',
             ]);
 
             Post::create([
-                'user_id' => $merchantVip->id,
+                'user_id' => $merchantTrusted->id,
                 'content' => 'Butuh armada CDD FTL untuk besok pagi jam 8. Muatan ringan (kerupuk). Ada yang standby sekitar Tangerang?',
                 'type' => 'seeking_driver',
             ]);
 
             Post::create([
-                'user_id' => $driverVip->id,
+                'user_id' => $driverGold->id,
                 'content' => 'Hati-hati lur tol cipularang KM 90 ada perbaikan jalan, macet panjang.',
                 'type' => 'status',
             ]);
 
             Post::create([
-                'user_id' => $merchantVip->id,
+                'user_id' => $merchantTrusted->id,
                 'content' => 'Sedia muatan rutin tiap rabu dari Surabaya ke Semarang. Silakan driver yang minat merapat atau chat.',
                 'type' => 'status',
             ]);
@@ -109,7 +109,7 @@ class RoleAndUserSeeder extends Seeder
         // Create Dummy Loads
         if (Load::count() == 0) {
             Load::create([
-                'merchant_id' => $merchantVip->id,
+                'merchant_id' => $merchantTrusted->id,
                 'type' => 'LTL',
                 'total_weight' => 4.0,
                 'available_weight' => 1.5,
@@ -126,7 +126,7 @@ class RoleAndUserSeeder extends Seeder
             ]);
 
             Load::create([
-                'merchant_id' => $merchantVip->id,
+                'merchant_id' => $merchantTrusted->id,
                 'type' => 'FTL',
                 'total_weight' => 8.0,
                 'available_weight' => 0,

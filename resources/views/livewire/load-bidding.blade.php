@@ -217,13 +217,24 @@
                     <div class="flex items-center">
                         <input id="paylater" type="checkbox" wire:model="is_paylater" class="h-5 w-5 text-brand-blue focus:ring-brand-blue border-gray-300 rounded">
                         <label for="paylater" class="ml-3 block text-sm font-medium text-gray-800">
-                            Gunakan Hak Eksklusif <span class="font-bold">(Paylater Lionparcel)</span>
+                            Gunakan Hak Eksklusif <span class="font-bold">(Cargo Fee)</span>
                         </label>
                     </div>
                     <div class="flex items-center gap-2">
                         <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Batas Bidding (Opsional):</label>
                         <input type="datetime-local" wire:model="bid_deadline" class="rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
                     </div>
+                    @if(!in_array(strtolower(Auth::user()->tier ?? 'common'), ['common', 'not_eligible']))
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Min. Tier Driver (Opsional):</label>
+                        <select wire:model="min_driver_tier" class="rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
+                            <option value="">Semua Tier</option>
+                            <option value="bronze">Bronze ke atas</option>
+                            <option value="silver">Silver ke atas</option>
+                            <option value="gold">Hanya Gold</option>
+                        </select>
+                    </div>
+                    @endif
                 </div>
 
                 <div class="text-right">
@@ -247,7 +258,12 @@
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode($driver->name) }}&background=random" class="w-12 h-12 rounded-full border border-gray-200">
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-bold text-gray-900 truncate">{{ $driver->name }}</p>
+                                <div class="flex items-center gap-1">
+                                    <p class="text-sm font-bold text-gray-900 truncate">{{ $driver->name }}</p>
+                                    @if($driver->tier)
+                                        <x-tier-badge :tier="$driver->tier" class="scale-[0.8] origin-left" />
+                                    @endif
+                                </div>
                                 <div class="flex items-center mt-1">
                                     <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                                     <span class="text-xs text-gray-600 font-medium ml-1">{{ number_format($driver->ratings_as_ratee_avg_score ?? 0, 1) }} / 5.0</span>
@@ -259,112 +275,9 @@
             </div>
         @endif
 
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold uppercase tracking-wide text-gray-800">Daftar Trip Dedicated Aktif</h3>
-            <div class="w-64 hidden md:block">
-                <input type="text" wire:model.live="search" placeholder="Cari muatan..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
-            </div>
-        </div>
-        <div class="space-y-6">
-            @forelse($loads as $load)
-                <div class="bg-white rounded-3xl shadow-sm overflow-hidden flex flex-col md:flex-row border border-gray-100">
-                    <!-- Left Side (Red) -->
-                    <div class="bg-brand-blue text-white p-6 md:w-1/3 flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-center mb-4">
-                                <span class="bg-white text-brand-blue text-xs font-bold px-3 py-1 rounded-full">DED-{{ $load->id }}-{{ date('Y') }}</span>
-                                <span class="bg-brand-black bg-opacity-30 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">{{ $load->status }}</span>
-                            </div>
-                            <h4 class="text-xl font-bold mb-2">{{ $load->merchant->name }}</h4>
-                            <p class="text-sm opacity-90 mb-6">📍 Rute Utama Terencana</p>
-                        </div>
-                        
-                        <div>
-                            <div class="flex justify-between text-sm mb-1 font-semibold">
-                                <span>Muatan: {{ $load->available_weight ?? 0 }}T / {{ $load->total_weight }}T</span>
-                                <span>{{ $load->total_weight > 0 ? round((($load->total_weight - ($load->available_weight ?? 0)) / $load->total_weight) * 100) : 0 }}% Terisi</span>
-                            </div>
-                            <div class="w-full bg-blue-900 rounded-full h-2.5 mb-6">
-                                <div class="bg-white h-2.5 rounded-full" style="width: {{ $load->total_weight > 0 ? round((($load->total_weight - ($load->available_weight ?? 0)) / $load->total_weight) * 100) : 0 }}%"></div>
-                            </div>
-                            <div class="flex justify-between items-center pt-4 border-t border-red-500">
-                                <span class="text-sm flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg> Sisa {{ $load->available_weight }}T Flash</span>
-                                <span class="font-bold text-lg">Rp {{ number_format($load->max_price, 0, ',', '.') }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Right Side (White) -->
-                    <div class="p-6 md:w-2/3 flex flex-col justify-center">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <h5 class="font-bold text-lg text-gray-900 mb-1">Visualisasi Ruang Muatan</h5>
-                                <p class="text-sm text-gray-500">Total Kapasitas: {{ $load->total_weight }} Ton</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs text-gray-500">Total Bids:</span>
-                                <div class="font-bold text-xl text-brand-blue">{{ $load->bids()->count() }}</div>
-                            </div>
-                        </div>
-
-                        <!-- Visualization Bar -->
-                        <div class="bg-gray-900 rounded-2xl p-4 flex gap-4 text-white">
-                            <div class="bg-brand-blue rounded-xl p-3 flex-grow flex items-center justify-between">
-                                <div>
-                                    <span class="text-xs font-bold uppercase opacity-80 block">Dedicated Cargo</span>
-                                    <span class="font-bold">{{ $load->total_weight - ($load->available_weight ?? 0) }} KG</span>
-                                </div>
-                            </div>
-                            <div class="border border-dashed border-gray-600 rounded-xl p-3 flex-grow flex items-center justify-between opacity-80">
-                                <div>
-                                    <span class="text-xs font-bold uppercase block text-gray-400">Sisa Ruang Kosong</span>
-                                    <span class="font-bold">{{ $load->available_weight }} KG</span>
-                                </div>
-                                <span class="bg-gray-800 text-xs px-2 py-1 rounded">Flash Cargo</span>
-                            </div>
-                        </div>
-
-                        <!-- Bids List -->
-                        @if($load->bids->count() > 0)
-                            <div class="mt-4 space-y-2">
-                                <h6 class="text-sm font-bold text-gray-700">Daftar Penawaran (Bids)</h6>
-                                @foreach($load->bids as $bid)
-                                    <div class="bg-gray-50 p-3 rounded-lg flex justify-between items-center border border-gray-200">
-                                        <div>
-                                            <span class="block font-bold text-gray-900">{{ $bid->driver->name }}</span>
-                                            @if($bid->status === 'rejected')
-                                                <span class="text-xs text-gray-500">Menolak - Saran Harga: Rp {{ number_format($bid->suggested_price, 0, ',', '.') }}</span>
-                                            @else
-                                                <span class="text-xs text-gray-500">Penawaran: Rp {{ number_format($bid->amount, 0, ',', '.') }}</span>
-                                            @endif
-                                        </div>
-                                        @if($bid->status === 'pending')
-                                            <button wire:click="approveBid({{ $bid->id }})" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-1 px-3 rounded-full transition">Pilih Driver</button>
-                                        @elseif($bid->status === 'accepted')
-                                            <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">Diterima</span>
-                                        @else
-                                            <span class="bg-gray-200 text-gray-600 text-xs font-bold px-2 py-1 rounded-full">Ditolak</span>
-                                        @endif
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="mt-4 text-sm text-gray-500 text-center py-2 bg-gray-50 rounded-lg border border-dashed border-gray-300">Belum ada penawaran dari driver.</div>
-                        @endif
-                        
-                        @if($load->status === 'closed')
-                            <div class="mt-4 pt-4 border-t border-gray-100 text-right">
-                                <button wire:click="repostLoad({{ $load->id }})" class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-bold py-2 px-4 rounded-xl transition">Buka Kembali (Repost)</button>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            @empty
-                <div class="text-center text-gray-500 bg-white p-6 rounded-lg shadow">Tidak ada muatan Anda saat ini.</div>
-            @endforelse
-        </div>
     @else
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-brand-black uppercase tracking-wide">Flash Market (Bursa Sisa Muatan)</h3>
+            <h3 class="text-xl font-bold text-brand-black uppercase tracking-wide">Flash Market (Bursa Muatan)</h3>
             <div class="w-64 hidden md:block">
                 <input type="text" wire:model.live="search" placeholder="Cari merchant atau tipe..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
             </div>
@@ -446,7 +359,18 @@
                             <div class="absolute top-4 right-4 bg-yellow-400 text-brand-black text-xs font-bold px-2 py-1 rounded">-40% OFF</div>
                         @endif
                         <h4 class="text-xl font-bold mt-6 mb-1">{{ $load->title ?? $load->merchant->name }}</h4>
-                        <p class="text-sm opacity-90">{{ $load->merchant->name }} • {{ $load->item_name ?? 'Barang Umum' }}</p>
+                        <div class="flex items-center gap-1 mb-1">
+                            <p class="text-sm opacity-90">{{ $load->merchant->name }}</p>
+                            @if($load->merchant->tier)
+                                <x-tier-badge :tier="$load->merchant->tier" class="scale-[0.7] origin-left" />
+                            @endif
+                            <span class="text-sm opacity-90">• {{ $load->item_name ?? 'Barang Umum' }}</span>
+                        </div>
+                        @if($load->min_driver_tier)
+                            <div class="mt-2 text-xs font-medium bg-red-500/20 text-white rounded px-2 py-1 inline-block border border-red-500/50">
+                                🔒 Hanya {{ ucfirst($load->min_driver_tier) }} ke atas
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Body -->
@@ -484,6 +408,33 @@
                                     <p class="font-bold text-gray-900">{{ $load->type === 'LTL' ? ($load->available_weight ?? $load->weight_kg) : $load->weight_kg }} KG</p>
                                 </div>
                             </div>
+
+                            @if($load->bid_deadline && $load->status === 'open')
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 mb-4 flex justify-between items-center" x-data="{
+                                deadline: new Date('{{ \Carbon\Carbon::parse($load->bid_deadline)->toIso8601String() }}').getTime(),
+                                now: new Date().getTime(),
+                                timeLeft: '',
+                                init() {
+                                    this.update();
+                                    setInterval(() => this.update(), 1000);
+                                },
+                                update() {
+                                    this.now = new Date().getTime();
+                                    let distance = this.deadline - this.now;
+                                    if (distance < 0) {
+                                        this.timeLeft = 'Waktu Habis';
+                                        return;
+                                    }
+                                    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) + Math.floor(distance / (1000 * 60 * 60 * 24)) * 24;
+                                    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                    this.timeLeft = hours + 'j ' + minutes + 'm ' + seconds + 'd';
+                                }
+                            }">
+                                <span class="text-xs font-bold text-gray-500">⏳ Sisa Waktu Bidding</span>
+                                <span class="text-sm font-black text-brand-blue" x-text="timeLeft"></span>
+                            </div>
+                            @endif
                         </div>
 
                         <!-- Action -->

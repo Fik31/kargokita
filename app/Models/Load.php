@@ -12,7 +12,7 @@ class Load extends Model
     protected $fillable = [
         'merchant_id', 'type', 'total_weight', 'available_weight',
         'max_price', 'status', 'origin_lat', 'origin_lng',
-        'dest_lat', 'dest_lng', 'route_polyline',
+        'dest_lat', 'dest_lng', 'route_polyline', 'min_driver_tier'
     ];
 
     public function merchant()

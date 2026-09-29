@@ -37,6 +37,7 @@ class LoadBidding extends Component
     
     public $bid_deadline;
     public $is_paylater = false;
+    public $min_driver_tier = null;
 
     // For Driver
     public $bid_amounts = [];
@@ -51,6 +52,10 @@ class LoadBidding extends Component
         // Auto-fill sender info with current user's profile if merchant
         if (Auth::user()->hasRole('merchant')) {
             $this->sender_name = Auth::user()->name;
+            
+            if (session()->has('repost_load_id')) {
+                $this->repostLoad(session()->pull('repost_load_id'));
+            }
         }
     }
 
@@ -73,6 +78,7 @@ class LoadBidding extends Component
             'distance' => 'nullable|numeric',
             'bid_deadline' => 'nullable|date',
             'is_paylater' => 'boolean',
+            'min_driver_tier' => 'nullable|in:bronze,silver,gold',
         ]);
 
         Load::create([
@@ -93,6 +99,7 @@ class LoadBidding extends Component
             'distance' => $this->distance,
             'bid_deadline' => $this->bid_deadline,
             'is_paylater' => $this->is_paylater,
+            'min_driver_tier' => $this->min_driver_tier,
             'status' => 'open',
             'escrow_status' => 'pending'
         ]);
@@ -228,14 +235,22 @@ class LoadBidding extends Component
     {
         $user = Auth::user();
 
-        $query = Load::query();
+        $query = Load::with([
+            'bids' => function ($q) {
+                $q->orderBy('amount', 'asc');
+            },
+            'bids.driver' => function ($q) {
+                $q->withAvg('ratingsAsRatee', 'score')
+                  ->withCount(['trips', 'trips as completed_trips_count' => function ($query) {
+                      $query->where('status', 'completed');
+                  }]);
+            }
+        ]);
 
         if ($user->hasRole('merchant')) {
-            $query->where('merchant_id', $user->id);
-            // Show both open and closed for merchant so they can repost
+            $query->where('merchant_id', $user->id)->where('id', -1); // don't load anything for merchant since we moved it
         } else {
             $query->where('status', 'open');
-            
             // Restrict LTL and Lion Parcel (Admin) loads to VIP Subscribers
             if (!$user->is_subscribed) {
                 $query->where('type', '!=', 'LTL');
@@ -246,6 +261,18 @@ class LoadBidding extends Component
                     });
                 });
             }
+
+            // Restrict by tier
+            $driverTier = strtolower($user->tier ?? 'common');
+            $tierRanks = ['common' => 0, 'bronze' => 1, 'silver' => 2, 'gold' => 3];
+            $driverRank = $tierRanks[$driverTier] ?? 0;
+
+            $query->where(function ($q) use ($driverRank) {
+                $q->whereNull('min_driver_tier');
+                if ($driverRank >= 1) $q->orWhere('min_driver_tier', 'bronze');
+                if ($driverRank >= 2) $q->orWhere('min_driver_tier', 'silver');
+                if ($driverRank >= 3) $q->orWhere('min_driver_tier', 'gold');
+            });
         }
 
         if (!empty($this->search)) {

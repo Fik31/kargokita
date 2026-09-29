@@ -80,13 +80,18 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                @if(!\App\Models\Rating::where('trip_id', $trip->id)->where('rater_id', Auth::id())->exists())
-                                    <button wire:click="openRatingModal({{ $trip->id }}, {{ Auth::user()->hasRole('driver') ? $trip->cargo->merchant_id : $trip->driver_id }})" class="text-sm font-medium text-brand-blue hover:text-blue-700 hover:underline">
-                                        Beri Penilaian
-                                    </button>
-                                @else
-                                    <span class="text-xs text-gray-500">Sudah dinilai</span>
-                                @endif
+                                <div class="flex flex-col gap-2">
+                                    <a href="{{ route('waybill', ['trip_id' => $trip->id]) }}" target="_blank" class="text-xs font-medium bg-gray-100 text-gray-700 py-1 px-2 rounded border border-gray-200 hover:bg-gray-200 transition">
+                                        Surat Jalan
+                                    </a>
+                                    @if(!\App\Models\Rating::where('trip_id', $trip->id)->where('rater_id', Auth::id())->exists())
+                                        <button wire:click="openRatingModal({{ $trip->id }}, {{ Auth::user()->hasRole('driver') ? $trip->cargo->merchant_id : $trip->driver_id }})" class="text-sm font-medium text-brand-blue hover:text-blue-700 hover:underline">
+                                            Beri Penilaian
+                                        </button>
+                                    @else
+                                        <span class="text-xs text-gray-500">Sudah dinilai</span>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty

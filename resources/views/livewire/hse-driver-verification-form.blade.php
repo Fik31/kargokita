@@ -208,6 +208,21 @@
             </div>
         </div>
 
+        <!-- HSE Tier Override -->
+        <div class="bg-white shadow rounded-lg border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b">
+                <h3 class="font-bold text-gray-800">Keputusan Akhir Tier (Kebijakan HSE)</h3>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-gray-500 mb-4">Sistem akan menghitung tier secara otomatis berdasarkan persentase bobot di atas. Namun, HSE dapat menggunakan kebijakan untuk menaikkan atau menurunkan tier akhir.</p>
+                <select wire:model="tier_adjustment" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                    <option value="auto">Sesuai Perhitungan Sistem (Auto)</option>
+                    <option value="bump_up">Naik 1 Tier (Bump Up)</option>
+                    <option value="bump_down">Turun 1 Tier (Bump Down)</option>
+                </select>
+            </div>
+        </div>
+
         <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
             <button type="button" wire:click="reject" wire:confirm="Yakin ingin menolak pendaftaran ini?" class="bg-white py-2 px-6 border border-red-300 rounded-lg shadow-sm text-sm font-bold text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
                 Tolak Pendaftaran

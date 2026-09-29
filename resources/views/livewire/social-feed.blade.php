@@ -81,6 +81,9 @@
                                 <div>
                                     <div class="font-bold text-gray-900 flex items-center">
                                         {{ $post->user->name }}
+                                        @if($post->user->tier)
+                                            <x-tier-badge :tier="$post->user->tier" class="ml-2 scale-[0.8] origin-left" />
+                                        @endif
                                         @if($post->user->is_subscribed)
                                             <svg class="w-4 h-4 text-blue-500 ml-1" fill="currentColor" viewBox="0 0 20 20"><title>Member Resmi</title><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                                         @endif

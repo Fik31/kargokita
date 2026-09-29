@@ -9,8 +9,15 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <h3 class="text-xl font-bold mb-2">Selamat Datang, {{ Auth::user()->name }}!</h3>
+                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
+                        Selamat Datang, {{ Auth::user()->name }}!
+                        @if(Auth::user()->tier && !Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse'))
+                            <x-tier-badge :tier="Auth::user()->tier" />
+                        @endif
+                    </h3>
+                    @if(!Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse'))
                     <p class="mb-4">Saat ini akun Anda berada di tier <strong>{{ strtoupper(Auth::user()->tier ?? 'COMMON') }}</strong>.</p>
+                    @endif
                     
                     @if(!Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver') && !Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse'))
                         <div class="mt-8 bg-blue-50 border border-brand-blue rounded-xl p-6">
