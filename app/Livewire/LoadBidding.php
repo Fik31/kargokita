@@ -109,6 +109,11 @@ class LoadBidding extends Component
 
     public function submitBid($loadId)
     {
+        if (!Auth::user()->hasRole('driver')) {
+            session()->flash('error', 'Silakan pilih role sebagai Driver terlebih dahulu untuk bisa melakukan bid.');
+            return;
+        }
+
         $load = Load::findOrFail($loadId);
 
         $this->validate([
@@ -127,6 +132,11 @@ class LoadBidding extends Component
 
     public function rejectBid($loadId)
     {
+        if (!Auth::user()->hasRole('driver')) {
+            session()->flash('error', 'Silakan pilih role sebagai Driver terlebih dahulu untuk bisa memberikan saran harga.');
+            return;
+        }
+
         $load = Load::findOrFail($loadId);
 
         $this->validate([

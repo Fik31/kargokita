@@ -2,7 +2,7 @@
     <div class="flex flex-col lg:flex-row gap-8">
         
         <!-- CENTER COLUMN: FEED (Main Content) -->
-        <div class="flex-1 lg:w-2/3 max-w-2xl w-full mx-auto lg:mx-0 space-y-6">
+        <div class="flex-1 lg:w-2/3 max-w-2xl w-full mx-auto lg:mx-0 space-y-6 order-2 lg:order-1">
 
             <!-- Stories Section -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
@@ -49,22 +49,22 @@
                             @error('content') <span class="text-red-500 text-xs px-2">{{ $message }}</span> @enderror
                         </div>
                     </div>
-                    <div class="flex items-center justify-between border-t border-gray-100 pt-4 mt-2">
-                        <div class="flex items-center space-x-2">
-                            <label class="cursor-pointer flex items-center text-sm font-medium text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-lg transition">
-                                <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-gray-100 pt-4 mt-2 gap-y-3">
+                        <div class="flex items-center space-x-2 w-full sm:w-auto">
+                            <label class="cursor-pointer flex items-center text-sm font-medium text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-lg transition whitespace-nowrap">
+                                <svg class="w-5 h-5 mr-1 sm:mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                 <span>Foto</span>
                                 <input type="file" wire:model="image" class="hidden">
                             </label>
                             @error('image') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                             
-                            <select wire:model="type" class="border-gray-200 text-gray-600 rounded-lg shadow-sm focus:border-brand-blue focus:ring focus:ring-brand-blue focus:ring-opacity-50 text-sm bg-gray-50 font-medium">
+                            <select wire:model="type" class="border-gray-200 text-gray-600 rounded-lg shadow-sm focus:border-brand-blue focus:ring focus:ring-brand-blue focus:ring-opacity-50 text-sm bg-gray-50 font-medium flex-1">
                                 <option value="status">Status Umum</option>
                                 <option value="seeking_load">Cari Muatan</option>
                                 <option value="seeking_driver">Cari Driver</option>
                             </select>
                         </div>
-                        <button type="submit" class="bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-sm transition">
+                        <button type="submit" class="w-full sm:w-auto bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-sm transition">
                             Post
                         </button>
                     </div>
@@ -130,8 +130,8 @@
         </div>
 
         <!-- RIGHT COLUMN: WIDGETS -->
-        <div class="hidden lg:block lg:w-1/3">
-            <div class="sticky top-8 space-y-6">
+        <div class="w-full lg:w-1/3 order-1 lg:order-2 mb-2 lg:mb-0">
+            <div class="lg:sticky lg:top-8 space-y-6">
             
             <!-- Driver Ranking Widget -->
             @if($topDrivers->isNotEmpty())

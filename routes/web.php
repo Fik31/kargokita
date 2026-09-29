@@ -34,8 +34,11 @@ Route::middleware('auth')->group(function () {
     // Chat
     Route::get('/chat', ChatInterface::class)->name('chat');
 
-    // Verification Form (User submits this to request merchant or driver role)
+    // Verification Form (User submits this to request merchant role)
     Route::get('/verification', VerificationForm::class)->name('verification');
+
+    // Driver Verification Form (Self Assessment)
+    Route::get('/driver-verification', \App\Livewire\DriverSelfAssessmentForm::class)->name('driver.verification');
 
     // Tracking (Can be accessed by Merchant and Administrator)
     Route::get('/tracking', LiveTracking::class)
@@ -49,15 +52,23 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/bidding-settings', \App\Livewire\AdminBiddingSettings::class)->name('admin.bidding-settings');
     });
 
+    // HSE / Admin Assessment Routes
+    Route::middleware('role:hse|administrator')->group(function () {
+        Route::get('/admin/assessment/dashboard', \App\Livewire\AssessmentDashboard::class)->name('admin.assessment.dashboard');
+        Route::get('/admin/assessment/verifications', \App\Livewire\HseVerificationList::class)->name('admin.assessment.verification-list');
+        Route::get('/admin/assessment/verify/{assessment_id?}', \App\Livewire\AssessmentForm::class)->name('admin.assessment.form');
+    });
+
+    // Bidding Routes (Accessible by auth, handled inside component)
+    Route::get('/bursa', LoadBidding::class)->name('bidding');
+
     // Merchant Routes
     Route::middleware('role:merchant')->group(function () {
-        Route::get('/merchant/bidding', LoadBidding::class)->name('merchant.bidding');
         Route::get('/merchant/ad-apply', \App\Livewire\MerchantAdApply::class)->name('merchant.ad-apply');
     });
 
     // Driver Routes
     Route::middleware('role:driver')->group(function () {
-        Route::get('/driver/bidding', LoadBidding::class)->name('driver.bidding');
         Route::get('/cockpit', DriverCockpit::class)->name('cockpit');
     });
 

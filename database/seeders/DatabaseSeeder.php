@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleAndUserSeeder::class,
             PresentationSeeder::class,
+            AssessmentCriteriaSeeder::class,
         ]);
     }
 }

@@ -24,6 +24,7 @@ class RoleAndUserSeeder extends Seeder
         Role::firstOrCreate(['name' => 'administrator']);
         Role::firstOrCreate(['name' => 'merchant']);
         Role::firstOrCreate(['name' => 'driver']);
+        Role::firstOrCreate(['name' => 'hse']);
 
         // Create Admin user
         $admin = User::firstOrCreate(
@@ -31,6 +32,13 @@ class RoleAndUserSeeder extends Seeder
             ['name' => 'Administrator', 'password' => Hash::make('password')]
         );
         $admin->assignRole('administrator');
+
+        // Create HSE user
+        $hse = User::firstOrCreate(
+            ['email' => 'hse@kargokita.com'],
+            ['name' => 'HSE Officer', 'password' => Hash::make('password')]
+        );
+        $hse->assignRole('hse');
 
         // Create Dummy Merchants
         $merchantKosong = User::firstOrCreate(

@@ -5,6 +5,41 @@
             {{ session('message') }}
         </div>
     @endif
+    
+    @if (session()->has('error'))
+        <div x-data="{ show: true }" x-show="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 transition-opacity" style="display: none;">
+            <div @click.away="show = false" class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md transform transition-all relative overflow-hidden">
+                <!-- Red top border -->
+                <div class="absolute top-0 left-0 right-0 h-2 bg-red-600"></div>
+                
+                <div class="text-center">
+                    <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-50 mb-6">
+                        <svg class="h-10 w-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Akses Terbatas</h3>
+                    <p class="text-sm text-gray-600 mb-8">{{ session('error') }}</p>
+                    
+                    @if(!Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver'))
+                        <div class="flex flex-col gap-3">
+                            <a href="{{ route('profile.edit') }}" class="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-brand-blue hover:bg-blue-700 focus:outline-none transition-transform transform hover:-translate-y-0.5">
+                                Ayo Pilih Role-mu Sekarang
+                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </a>
+                            <button @click="show = false" type="button" class="w-full flex justify-center py-3.5 px-4 border border-gray-200 rounded-xl shadow-sm text-sm font-bold text-gray-600 bg-white hover:bg-gray-50 focus:outline-none transition">
+                                Nanti Saja, Saya Hanya Ingin Melihat
+                            </button>
+                        </div>
+                    @else
+                        <button @click="show = false" type="button" class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none transition">
+                            Tutup
+                        </button>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
 
     @if($isMerchant)
         <!-- Ad Banner for Merchant -->
