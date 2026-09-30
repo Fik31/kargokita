@@ -31,6 +31,17 @@
                         <td class="px-6 py-4">
                             <div class="text-sm font-bold text-gray-900">{{ $dispute->reporter->name ?? 'N/A' }}</div>
                             <div class="text-xs text-gray-500">{{ $dispute->reporter->roles->first()->name ?? '' }}</div>
+                            @if($dispute->cargoLoad)
+                                @if($dispute->cargoLoad->sla_type === 'Premium')
+                                    <span class="mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200 shadow-sm">
+                                        ⭐ Premium SLA (24/7 Support)
+                                    </span>
+                                @elseif($dispute->cargoLoad->sla_type === 'Priority')
+                                    <span class="mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                                        ⚡ Priority
+                                    </span>
+                                @endif
+                            @endif
                         </td>
                         <td class="px-6 py-4">
                             <div class="text-sm font-bold text-gray-900">{{ ucfirst(str_replace('_', ' ', $dispute->type)) }}</div>
@@ -60,7 +71,13 @@
                                                     </h3>
                                                     <div class="mt-4 text-sm text-gray-500">
                                                         <p><strong>Pelapor:</strong> {{ $dispute->reporter->name ?? 'N/A' }}</p>
-                                                        <p><strong>Merchant Tujuan:</strong> {{ $dispute->cargoLoad->merchant->name ?? 'N/A' }}</p>
+                                                        <p><strong>Merchant Tujuan:</strong> {{ $dispute->cargoLoad->merchant->name ?? 'N/A' }} 
+                                                            @if($dispute->cargoLoad && $dispute->cargoLoad->sla_type === 'Premium')
+                                                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-purple-100 text-purple-800">
+                                                                    Premium Merchant (Priority Backup Truck)
+                                                                </span>
+                                                            @endif
+                                                        </p>
                                                         <p><strong>Driver:</strong> {{ $dispute->trip->driver->name ?? 'N/A' }}</p>
                                                         <hr class="my-4">
                                                         <p><strong>Alasan:</strong></p>

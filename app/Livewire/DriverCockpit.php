@@ -512,6 +512,7 @@ class DriverCockpit extends Component
                 'escrow_status' => 'pending',
                 'is_paylater' => $cargo->is_paylater,
                 'is_urgent' => true,
+                'required_equipments' => $cargo->required_equipments,
             ]);
 
             // Also set old cargo to done/failed

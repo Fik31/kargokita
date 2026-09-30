@@ -22,8 +22,8 @@ class CorrectiveAction extends Model
         return $this->belongsTo(AssessmentItem::class);
     }
 
-    public function pic()
-    {
-        return $this->belongsTo(User::class, 'pic_id');
-    }
+    // public function pic()
+    // {
+    //     return $this->belongsTo(User::class, 'pic_id');
+    // }
 }

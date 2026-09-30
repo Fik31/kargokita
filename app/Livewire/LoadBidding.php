@@ -57,6 +57,8 @@ class LoadBidding extends Component
 
     public $min_driver_tier = null;
 
+    public $required_equipments;
+
     // For Driver
     public $bid_amounts = [];
 
@@ -120,12 +122,36 @@ class LoadBidding extends Component
             'bid_deadline' => 'nullable|date',
             'is_paylater' => 'boolean',
             'min_driver_tier' => 'nullable|in:bronze,silver,gold',
+            'required_equipments' => 'nullable|string',
         ]);
 
-        $merchantTier = strtolower(Auth::user()->tier ?? '');
-        if (! in_array($merchantTier, ['trusted', 'premium'])) {
+        $merchantTier = strtolower(Auth::user()->tier ?? 'common');
+        
+        $appFeePercentage = 5.00;
+        $slaType = 'Standard';
+        
+        // SLA and App Fee based on Matrix
+        if (in_array($merchantTier, ['trusted', 'premium'])) {
+            $appFeePercentage = 20.00;
+            $slaType = 'Premium';
+            // Full Service: Enforce min silver if they didn't pick anything higher
+            if (empty($this->min_driver_tier) || $this->min_driver_tier == 'bronze') {
+                $this->min_driver_tier = 'silver';
+            }
+        } elseif ($merchantTier === 'verified') {
+            $appFeePercentage = 10.00;
+            $slaType = 'Priority';
+            $this->is_paylater = false; // Based on older rule (paylater only for trusted/premium)
+            // Verified: Enforce min silver
+            if (empty($this->min_driver_tier) || $this->min_driver_tier == 'bronze') {
+                $this->min_driver_tier = 'silver';
+            }
+        } else {
+            // Basic (Common)
+            $appFeePercentage = 5.00;
+            $slaType = 'Standard';
             $this->is_paylater = false;
-            $this->min_driver_tier = null;
+            $this->min_driver_tier = null; // Basic cannot restrict driver matching, open bid
         }
 
         Load::create([
@@ -149,16 +175,26 @@ class LoadBidding extends Component
             'bid_deadline' => $this->bid_deadline,
             'is_paylater' => $this->is_paylater,
             'min_driver_tier' => $this->min_driver_tier,
+            'required_equipments' => $this->required_equipments,
+            'app_fee_percentage' => $appFeePercentage,
+            'sla_type' => $slaType,
             'status' => 'open',
             'escrow_status' => 'pending',
         ]);
+
+        if ($slaType === 'Premium') {
+            \App\Models\Post::create([
+                'user_id' => Auth::id(),
+                'content' => '📢 BROADCAST PREMIUM: Ada muatan baru "' . $this->title . '" seberat ' . $this->weight_kg . ' KG dari ' . Auth::user()->name . '. Rute tujuan: ' . $this->receiver_address . '. Silakan segera masuk ke bursa untuk ambil penawaran spesial ini!',
+            ]);
+        }
 
         $this->reset([
             'title', 'item_name', 'weight_kg', 'koli', 'vehicle_type_needed',
             'sender_name', 'sender_phone', 'sender_address',
             'receiver_name', 'receiver_phone', 'receiver_address',
             'distance', 'bid_deadline', 'max_price', 'is_paylater',
-            'sender_notes', 'receiver_notes',
+            'sender_notes', 'receiver_notes', 'required_equipments',
         ]);
         $this->use_profile_data = false;
 
@@ -239,6 +275,7 @@ class LoadBidding extends Component
         $this->sender_notes = $oldLoad->sender_notes;
         $this->receiver_notes = $oldLoad->receiver_notes;
         $this->is_paylater = $oldLoad->is_paylater;
+        $this->required_equipments = $oldLoad->required_equipments;
         $this->use_profile_data = false;
 
         $this->reposting_load_id = $oldLoad->id;

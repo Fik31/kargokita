@@ -16,8 +16,8 @@ class Load extends Model
         'title', 'item_name', 'weight_kg', 'koli', 'vehicle_type_needed',
         'sender_name', 'sender_phone', 'sender_address',
         'receiver_name', 'receiver_phone', 'receiver_address',
-        'distance', 'bid_deadline', 'escrow_status', 'is_paylater',
-        'sender_notes', 'receiver_notes', 'is_urgent',
+        'sender_notes', 'receiver_notes', 'is_urgent', 'required_equipments',
+        'app_fee_percentage', 'sla_type',
     ];
 
     public function merchant()

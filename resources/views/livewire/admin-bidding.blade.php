@@ -68,8 +68,17 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="text-sm text-gray-500">Harga Maks:</div>
-                            <div class="font-bold text-brand-blue">Rp {{ number_format($load->max_price, 0, ',', '.') }}</div>
+                            <div class="text-sm text-gray-500">Harga Kesepakatan (Bid):</div>
+                            @php
+                                $acceptedBid = $load->bids->firstWhere('status', 'accepted');
+                                $grossAmount = $acceptedBid ? $acceptedBid->amount : $load->max_price;
+                                $feePercentage = $load->app_fee_percentage ?? 5;
+                                $appFee = $grossAmount * ($feePercentage / 100);
+                                $netToDriver = $grossAmount - $appFee;
+                            @endphp
+                            <div class="font-bold text-gray-800">Rp {{ number_format($grossAmount, 0, ',', '.') }}</div>
+                            <div class="text-xs text-red-500 mt-1">App Fee ({{ $feePercentage }}%): -Rp {{ number_format($appFee, 0, ',', '.') }}</div>
+                            <div class="text-xs text-green-600 font-bold mt-1 border-t border-gray-200 pt-1">Driver: Rp {{ number_format($netToDriver, 0, ',', '.') }}</div>
                         </div>
                     </div>
 

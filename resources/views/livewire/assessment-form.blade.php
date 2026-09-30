@@ -122,12 +122,12 @@
                                                     </div>
                                                     <div class="grid grid-cols-2 gap-3">
                                                         <div>
-                                                            <label class="block text-xs font-medium text-red-700 mb-1">Due Date CA</label>
-                                                            <input type="date" wire:model="answers.{{ $criterion->id }}.due_date" class="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-red-300 rounded-md" required>
+                                                            <label class="block text-xs font-medium text-red-700 mb-1">Due Date CA (Opsional)</label>
+                                                            <input type="date" wire:model="answers.{{ $criterion->id }}.due_date" class="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-red-300 rounded-md">
                                                         </div>
                                                         <div>
-                                                            <label class="block text-xs font-medium text-red-700 mb-1">PIC CA (User ID)</label>
-                                                            <input type="number" wire:model="answers.{{ $criterion->id }}.pic_ca" class="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-red-300 rounded-md" required>
+                                                            <label class="block text-xs font-medium text-red-700 mb-1">PIC CA</label>
+                                                            <input type="text" wire:model="answers.{{ $criterion->id }}.pic_ca" class="shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-red-300 rounded-md" placeholder="Nama PIC">
                                                         </div>
                                                     </div>
                                                 </div>

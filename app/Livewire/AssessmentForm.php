@@ -112,7 +112,7 @@ class AssessmentForm extends Component
                 CorrectiveAction::updateOrCreate(
                     ['assessment_item_id' => $item->id],
                     [
-                        'pic_id' => $answer['pic_ca'] ?? null,
+                        'pic_name' => $answer['pic_ca'] ?? null,
                         'due_date' => $answer['due_date'] ?? null,
                         'notes' => $answer['notes'] ?? 'Tindak lanjut dari verifikasi.',
                         'status' => 'OPEN',

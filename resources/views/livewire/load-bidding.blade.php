@@ -132,6 +132,11 @@
                             </select>
                             @error('vehicle_type_needed') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Perlengkapan Tambahan (Opsional)</label>
+                            <input type="text" wire:model="required_equipments" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" placeholder="Cth: Rompi Safety, Sepatu">
+                            @error('required_equipments') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
                         <div x-data="{ 
                                 rawPrice: $wire.entangle('max_price'),
                                 formattedPrice: '',
@@ -249,12 +254,14 @@
                         <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Batas Bidding (Opsional):</label>
                         <input type="datetime-local" wire:model="bid_deadline" class="rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
                     </div>
-                    @if(in_array(strtolower(Auth::user()->tier ?? ''), ['trusted', 'premium']))
+                    @php
+                        $mTier = strtolower(Auth::user()->tier ?? 'common');
+                        $isVerifiedOrAbove = in_array($mTier, ['verified', 'trusted', 'premium']);
+                    @endphp
+                    @if($isVerifiedOrAbove)
                     <div class="flex items-center gap-2">
-                        <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Min. Tier Driver (Opsional):</label>
+                        <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Min. Tier Driver (Wajib Silver):</label>
                         <select wire:model="min_driver_tier" class="rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
-                            <option value="">Semua Tier</option>
-                            <option value="bronze">Bronze ke atas</option>
                             <option value="silver">Silver ke atas</option>
                             <option value="gold">Hanya Gold</option>
                         </select>
@@ -262,10 +269,23 @@
                     @endif
                 </div>
 
-                <div class="text-right">
-                    <button type="submit" class="bg-brand-blue hover:bg-blue-700 text-white py-3 px-8 rounded-full shadow-lg font-bold text-lg transition-transform transform hover:scale-105">
-                        Posting Order ke Bursa
-                    </button>
+                @php
+                    $feeStr = $mTier === 'verified' ? '10%' : (in_array($mTier, ['trusted', 'premium']) ? '20%' : '5%');
+                    $slaStr = $mTier === 'verified' ? 'Priority' : (in_array($mTier, ['trusted', 'premium']) ? 'Premium & 24/7 Support' : 'Standard');
+                    $truckSourcing = in_array($mTier, ['trusted', 'premium']) ? 'Notify All Driver & Priority Backup' : 'Menunggu di Bursa';
+                @endphp
+                <div class="flex flex-col md:flex-row justify-between items-center mt-6">
+                    <div class="text-sm text-gray-500 bg-gray-50 px-4 py-2 rounded-lg border border-gray-200 mb-4 md:mb-0">
+                        <span class="font-bold text-gray-700">Service Level Anda ({{ ucfirst($mTier) }}):</span> 
+                        App Fee: <span class="font-bold text-brand-blue">{{ $feeStr }}</span> | 
+                        SLA: <span class="font-bold text-brand-blue">{{ $slaStr }}</span> |
+                        Sourcing: <span class="font-bold text-brand-blue">{{ $truckSourcing }}</span>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="bg-brand-blue hover:bg-blue-700 text-white py-3 px-8 rounded-full shadow-lg font-bold text-lg transition-transform transform hover:scale-105">
+                            Posting Order ke Bursa
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -492,6 +512,11 @@
                                     <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">🏁 Ke: {{ $load->receiver_address ?? 'Belum ditentukan' }}</span>
                                     @if($load->distance)
                                         <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Jarak: ~{{ $load->distance }} KM</span>
+                                    @endif
+                                    @if($load->required_equipments)
+                                        <span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> Wajib: {{ $load->required_equipments }}
+                                        </span>
                                     @endif
                                 </div>
                             </div>

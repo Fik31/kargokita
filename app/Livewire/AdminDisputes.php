@@ -11,8 +11,15 @@ class AdminDisputes extends Component
 {
     public function render()
     {
+        $disputes = Dispute::with(['trip.driver', 'cargoLoad.merchant', 'reporter'])
+            ->leftJoin('loads', 'disputes.load_id', '=', 'loads.id')
+            ->orderByRaw("CASE WHEN loads.sla_type = 'Premium' THEN 1 WHEN loads.sla_type = 'Priority' THEN 2 ELSE 3 END")
+            ->orderBy('disputes.created_at', 'desc')
+            ->select('disputes.*')
+            ->get();
+
         return view('livewire.admin-disputes', [
-            'disputes' => Dispute::with(['trip.driver', 'cargoLoad.merchant', 'reporter'])->latest()->get(),
+            'disputes' => $disputes,
         ]);
     }
 

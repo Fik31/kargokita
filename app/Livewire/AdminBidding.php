@@ -64,9 +64,17 @@ class AdminBidding extends Component
                     ->where('data.trip_id', $acceptedBid->trip->id)
                     ->markAsRead();
             }
-        }
 
-        session()->flash('message', "Status pembayaran (escrow) muatan {$load->title} berhasil diubah menjadi {$status}.");
+            // Fee Calculation Logic
+            $grossAmount = $acceptedBid ? $acceptedBid->amount : $load->max_price;
+            $feePercentage = $load->app_fee_percentage ?? 5;
+            $appFee = $grossAmount * ($feePercentage / 100);
+            $netToDriver = $grossAmount - $appFee;
+
+            session()->flash('message', "Dana Escrow diteruskan! Gross: Rp" . number_format($grossAmount, 0, ',', '.') . " | App Fee ($feePercentage%): Rp" . number_format($appFee, 0, ',', '.') . " | Net ke Driver: Rp" . number_format($netToDriver, 0, ',', '.'));
+        } else {
+            session()->flash('message', "Status pembayaran (escrow) muatan {$load->title} berhasil diubah menjadi {$status}.");
+        }
     }
 
     public $search = '';
