@@ -1,11 +1,11 @@
 <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-    <div class="bg-blue-900 text-white p-4 rounded-t-lg text-center shadow">
+    <div id="tour-hse-header" class="bg-blue-900 text-white p-4 rounded-t-lg text-center shadow">
         <h1 class="text-2xl font-bold">HSE DRIVER & VEHICLE SAFETY DASHBOARD</h1>
         <p class="text-sm mt-1 text-blue-100">Dashboard monitoring untuk assessment & penentuan tier Driver.</p>
     </div>
 
     <!-- Main KPI Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-6">
+    <div id="tour-hse-kpi" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-6">
         <div class="bg-white rounded-lg shadow border-t-4 border-blue-600 overflow-hidden text-center">
             <div class="bg-blue-600 text-white py-2 text-xs font-semibold">TOTAL ASSESSMENT</div>
             <div class="p-4 text-3xl font-bold text-gray-800">{{ $totalAssessments }}</div>
@@ -95,7 +95,7 @@
 
         <div class="col-span-1 lg:col-span-2 space-y-6">
             <!-- Rules / Eligibility info -->
-            <div class="bg-white p-6 shadow rounded-lg border border-blue-100">
+            <div id="tour-hse-rules" class="bg-white p-6 shadow rounded-lg border border-blue-100">
                 <h3 class="text-lg font-bold text-blue-900 mb-3 border-b pb-2">PRINSIP ELIGIBILITY & TIERING</h3>
                 <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
                     <li>Kriteria berlabel <span class="bg-red-100 text-red-800 px-1 rounded font-bold text-xs">Mandatory YES</span> jika bernilai NON-COMPLY = otomatis <b>NOT ELIGIBLE</b> (Downgrade Tier).</li>
@@ -126,3 +126,71 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isHseUser = @json(Auth::user()->hasRole('hse') || Auth::user()->hasRole('administrator'));
+        
+        if (isHseUser) {
+            const driver = window.driver.js.driver;
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: [
+                    {
+                        element: '#tour-hse-header',
+                        popover: {
+                            title: 'Dashboard HSE',
+                            description: 'Selamat datang di Dashboard HSE. Halaman ini memberikan ringkasan status keselamatan dan verifikasi armada.',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-hse-kpi',
+                        popover: {
+                            title: 'Metrik Utama (KPI)',
+                            description: 'Di sini Anda dapat memantau jumlah total asesmen, skor rata-rata, dan distribusi Tier (Gold, Silver, Bronze) yang telah diberikan.',
+                            side: "bottom",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '#tour-hse-rules',
+                        popover: {
+                            title: 'Prinsip Penilaian',
+                            description: 'Sebagai pengingat, ini adalah prinsip dasar penentuan kelayakan (*eligibility*) dan tiering yang Anda gunakan saat verifikasi.',
+                            side: "top",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#nav-verification',
+                        popover: {
+                            title: 'Verifikasi HSE',
+                            description: 'Anda dapat masuk ke menu ini untuk mulai memverifikasi data dan kendaraan driver.',
+                            side: "right",
+                            align: 'start'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

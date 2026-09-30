@@ -1,5 +1,5 @@
 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <div class="mb-8">
+    <div id="tour-disputes-header" class="mb-8">
         <h2 class="text-2xl font-bold text-gray-800">Admin Panel: Mediasi & Keadaan Darurat (SOS)</h2>
         <p class="text-gray-500">Laporan fraud, kecurangan kapasitas, dan kerusakan kendaraan di jalan.</p>
     </div>
@@ -10,7 +10,7 @@
         </div>
     @endif
 
-    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div id="tour-disputes-table" class="bg-white shadow overflow-hidden sm:rounded-lg">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
@@ -118,3 +118,62 @@
         </table>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isHseUser = @json(Auth::user()->hasRole('hse') || Auth::user()->hasRole('administrator'));
+        
+        if (isHseUser) {
+            const driver = window.driver.js.driver;
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: [
+                    {
+                        element: '#tour-disputes-header',
+                        popover: {
+                            title: 'Darurat & Mediasi',
+                            description: 'Ini adalah halaman pusat penanganan insiden darurat, fraud, atau masalah asuransi selama pengiriman berlangsung.',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-disputes-table',
+                        popover: {
+                            title: 'Daftar Laporan (Tiket)',
+                            description: 'Semua laporan SOS akan masuk ke sini. Anda dapat membuka detailnya, melakukan mediasi, lalu menutup tiket tersebut.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '#nav-profile',
+                        popover: {
+                            title: 'Selesai!',
+                            description: 'Itulah menu-menu yang dapat Anda akses sebagai HSE. Terakhir, Anda bisa membuka Profil untuk melakukan pengaturan lanjutan.',
+                            side: "right",
+                            align: 'start'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

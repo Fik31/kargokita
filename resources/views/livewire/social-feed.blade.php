@@ -5,7 +5,7 @@
         <div class="flex-1 lg:w-2/3 max-w-2xl w-full mx-auto lg:mx-0 space-y-6 order-2 lg:order-1">
 
             <!-- Stories Section -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+            <div id="tour-feed-stories" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
                 <div class="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
                     <!-- Add Story Button (Dummy) -->
                     <div class="flex flex-col items-center flex-shrink-0 cursor-pointer">
@@ -29,7 +29,7 @@
             </div>
 
             <!-- Form Create Post -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div id="tour-feed-create" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">Buat Postingan Baru</h3>
                 @if (session()->has('message'))
                     <div class="p-3 mb-4 text-sm text-green-800 rounded-lg bg-green-50 border border-green-100">
@@ -72,7 +72,7 @@
             </div>
 
             <!-- Feed List -->
-            <div class="space-y-6">
+            <div id="tour-feed-list" class="space-y-6">
                 @forelse ($posts as $post)
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                         <div class="flex items-center justify-between mb-4">
@@ -168,7 +168,7 @@
             @endif
 
             <!-- Trending Bids Widget (Static Dummy for visual) -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+            <div id="tour-feed-widgets" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                 <h3 class="text-base font-bold text-gray-900 mb-4 flex items-center justify-between pb-2 border-b border-gray-50">
                     <span>Lelang Aktif</span>
                     <span class="text-xs text-brand-blue font-semibold hover:underline cursor-pointer">Lihat Semua</span>
@@ -282,3 +282,79 @@
     </div>
     @endif
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isCommonUser = @json(!Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse') && !Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver'));
+        const isHseUser = @json(Auth::user()->hasRole('hse') || Auth::user()->hasRole('administrator'));
+        const isDriverUser = @json(Auth::user()->hasRole('driver'));
+        const isMerchantUser = @json(Auth::user()->hasRole('merchant'));
+        
+        // UNTUK PRESENTASI: Nonaktifkan cek localStorage
+        // const hasSeenTour = localStorage.getItem('hasSeenTour_feed_common');
+
+        if (isCommonUser || isHseUser || isDriverUser || isMerchantUser) {
+            const driver = window.driver.js.driver;
+            
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: [
+                    {
+                        element: '#tour-feed-stories',
+                        popover: {
+                            title: 'Fitur Story',
+                            description: 'Lihat aktivitas singkat atau bagikan momen perjalanan pengiriman melalui fitur Story.',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-feed-create',
+                        popover: {
+                            title: 'Buat Postingan',
+                            description: 'Anda bisa memposting info seputar pencarian armada, informasi kargo, atau berdiskusi dengan komunitas logistik lainnya.',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-feed-list',
+                        popover: {
+                            title: 'Linimasa Utama',
+                            description: 'Ini adalah Feed utama. Temukan berbagai pembaruan terbaru dari sesama pengguna KargoKita di sini.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '#tour-feed-widgets',
+                        popover: {
+                            title: 'Informasi Tambahan',
+                            description: 'Di panel ini, Anda dapat melihat daftar Top Drivers dan berbagai Lelang (bidding) aktif yang sedang tren.',
+                            side: "left",
+                            align: 'start'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        // localStorage.setItem('hasSeenTour_feed_common', 'true');
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

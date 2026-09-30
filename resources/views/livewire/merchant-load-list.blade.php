@@ -6,7 +6,7 @@
         </div>
     @endif
 
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div id="tour-merchant-tabs" class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-wide">Daftar Order Anda</h2>
         <div class="flex items-center gap-2">
             <button wire:click="setTab('open')" class="px-4 py-2 text-sm font-bold rounded-lg transition {{ $activeTab === 'open' ? 'bg-brand-blue text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50' }}">Baru Dibuka</button>
@@ -21,7 +21,7 @@
     
     <div class="space-y-6">
         @forelse($loads as $load)
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6 transition-all hover:shadow-md">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6 transition-all hover:shadow-md tour-merchant-load">
                 <!-- Load Header -->
                 <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
@@ -119,7 +119,7 @@
                     </div>
                     @endif
 
-                    <div>
+                    <div class="tour-merchant-bids">
                         <h5 class="text-sm font-bold text-gray-800 mb-4 flex items-center">
                             <svg class="w-4 h-4 mr-2 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
                             Daftar Penawaran Masuk (Terendah ke Tertinggi)
@@ -227,3 +227,70 @@
         @endforelse
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isMerchantUser = @json(Auth::user()->hasRole('merchant'));
+        
+        if (isMerchantUser) {
+            const driver = window.driver.js.driver;
+            
+            let steps = [
+                {
+                    element: '#tour-merchant-tabs',
+                    popover: {
+                        title: 'Manajemen Order',
+                        description: 'Di menu ini, Anda bisa memantau semua order yang Anda buat. Gunakan tab ini untuk beralih antara order yang Baru Dibuka, Menunggu Persetujuan, atau yang sudah Berjalan/Selesai.',
+                        side: "bottom",
+                        align: 'center'
+                    }
+                }
+            ];
+
+            if (document.querySelector('.tour-merchant-load')) {
+                steps.push({
+                    element: '.tour-merchant-load',
+                    popover: {
+                        title: 'Detail Order',
+                        description: 'Setiap kotak ini mewakili satu order. Di bagian atas Anda bisa melihat status, jenis muatan (FTL/LTL), rute, dan budget maksimal yang Anda tetapkan.',
+                        side: "top",
+                        align: 'center'
+                    }
+                });
+                if (document.querySelector('.tour-merchant-bids')) {
+                    steps.push({
+                        element: '.tour-merchant-bids',
+                        popover: {
+                            title: 'Daftar Penawaran (Bids)',
+                            description: 'Di sini Anda akan melihat penawaran harga dari para driver yang berminat. Anda dapat memeriksa persentase sukses driver dan memilih penawaran terbaik (Pilih Driver).',
+                            side: "top",
+                            align: 'center'
+                        }
+                    });
+                }
+            }
+
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: steps,
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

@@ -1,6 +1,6 @@
 <div class="max-w-6xl mx-auto h-[80vh] flex bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
     <!-- Sidebar -->
-    <div class="w-1/3 border-r border-gray-200 bg-gray-50 flex flex-col">
+    <div id="tour-chat-sidebar" class="w-1/3 border-r border-gray-200 bg-gray-50 flex flex-col">
         <div class="p-4 border-b border-gray-200 bg-white">
             <h2 class="text-xl font-bold text-gray-800">Pesan</h2>
             <div class="mt-4 relative">
@@ -38,7 +38,7 @@
     </div>
 
     <!-- Main Chat Area -->
-    <div class="w-2/3 flex flex-col bg-slate-50">
+    <div id="tour-chat-area" class="w-2/3 flex flex-col bg-slate-50">
         @if($selectedContactId)
             @php 
                 $contact = collect($contacts)->firstWhere('id', $selectedContactId);
@@ -169,7 +169,7 @@
                 </svg>
                 <p class="text-lg font-medium text-gray-500">Pilih pesan untuk mulai mengobrol</p>
                 <p class="text-sm mt-1 mb-4">Chat langsung dengan Driver atau Merchant terkait muatan Anda.</p>
-                <div class="bg-yellow-50 text-yellow-800 p-4 rounded-lg text-sm max-w-md border border-yellow-200 text-left">
+                <div id="tour-chat-rules" class="bg-yellow-50 text-yellow-800 p-4 rounded-lg text-sm max-w-md border border-yellow-200 text-left">
                     <span class="font-bold flex items-center mb-2">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                         Aturan Chat Kargokita
@@ -184,3 +184,70 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isCommonUser = @json(!Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse') && !Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver'));
+        const isHseUser = @json(Auth::user()->hasRole('hse') || Auth::user()->hasRole('administrator'));
+        const isDriverUser = @json(Auth::user()->hasRole('driver'));
+        const isMerchantUser = @json(Auth::user()->hasRole('merchant'));
+        
+        // UNTUK KEPERLUAN PRESENTASI: Kita nonaktifkan pengecekan localStorage
+        // const hasSeenTour = localStorage.getItem('hasSeenTour_chat_common');
+
+        if (isCommonUser || isHseUser || isDriverUser || isMerchantUser) {
+            const driver = window.driver.js.driver;
+            
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: [
+                    {
+                        element: '#tour-chat-sidebar',
+                        popover: {
+                            title: 'Daftar Kontak',
+                            description: 'Di sini Anda dapat melihat daftar orang yang sedang atau pernah bertransaksi dengan Anda.',
+                            side: "right",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-chat-area',
+                        popover: {
+                            title: 'Ruang Obrolan',
+                            description: 'Ini adalah area pesan tempat Anda bisa berdiskusi seputar detail pengiriman muatan.',
+                            side: "left",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-chat-rules',
+                        popover: {
+                            title: 'Aturan Chat KargoKita',
+                            description: 'Pastikan Anda membaca aturan ini. Kami sangat melarang transaksi di luar aplikasi untuk menjaga keamanan bersama.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        // localStorage.setItem('hasSeenTour_chat_common', 'true');
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

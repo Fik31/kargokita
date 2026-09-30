@@ -1,6 +1,6 @@
 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900">Laporan & Analitik</h2>
+        <h2 id="tour-report-header" class="text-2xl font-bold text-gray-900">Laporan & Analitik</h2>
         <div class="flex gap-2">
             <select class="bg-white border border-gray-300 text-gray-700 rounded-lg px-3 py-2 text-sm shadow-sm focus:ring-brand-blue focus:border-brand-blue">
                 <option>Bulan Ini</option>
@@ -15,7 +15,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div id="tour-report-stats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
             <div>
                 <p class="text-sm text-gray-500 font-medium mb-1">Total Transaksi</p>
@@ -108,7 +108,7 @@
         </div>
     </div>
     
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+    <div id="tour-report-history" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <h3 class="font-bold text-gray-800 mb-4 text-lg">Riwayat Transaksi Terbaru</h3>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm text-left text-gray-500">
@@ -148,3 +148,64 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isDriverUser = @json(Auth::user()->hasRole('driver'));
+        const isMerchantUser = @json(Auth::user()->hasRole('merchant'));
+        
+        if (isDriverUser || isMerchantUser) {
+            const driver = window.driver.js.driver;
+            
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: [
+                    {
+                        element: '#tour-report-header',
+                        popover: {
+                            title: 'Laporan & Wallet',
+                            description: 'Di sini Anda dapat melihat statistik penghasilan dan performa pengiriman Anda.',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-report-stats',
+                        popover: {
+                            title: 'Statistik Utama',
+                            description: 'Ringkasan total transaksi, pendapatan (wallet), serta SLA persentase sukses Anda sebagai driver.',
+                            side: "bottom",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '#tour-report-history',
+                        popover: {
+                            title: 'Riwayat Transaksi',
+                            description: 'Daftar detail transaksi dan pembayaran yang masuk ke saldo wallet Anda.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

@@ -1,15 +1,15 @@
 <div class="min-h-screen bg-gray-50 -mt-8 py-8 px-4 sm:px-6 lg:px-8 font-sans">
     <div class="max-w-2xl mx-auto">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-8 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-brand-blue rounded-full flex items-center justify-center font-bold text-white text-xl">LP</div>
-                <div>
-                    <h2 class="text-lg font-bold text-gray-800 leading-tight">Lion Parcel Driver Cockpit</h2>
-                    <p class="text-xs text-green-600 flex items-center"><span class="w-2 h-2 rounded-full bg-green-500 mr-1 animate-pulse"></span> GPS Online • Telematics Aktif</p>
+        <div id="tour-cockpit-header" class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-8 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="w-10 h-10 bg-brand-blue rounded-full flex items-center justify-center font-bold text-white text-xl shrink-0">LP</div>
+                <div class="flex-1">
+                    <h2 class="text-base sm:text-lg font-bold text-gray-800 leading-tight">Lion Parcel Driver Cockpit</h2>
+                    <p class="text-[10px] sm:text-xs text-green-600 flex items-center"><span class="w-2 h-2 rounded-full bg-green-500 mr-1 animate-pulse shrink-0"></span> GPS Online • Telematics Aktif</p>
                 </div>
             </div>
-            <div class="bg-blue-50 text-brand-blue font-bold px-3 py-1 rounded-full text-xs border border-blue-100">
+            <div class="bg-blue-50 text-brand-blue font-bold px-3 py-2 sm:py-1 rounded-xl sm:rounded-full text-xs sm:text-sm border border-blue-100 w-full sm:w-auto text-center">
                 TRK-{{ str_pad($activeTrip->id ?? 1, 3, '0', STR_PAD_LEFT) }} (B 9482 UXZ)
             </div>
         </div>
@@ -22,25 +22,25 @@
 
         @if($activeTrip)
             <!-- Stepper -->
-            <div class="flex bg-white rounded-2xl p-2 mb-6 border border-gray-200 shadow-sm">
-                <div class="flex-1 text-center py-2 rounded-xl {{ $activeTrip->status === 'loading' ? 'bg-brand-blue text-white' : 'text-gray-500' }}">
-                    <p class="font-bold text-sm">1. Proses Muat</p>
-                    <p class="text-[10px]">Foto Muatan</p>
-                </div>
-                <div class="flex-1 text-center py-2 rounded-xl {{ $activeTrip->status === 'in_transit' ? 'bg-brand-blue text-white shadow-md' : 'text-gray-500' }}">
-                    <p class="font-bold text-sm">2. Proses Jalan</p>
-                    <p class="text-[10px]">Cockpit & GPS</p>
-                </div>
-                <div class="flex-1 text-center py-2 rounded-xl {{ $activeTrip->status === 'unloading' ? 'bg-brand-blue text-white' : 'text-gray-500' }}">
-                    <p class="font-bold text-sm">3. Bongkar</p>
-                    <p class="text-[10px]">Foto Sampai</p>
-                </div>
+            <div id="tour-cockpit-stepper" class="flex bg-white rounded-2xl p-1.5 sm:p-2 mb-6 border border-gray-200 shadow-sm">
+                <button type="button" wire:click="setTab('loading')" id="tour-cockpit-tab-loading" class="flex-1 text-center py-2 px-1 rounded-xl {{ $activeTab === 'loading' ? 'bg-brand-blue text-white' : 'text-gray-500 hover:bg-gray-100' }} transition">
+                    <p class="font-bold text-xs sm:text-sm leading-tight mb-1">1. Proses Muat</p>
+                    <p class="text-[9px] sm:text-[10px] leading-tight">Foto Muatan</p>
+                </button>
+                <button type="button" wire:click="setTab('in_transit')" id="tour-cockpit-tab-transit" class="flex-1 text-center py-2 px-1 rounded-xl {{ $activeTab === 'in_transit' ? 'bg-brand-blue text-white shadow-md' : 'text-gray-500 hover:bg-gray-100' }} transition">
+                    <p class="font-bold text-xs sm:text-sm leading-tight mb-1">2. Proses Jalan</p>
+                    <p class="text-[9px] sm:text-[10px] leading-tight">Cockpit & GPS</p>
+                </button>
+                <button type="button" wire:click="setTab('unloading')" id="tour-cockpit-tab-unloading" class="flex-1 text-center py-2 px-1 rounded-xl {{ $activeTab === 'unloading' ? 'bg-brand-blue text-white' : 'text-gray-500 hover:bg-gray-100' }} transition">
+                    <p class="font-bold text-xs sm:text-sm leading-tight mb-1">3. Bongkar</p>
+                    <p class="text-[9px] sm:text-[10px] leading-tight">Foto Sampai</p>
+                </button>
             </div>
 
-            <div class="space-y-6">
+            <div id="tour-cockpit-content" class="space-y-6">
                 <!-- Tab 1: Proses Muat -->
                 @if($activeTab === 'loading')
-                    <div class="border border-gray-200 p-6 rounded-2xl bg-white text-gray-800 shadow-sm">
+                    <div id="tour-loading-content" class="border border-gray-200 p-4 sm:p-6 rounded-2xl bg-white text-gray-800 shadow-sm">
                         <h3 class="font-bold mb-2 text-lg text-brand-blue">Instruksi Muat (Loading)</h3>
                         <p class="text-sm text-gray-500 mb-4">Silakan unggah foto barang saat dimuat ke truk untuk keperluan manifes Lion Parcel.</p>
 
@@ -57,14 +57,18 @@
                             <x-camera-input modelName="photo_loaded" title="Bukti Selesai Muat" requiredStatus="loading" :activeTrip="$activeTrip" :photoVar="$photo_loaded" />
                             <x-camera-input modelName="document_loading" title="Dokumen Pendukung (Opsional)" requiredStatus="loading" :activeTrip="$activeTrip" :photoVar="$document_loading" />
 
-                            <button type="submit" class="bg-brand-blue hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow w-full transition mt-4">Mulai Perjalanan</button>
+                            @if($activeTrip->status === 'loading')
+                                <button type="submit" class="bg-brand-blue hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow w-full transition mt-4">Mulai Perjalanan</button>
+                            @else
+                                <div class="bg-gray-100 text-gray-500 text-center font-bold py-3 px-4 rounded-xl mt-4 text-sm">Mode Lihat (Hanya View)</div>
+                            @endif
                         </form>
                     </div>
                 @endif
 
                 <!-- Tab 2: Sedang Berjalan -->
                 @if($activeTab === 'in_transit')
-                    <div class="bg-brand-blue rounded-3xl p-6 text-white shadow-xl relative overflow-hidden border border-red-500">
+                    <div id="tour-transit-nav" class="bg-brand-blue rounded-3xl p-4 sm:p-6 text-white shadow-xl relative overflow-hidden border border-red-500">
                         <div class="absolute top-[-50px] right-[-50px] w-48 h-48 bg-blue-600 rounded-full opacity-50 blur-2xl"></div>
                         <div class="flex justify-between items-center mb-6 relative z-10">
                             <p class="text-xs font-bold tracking-wider text-blue-200">INSTRUKSI KORIDOR TOL:</p>
@@ -76,8 +80,8 @@
                                 <svg class="w-6 h-6 text-brand-blue transform -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                             </div>
                             <div>
-                                <h3 class="text-xl font-bold leading-tight">Tetap di Jalur Tol Trans Jawa</h3>
-                                <p class="text-sm text-blue-100 mt-1">Titik Temu LTL Berikutnya: KM 207 Cirebon</p>
+                                <h3 class="text-lg sm:text-xl font-bold leading-tight">Tetap di Jalur Tol Trans Jawa</h3>
+                                <p class="text-xs sm:text-sm text-blue-100 mt-1">Titik Temu LTL Berikutnya: KM 207 Cirebon</p>
                             </div>
                         </div>
 
@@ -89,17 +93,17 @@
                             <div class="font-mono text-sm"><span class="font-bold">38m</span> <span class="text-blue-300">/ Max 100m</span></div>
                         </div>
 
-                        <div class="grid grid-cols-3 gap-3 relative z-10">
-                            <div class="bg-black/10 rounded-xl p-3 text-center border border-blue-400/50"><p class="text-[10px] text-blue-100 mb-1">Kecepatan</p><p class="font-bold text-lg">68 <span class="text-xs">km/h</span></p></div>
-                            <div class="bg-black/10 rounded-xl p-3 text-center border border-blue-400/50"><p class="text-[10px] text-blue-100 mb-1">BBM Solar</p><p class="font-bold text-lg">64%</p></div>
-                            <div class="bg-black/10 rounded-xl p-3 text-center border border-blue-400/50"><p class="text-[10px] text-blue-100 mb-1">Sisa Jarak</p><p class="font-bold text-lg">398 <span class="text-xs">KM</span></p></div>
+                        <div class="grid grid-cols-3 gap-2 sm:gap-3 relative z-10">
+                            <div class="bg-black/10 rounded-xl p-2 sm:p-3 text-center border border-blue-400/50"><p class="text-[9px] sm:text-[10px] text-blue-100 mb-1">Kecepatan</p><p class="font-bold text-sm sm:text-lg">68 <span class="text-[10px] sm:text-xs">km/h</span></p></div>
+                            <div class="bg-black/10 rounded-xl p-2 sm:p-3 text-center border border-blue-400/50"><p class="text-[9px] sm:text-[10px] text-blue-100 mb-1">BBM Solar</p><p class="font-bold text-sm sm:text-lg">64%</p></div>
+                            <div class="bg-black/10 rounded-xl p-2 sm:p-3 text-center border border-blue-400/50"><p class="text-[9px] sm:text-[10px] text-blue-100 mb-1">Sisa Jarak</p><p class="font-bold text-sm sm:text-lg">398 <span class="text-[10px] sm:text-xs">KM</span></p></div>
                         </div>
                     </div>
 
-                    <div class="mt-8">
-                        <div class="flex justify-between items-end mb-4">
-                            <h3 class="font-bold text-gray-800">Muatan di Dalam Bak Truk:</h3>
-                            <div class="flex items-center gap-3">
+                    <div id="tour-transit-cargo" class="mt-8">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-0 mb-4">
+                            <h3 class="font-bold text-gray-800 text-sm sm:text-base">Muatan di Dalam Bak Truk:</h3>
+                            <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
                                 <a href="{{ route('waybill', ['trip_id' => $activeTrip->id]) }}" target="_blank" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 text-xs font-bold px-3 py-1.5 rounded-full flex items-center shadow-sm">
                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     Surat Jalan
@@ -108,35 +112,41 @@
                             </div>
                         </div>
                         <div class="space-y-3">
-                            <div class="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center shadow-sm">
-                                <div><h4 class="text-gray-800 font-bold text-sm">1. Muatan Dedicated FTL (2.5 Ton)</h4><p class="text-gray-500 text-xs mt-1">Tujuan: Gudang SIER Rungkut Surabaya</p></div>
-                                <span class="bg-blue-50 text-brand-blue text-[10px] px-3 py-1 rounded-full border border-blue-100">Terkunci</span>
+                            <div class="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-0 shadow-sm">
+                                <div><h4 class="text-gray-800 font-bold text-xs sm:text-sm">1. Muatan Dedicated FTL (2.5 Ton)</h4><p class="text-gray-500 text-[10px] sm:text-xs mt-1">Tujuan: Gudang SIER Rungkut Surabaya</p></div>
+                                <span class="bg-blue-50 text-brand-blue text-[10px] px-3 py-1 rounded-full border border-blue-100 self-start sm:self-auto">Terkunci</span>
                             </div>
-                            <div class="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center shadow-sm">
-                                <div><h4 class="text-gray-800 font-bold text-sm">2. Flash Cargo LTL Sisa (450 kg)</h4><p class="text-gray-500 text-xs mt-1">Titik Temu: Rest Area KM 207 Cirebon</p></div>
-                                <span class="bg-gray-100 text-gray-600 font-bold text-[10px] px-3 py-1 rounded-full border border-gray-200">Bak Belakang</span>
+                            <div class="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-0 shadow-sm">
+                                <div><h4 class="text-gray-800 font-bold text-xs sm:text-sm">2. Flash Cargo LTL Sisa (450 kg)</h4><p class="text-gray-500 text-[10px] sm:text-xs mt-1">Titik Temu: Rest Area KM 207 Cirebon</p></div>
+                                <span class="bg-gray-100 text-gray-600 font-bold text-[10px] px-3 py-1 rounded-full border border-gray-200 self-start sm:self-auto">Bak Belakang</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-                        <button wire:click="toggleStopForm" class="bg-white text-brand-blue font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-blue-50 transition border border-gray-200 text-center">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-                            <span class="text-xs">Check-in<br>Berhenti</span>
-                        </button>
-                        <button wire:click="toggleFlashSaleForm" class="bg-white text-green-600 font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-green-50 transition border border-green-200 text-center">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span class="text-xs">Buka Bid<br>(LTL Sisa)</span>
-                        </button>
-                        <button wire:click="toggleDeviationForm" class="bg-white text-orange-500 font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-orange-50 transition border border-gray-200 text-center">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            <span class="text-xs">Lapor<br>Deviasi</span>
-                        </button>
-                        <button wire:click="toggleUrgentForm" class="bg-red-50 text-red-600 font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-red-100 transition border border-red-200 text-center">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            <span class="text-xs">Darurat<br>(SOS)</span>
-                        </button>
-                    </div>
+                    @if($activeTrip->status === 'in_transit')
+                        <div id="tour-transit-actions" class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-8">
+                            <button wire:click="toggleStopForm" class="bg-white text-brand-blue font-bold py-3 sm:py-4 px-2 rounded-2xl flex flex-col items-center justify-center gap-1 sm:gap-2 shadow-sm hover:bg-blue-50 transition border border-gray-200 text-center">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                <span class="text-[10px] sm:text-xs leading-tight">Check-in<br>Berhenti</span>
+                            </button>
+                            <button wire:click="toggleFlashSaleForm" class="bg-white text-green-600 font-bold py-3 sm:py-4 px-2 rounded-2xl flex flex-col items-center justify-center gap-1 sm:gap-2 shadow-sm hover:bg-green-50 transition border border-green-200 text-center">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="text-[10px] sm:text-xs leading-tight">Buka Bid<br>(LTL Sisa)</span>
+                            </button>
+                            <button wire:click="toggleDeviationForm" class="bg-white text-orange-500 font-bold py-3 sm:py-4 px-2 rounded-2xl flex flex-col items-center justify-center gap-1 sm:gap-2 shadow-sm hover:bg-orange-50 transition border border-gray-200 text-center">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                <span class="text-[10px] sm:text-xs leading-tight">Lapor<br>Deviasi</span>
+                            </button>
+                            <button wire:click="toggleUrgentForm" class="bg-red-50 text-red-600 font-bold py-3 sm:py-4 px-2 rounded-2xl flex flex-col items-center justify-center gap-1 sm:gap-2 shadow-sm hover:bg-red-100 transition border border-red-200 text-center">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                <span class="text-[10px] sm:text-xs leading-tight">Darurat<br>(SOS)</span>
+                            </button>
+                        </div>
+                    @else
+                        <div class="mt-8 bg-gray-100 text-gray-500 text-center font-bold py-4 px-4 rounded-xl text-sm shadow-sm border border-gray-200">
+                            Aksi Dinonaktifkan (Mode Lihat)
+                        </div>
+                    @endif
 
                     @if($showFlashSaleForm)
                         <div class="mt-4 bg-green-50 p-4 rounded-xl border border-green-200 shadow-sm">
@@ -198,14 +208,16 @@
                         </div>
                     @endif
 
-                    <div class="mt-8 border-t border-gray-200 pt-6 flex flex-col items-center">
-                        <button wire:click="setTab('unloading')" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-xl shadow transition">Lanjut ke Proses Bongkar</button>
-                    </div>
+                    @if($activeTrip->status === 'in_transit')
+                        <div class="mt-8 border-t border-gray-200 pt-6 flex flex-col items-center">
+                            <button wire:click="setTab('unloading')" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-xl shadow transition">Lanjut ke Proses Bongkar</button>
+                        </div>
+                    @endif
                 @endif
                 
                 <!-- Tab 3: Bongkar -->
                 @if($activeTab === 'unloading')
-                    <div class="border border-gray-200 p-6 rounded-2xl bg-white text-gray-800 shadow-sm">
+                    <div id="tour-unloading-content" class="border border-gray-200 p-4 sm:p-6 rounded-2xl bg-white text-gray-800 shadow-sm">
                         <h3 class="font-bold mb-2 text-lg text-brand-blue">Form Penyelesaian (Bongkar)</h3>
                         <p class="text-sm text-gray-500 mb-4">Silakan unggah foto barang saat dibongkar sebelum menyelesaikan perjalanan.</p>
 
@@ -221,7 +233,11 @@
                             <x-camera-input modelName="photo_unloading" title="Bukti Proses Bongkar" requiredStatus="unloading" :activeTrip="$activeTrip" :photoVar="$photo_unloading" />
                             <x-camera-input modelName="document_unloading" title="Dokumen Pendukung (Opsional)" requiredStatus="unloading" :activeTrip="$activeTrip" :photoVar="$document_unloading" />
                             
-                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl shadow w-full transition mt-4">Selesaikan Perjalanan</button>
+                            @if($activeTrip->status === 'unloading')
+                                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl shadow w-full transition mt-4">Selesaikan Perjalanan</button>
+                            @else
+                                <div class="bg-gray-100 text-gray-500 text-center font-bold py-3 px-4 rounded-xl mt-4 text-sm">Mode Lihat (Hanya View)</div>
+                            @endif
                         </form>
                     </div>
                 @endif
@@ -232,7 +248,7 @@
                 <a href="#" class="text-brand-blue font-bold flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg> Hubungi Dispatcher 24/7</a>
             </div>
         @else
-            <div class="text-center text-gray-500 p-12 bg-white border border-gray-300 rounded-2xl border-dashed mt-8">
+            <div id="tour-cockpit-empty" class="text-center text-gray-500 p-12 bg-white border border-gray-300 rounded-2xl border-dashed mt-8">
                 <p class="font-bold text-lg text-gray-700">Tidak Ada Trip Aktif</p>
                 <a href="{{ route('bidding') }}" class="mt-6 inline-block bg-brand-blue text-white font-bold py-2 px-6 rounded-xl">Cari Muatan</a>
             </div>
@@ -359,3 +375,121 @@
     });
     </script>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isDriverUser = @json(Auth::user()->hasRole('driver'));
+        
+        if (isDriverUser) {
+            const hasActiveTrip = @json($activeTrip ? true : false);
+            const activeTab = @json($activeTab);
+            const driver = window.driver.js.driver;
+            
+            let steps = [];
+            
+            steps.push({
+                element: '#tour-cockpit-header',
+                popover: {
+                    title: 'Driver Cockpit',
+                    description: 'Ini adalah pusat kendali Anda saat melakukan pengiriman. Anda bisa melihat status GPS dan nomor perjalanan (TRK).',
+                    side: "bottom",
+                    align: 'start'
+                }
+            });
+
+            if (hasActiveTrip) {
+                steps.push({
+                    element: '#tour-cockpit-stepper',
+                    popover: {
+                        title: 'Status Perjalanan',
+                        description: 'Proses pengiriman dibagi menjadi 3 tahap. Anda bisa klik tab manapun (Muat, Jalan, Bongkar) untuk melihat instruksi di dalamnya.',
+                        side: "bottom",
+                        align: 'center'
+                    }
+                });
+
+                if (activeTab === 'loading') {
+                    steps.push({
+                        element: '#tour-loading-content',
+                        popover: {
+                            title: 'Tahap 1: Proses Muat',
+                            description: 'Di sini Anda harus mengambil foto barang saat dimuat ke truk dan mengunggahnya sebagai bukti manifest. Pastikan Anda berada di lokasi penjemputan karena foto memiliki watermark GPS.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    });
+                } else if (activeTab === 'in_transit') {
+                    steps.push({
+                        element: '#tour-transit-nav',
+                        popover: {
+                            title: 'Navigasi & Telemetri',
+                            description: 'Saat perjalanan dimulai, Anda dapat memantau kecepatan kendaraan (GPS), perkiraan sisa BBM, dan status keberadaan Anda di koridor tol.',
+                            side: "bottom",
+                            align: 'center'
+                        }
+                    });
+                    steps.push({
+                        element: '#tour-transit-cargo',
+                        popover: {
+                            title: 'Daftar Muatan',
+                            description: 'Menampilkan detail muatan apa saja yang saat ini ada di dalam bak truk Anda beserta total tonasenya.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    });
+                    steps.push({
+                        element: '#tour-transit-actions',
+                        popover: {
+                            title: 'Aksi Darurat & Laporan',
+                            description: 'Gunakan tombol-tombol ini untuk: <br>1. <b>Check-in Berhenti</b> saat istirahat.<br>2. <b>Buka Bid LTL</b> (Flash Sale) jika bak masih muat.<br>3. <b>Lapor Deviasi</b> jika keluar rute.<br>4. <b>Darurat (SOS)</b> jika truk mogok.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    });
+                } else if (activeTab === 'unloading') {
+                    steps.push({
+                        element: '#tour-unloading-content',
+                        popover: {
+                            title: 'Tahap 3: Proses Bongkar',
+                            description: 'Setelah sampai tujuan, Anda masuk ke tab ini untuk mengambil dan mengunggah bukti foto bongkar barang sebelum menyelesaikan trip.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    });
+                }
+            } else {
+                steps.push({
+                    element: '#tour-cockpit-empty',
+                    popover: {
+                        title: 'Belum Ada Perjalanan',
+                        description: 'Saat ini Anda tidak memiliki trip aktif. Silakan cari muatan terlebih dahulu di Flash Market.',
+                        side: "top",
+                        align: 'center'
+                    }
+                });
+            }
+
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: steps,
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

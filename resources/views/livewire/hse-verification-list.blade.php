@@ -5,7 +5,7 @@
     </div>
 
     <!-- Pending Data Diri (Tier) Verifications -->
-    <div class="bg-white shadow rounded-lg overflow-hidden border-t-4 border-blue-500 mb-8">
+    <div id="tour-hse-data" class="bg-white shadow rounded-lg overflow-hidden border-t-4 border-blue-500 mb-8">
         <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
             <h3 class="text-lg font-bold text-gray-800">Menunggu Verifikasi Data Diri (Tier Driver)</h3>
             <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">{{ $pendingDataVerifications->count() }} Pending</span>
@@ -45,7 +45,7 @@
     </div>
 
     <!-- Pending HSE Audit Assessments -->
-    <div class="bg-white shadow rounded-lg overflow-hidden border-t-4 border-yellow-400">
+    <div id="tour-hse-audit" class="bg-white shadow rounded-lg overflow-hidden border-t-4 border-yellow-400">
         <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
             <h3 class="text-lg font-bold text-gray-800">Menunggu Verifikasi HSE Audit Assessment</h3>
             <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full">{{ $pendingAssessments->count() }} Pending</span>
@@ -84,3 +84,62 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isHseUser = @json(Auth::user()->hasRole('hse') || Auth::user()->hasRole('administrator'));
+        
+        if (isHseUser) {
+            const driver = window.driver.js.driver;
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: [
+                    {
+                        element: '#tour-hse-data',
+                        popover: {
+                            title: 'Verifikasi Data Diri (Tiering)',
+                            description: 'Di sini Anda dapat melihat daftar driver yang mengajukan verifikasi data awal untuk penentuan Tier (Gold/Silver/Bronze/Common).',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-hse-audit',
+                        popover: {
+                            title: 'Verifikasi HSE Audit',
+                            description: 'Ini adalah daftar pengajuan form self-assessment terkait keselamatan armada. Anda bertugas memvalidasi jawaban mereka di sini.',
+                            side: "top",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#nav-disputes',
+                        popover: {
+                            title: 'Darurat / Mediasi',
+                            description: 'Langkah selanjutnya: Jika ada insiden, klaim asuransi, atau darurat, Anda dapat menanganinya di menu Mediasi.',
+                            side: "right",
+                            align: 'start'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

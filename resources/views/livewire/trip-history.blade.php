@@ -1,7 +1,7 @@
 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Riwayat Perjalanan (History)</h2>
+            <h2 id="tour-history-header" class="text-2xl font-bold text-gray-900">Riwayat Perjalanan (History)</h2>
             <div class="w-64">
                 <input type="text" wire:model.live="search" placeholder="Cari merchant atau driver..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
             </div>
@@ -19,7 +19,7 @@
         @endif
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table id="tour-history-table" class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">No. Trip</th>
@@ -28,10 +28,10 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Driver</th>
                         @endif
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Waktu Selesai</th>
-                        <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Total Event</th>
-                        <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Foto</th>
+                        <th id="tour-history-event" scope="col" class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Total Event</th>
+                        <th id="tour-history-foto" scope="col" class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Foto</th>
                         <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                        <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
+                        <th id="tour-history-aksi" scope="col" class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -58,16 +58,10 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ $trip->updated_at->format('d M Y, H:i WIB') }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                @if(Auth::user()->hasRole('administrator'))
-                                    <button wire:click="viewEvents({{ $trip->id }})" class="inline-flex items-center px-3 py-1 border border-transparent text-xs leading-4 font-medium rounded text-brand-blue bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition">
-                                        {{ $trip->events->count() }} Event
-                                    </button>
-                                @else
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                        {{ $trip->events->count() }} Event
-                                    </span>
-                                @endif
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <button wire:click="viewEvents({{ $trip->id }})" class="inline-flex items-center px-3 py-1 border border-transparent text-xs leading-4 font-medium rounded text-brand-blue bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition">
+                                    {{ $trip->events->count() }} Event
+                                </button>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <button wire:click="viewPhotos({{ $trip->id }})" class="inline-flex items-center px-3 py-1 border border-transparent text-xs leading-4 font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
@@ -249,3 +243,73 @@
     </div>
     @endif
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isDriverUser = @json(Auth::user()->hasRole('driver'));
+        const isMerchantUser = @json(Auth::user()->hasRole('merchant'));
+        
+        if (isDriverUser || isMerchantUser) {
+            const driver = window.driver.js.driver;
+            
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: [
+                    {
+                        element: '#tour-history-header',
+                        popover: {
+                            title: 'Riwayat Perjalanan',
+                            description: 'Di sini Anda dapat melihat seluruh riwayat perjalanan (trip) yang telah selesai.',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-history-event',
+                        popover: {
+                            title: 'Total Event',
+                            description: 'Angka ini menunjukkan jumlah aktivitas atau kejadian selama trip (seperti Check-in Berhenti atau Deviasi rute). Anda bisa <b>mengklik angkanya</b> untuk melihat daftar lengkap event dan waktu kejadiannya.',
+                            side: "bottom",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '#tour-history-foto',
+                        popover: {
+                            title: 'Galeri Foto',
+                            description: 'Menampilkan jumlah foto bukti yang Anda unggah selama proses muat dan bongkar. Klik tombolnya untuk melihat hasil foto beserta watermark GPS-nya.',
+                            side: "bottom",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '#tour-history-aksi',
+                        popover: {
+                            title: 'Aksi & Dokumen',
+                            description: 'Di kolom ini, Anda bisa mengunduh <b>Surat Jalan</b> yang sudah ditandatangani. Jangan lupa untuk <b>Beri Penilaian (Rating)</b> kepada Merchant atas pengalaman kerja sama ini.',
+                            side: "bottom",
+                            align: 'center'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

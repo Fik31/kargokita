@@ -16,7 +16,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
             
             @if(!Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver') && !Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse'))
-                <div class="relative overflow-hidden bg-gradient-to-r from-brand-blue to-blue-800 rounded-3xl p-8 shadow-xl flex flex-col sm:flex-row items-center justify-between text-white border border-blue-900/30">
+                <div id="tour-profile-upgrade" class="relative overflow-hidden bg-gradient-to-r from-brand-blue to-blue-800 rounded-3xl p-8 shadow-xl flex flex-col sm:flex-row items-center justify-between text-white border border-blue-900/30">
                     <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 rounded-full bg-brand-tosca/20 blur-2xl"></div>
                     <div class="mb-6 sm:mb-0 relative z-10">
                         <h4 class="text-2xl font-bold mb-2 flex items-center gap-2">
@@ -74,7 +74,7 @@
             <!-- Settings Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Personal Info -->
-                <div class="bg-white shadow-sm sm:rounded-3xl border border-gray-100 overflow-hidden relative">
+                <div id="tour-profile-info" class="bg-white shadow-sm sm:rounded-3xl border border-gray-100 overflow-hidden relative">
                     <div class="h-1 w-full bg-brand-blue"></div>
                     <div class="p-8">
                         <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
@@ -88,7 +88,7 @@
                 </div>
 
                 <!-- Password -->
-                <div class="bg-white shadow-sm sm:rounded-3xl border border-gray-100 overflow-hidden relative">
+                <div id="tour-profile-password" class="bg-white shadow-sm sm:rounded-3xl border border-gray-100 overflow-hidden relative">
                     <div class="h-1 w-full bg-brand-tosca"></div>
                     <div class="p-8">
                         <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
@@ -137,4 +137,77 @@
 
         </div>
     </div>
+
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const isCommonUser = @json(!Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse') && !Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver'));
+            const isHseUser = @json(Auth::user()->hasRole('hse') || Auth::user()->hasRole('administrator'));
+            const isDriverUser = @json(Auth::user()->hasRole('driver'));
+            const isMerchantUser = @json(Auth::user()->hasRole('merchant'));
+            
+            // UNTUK PRESENTASI: Nonaktifkan cek localStorage
+            // const hasSeenTour = localStorage.getItem('hasSeenTour_profile_common');
+
+            if (isCommonUser || isHseUser || isDriverUser || isMerchantUser) {
+                const driver = window.driver.js.driver;
+                
+                let steps = [];
+                
+                if (isCommonUser) {
+                    steps.push({
+                        element: '#tour-profile-upgrade',
+                        popover: {
+                            title: 'Upgrade Akun',
+                            description: 'Di sini Anda dapat memilih untuk mendaftar sebagai Merchant atau Driver agar bisa mulai bertransaksi.',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    });
+                }
+                
+                steps.push({
+                    element: '#tour-profile-info',
+                    popover: {
+                        title: 'Informasi Pribadi',
+                        description: 'Pastikan nama dan email Anda sudah benar. Anda bisa memperbaruinya di sini.',
+                        side: "right",
+                        align: 'start'
+                    }
+                });
+                
+                steps.push({
+                    element: '#tour-profile-password',
+                    popover: {
+                        title: 'Keamanan',
+                        description: 'Jaga keamanan akun Anda dengan mengganti password secara berkala.',
+                        side: "left",
+                        align: 'start'
+                    }
+                });
+                
+                const driverObj = driver({
+                    showProgress: true,
+                    animate: true,
+                    doneBtnText: 'Selesai & Mengerti',
+                    closeBtnText: 'Skip Tutorial',
+                    nextBtnText: 'Selanjutnya',
+                    prevBtnText: 'Kembali',
+                    steps: steps,
+                    onDestroyStarted: () => {
+                        if (!driverObj.hasNextStep() || confirm("Akhiri tutorial profil?")) {
+                            // localStorage.setItem('hasSeenTour_profile_common', 'true');
+                            driverObj.destroy();
+                        }
+                    },
+                });
+                
+                setTimeout(() => {
+                    driverObj.drive();
+                }, 500);
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>

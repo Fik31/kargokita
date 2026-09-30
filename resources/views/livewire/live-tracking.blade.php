@@ -392,3 +392,55 @@
     </script>
     @endscript
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isMerchantUser = @json(Auth::user()->hasRole('merchant'));
+        const isAdminUser = @json(Auth::user()->hasRole('administrator'));
+        
+        if (isMerchantUser || isAdminUser) {
+            const driver = window.driver.js.driver;
+            
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: [
+                    {
+                        element: '.max-w-7xl > div:first-child > h2',
+                        popover: {
+                            title: 'Live Tracking Truk',
+                            description: 'Di halaman ini, Anda bisa memantau pergerakan truk secara real-time untuk setiap order Anda yang sedang berjalan (In Transit).',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '.space-y-4',
+                        popover: {
+                            title: 'Daftar Trip',
+                            description: 'Klik pada salah satu trip untuk membuka detail dan melihat posisi truk saat ini.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

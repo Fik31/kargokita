@@ -22,6 +22,43 @@
         <!-- Leaflet Routing Machine -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
         <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+        <!-- Driver.js CSS & Custom Theme -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
+        <style>
+            .driver-popover {
+                background-color: #0D8ABC !important; /* brand-blue */
+                color: #ffffff !important;
+                border-radius: 12px !important;
+            }
+            .driver-popover-title {
+                color: #ffffff !important;
+                font-weight: bold !important;
+            }
+            .driver-popover-description {
+                color: #e0f2fe !important; /* light blue */
+            }
+            .driver-popover-progress-text {
+                color: #bae6fd !important;
+            }
+            .driver-popover-footer button {
+                background-color: #ffffff !important;
+                color: #0D8ABC !important;
+                border: 1px solid #ffffff !important;
+                border-radius: 6px !important;
+                text-shadow: none !important;
+                font-weight: 600 !important;
+            }
+            .driver-popover-footer button:hover {
+                background-color: #f0f9ff !important;
+            }
+            .driver-popover-close-btn {
+                color: #ffffff !important;
+            }
+            .driver-popover-close-btn:hover {
+                color: #bae6fd !important;
+            }
+        </style>
     </head>
     <body class="font-sans antialiased">
         <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-gray-100 overflow-hidden">
@@ -82,5 +119,6 @@
                 </main>
             </div>
         </div>
+        @stack('scripts')
     </body>
 </html>

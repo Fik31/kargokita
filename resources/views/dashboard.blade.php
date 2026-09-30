@@ -9,14 +9,14 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
+                    <h3 id="tour-welcome" class="text-xl font-bold mb-2 flex items-center gap-2">
                         Selamat Datang, {{ Auth::user()->name }}!
                         @if(Auth::user()->tier && !Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse'))
                             <x-tier-badge :tier="Auth::user()->tier" />
                         @endif
                     </h3>
                     @if(!Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse'))
-                    <p class="mb-4">Saat ini akun Anda berada di tier <strong>{{ strtoupper(Auth::user()->tier ?? 'COMMON') }}</strong>.</p>
+                    <p id="tour-tier" class="mb-4">Saat ini akun Anda berada di tier <strong>{{ strtoupper(Auth::user()->tier ?? 'COMMON') }}</strong>.</p>
                     @endif
                     
                     @php
@@ -39,12 +39,12 @@
                                 <p class="text-yellow-700 text-sm">Data pendaftaran Anda sedang diverifikasi aplikasi, silakan tunggu max 1x24 jam.</p>
                             </div>
                         @else
-                            <div class="mt-8 bg-blue-50 border border-brand-blue rounded-xl p-6">
+                            <div id="tour-verification" class="mt-8 bg-blue-50 border border-brand-blue rounded-xl p-6">
                                 <h4 class="text-lg font-bold text-brand-black mb-2">Lengkapi Profil Anda</h4>
                                 <p class="text-gray-600 mb-6 text-sm">Untuk mulai memposting muatan atau mengambil tawaran muatan (bidding), Anda perlu memverifikasi akun Anda sebagai Merchant atau Driver.</p>
                                 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <a href="{{ route('verification') }}" class="block p-5 border border-gray-200 rounded-lg hover:border-brand-blue hover:shadow-md transition bg-white text-center">
+                                    <a id="tour-merchant" href="{{ route('verification') }}" class="block p-5 border border-gray-200 rounded-lg hover:border-brand-blue hover:shadow-md transition bg-white text-center">
                                         <div class="text-brand-blue mb-2">
                                             <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                                         </div>
@@ -52,7 +52,7 @@
                                         <p class="text-xs text-gray-500 mt-1">Pemilik Muatan (Shipper)</p>
                                     </a>
                                     
-                                    <a href="{{ route('driver.verification') }}" class="block p-5 border border-gray-200 rounded-lg hover:border-brand-blue hover:shadow-md transition bg-white text-center">
+                                    <a id="tour-driver" href="{{ route('driver.verification') }}" class="block p-5 border border-gray-200 rounded-lg hover:border-brand-blue hover:shadow-md transition bg-white text-center">
                                         <div class="text-brand-blue mb-2">
                                             <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
                                         </div>
@@ -81,4 +81,121 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const isCommonUser = @json(!$hasRole && !$hasPendingDriver && !$hasPendingMerchant);
+            // UNTUK KEPERLUAN PRESENTASI: Kita nonaktifkan pengecekan hasSeenTour agar tour selalu muncul
+            // const hasSeenTour = localStorage.getItem('hasSeenTour_common');
+
+            if (isCommonUser) { //  && !hasSeenTour
+                const driver = window.driver.js.driver;
+                
+                const driverObj = driver({
+                    showProgress: true,
+                    animate: true,
+                    doneBtnText: 'Oke, Saya Mengerti',
+                    closeBtnText: 'Skip Tutorial',
+                    nextBtnText: 'Selanjutnya',
+                    prevBtnText: 'Kembali',
+                    steps: [
+                        {
+                            element: '#tour-welcome',
+                            popover: {
+                                title: 'Selamat Datang di KargoKita! 🎉',
+                                description: 'Ini adalah halaman Dashboard utama Anda. Mari ikuti panduan singkat ini untuk memulai.',
+                                side: "bottom",
+                                align: 'start'
+                            }
+                        },
+                        {
+                            element: '#tour-tier',
+                            popover: {
+                                title: 'Status Akun',
+                                description: 'Saat ini akun Anda adalah COMMON. Anda perlu melakukan pendaftaran peran (Merchant atau Driver) untuk mulai bertransaksi.',
+                                side: "bottom",
+                                align: 'start'
+                            }
+                        },
+                        {
+                            element: '#tour-verification',
+                            popover: {
+                                title: 'Pilih Peran Anda',
+                                description: 'Anda dapat memilih untuk menjadi Shipper (Pengirim) atau Transporter (Pemilik Armada) sesuai dengan kebutuhan bisnis Anda.',
+                                side: "top",
+                                align: 'start'
+                            }
+                        },
+                        {
+                            element: '#tour-merchant',
+                            popover: {
+                                title: 'Daftar sebagai Merchant',
+                                description: 'Pilih opsi ini jika Anda ingin mencari armada untuk mengirimkan barang muatan Anda.',
+                                side: "right",
+                                align: 'center'
+                            }
+                        },
+                        {
+                            element: '#tour-driver',
+                            popover: {
+                                title: 'Daftar sebagai Driver',
+                                description: 'Pilih opsi ini jika Anda memiliki armada truk dan sedang mencari muatan untuk dikirimkan.',
+                                side: "left",
+                                align: 'center'
+                            }
+                        },
+                        {
+                            element: '#nav-feed',
+                            popover: {
+                                title: 'Feed Utama',
+                                description: 'Menu ini menampilkan informasi dan update terbaru seputar KargoKita.',
+                                side: "right",
+                                align: 'start'
+                            }
+                        },
+                        {
+                            element: '#nav-chat',
+                            popover: {
+                                title: 'Pesan (Chat)',
+                                description: 'Gunakan fitur ini untuk berkomunikasi dengan pengguna lain terkait pengiriman atau order Anda.',
+                                side: "right",
+                                align: 'start'
+                            }
+                        },
+                        {
+                            element: '#nav-bidding',
+                            popover: {
+                                title: 'Pasar Muatan (Bidding)',
+                                description: 'Menu ini adalah tempat Anda mencari dan melakukan penawaran (bidding) pada muatan yang tersedia.',
+                                side: "right",
+                                align: 'start'
+                            }
+                        },
+                        {
+                            element: '#nav-profile',
+                            popover: {
+                                title: 'Profil & Pengaturan',
+                                description: 'Di sini Anda dapat melihat detail profil, mengajukan verifikasi lanjutan, serta keluar dari aplikasi.',
+                                side: "right",
+                                align: 'start'
+                            }
+                        }
+                    ],
+                    onDestroyStarted: () => {
+                        if (!driverObj.hasNextStep() || confirm("Skip tutorial ini? Anda selalu bisa memulainya nanti.")) {
+                            localStorage.setItem('hasSeenTour_common', 'true');
+                            driverObj.destroy();
+                        }
+                    },
+                });
+                
+                setTimeout(() => {
+                    driverObj.drive();
+                }, 500);
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>

@@ -90,3 +90,64 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isMerchantUser = @json(Auth::user()->hasRole('merchant'));
+        const isDriverUser = @json(Auth::user()->hasRole('driver'));
+        
+        if (isMerchantUser || isDriverUser) {
+            const driver = window.driver.js.driver;
+            
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: [
+                    {
+                        element: '.max-w-4xl > div:first-child',
+                        popover: {
+                            title: 'Deposit Jaminan Keanggotaan',
+                            description: 'Ini adalah halaman untuk melakukan Deposit Jaminan. Dana Anda aman karena bersifat Refundable (dapat dikembalikan) sesuai syarat dan ketentuan.',
+                            side: "bottom",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '.bg-gradient-to-br',
+                        popover: {
+                            title: 'Keuntungan Deposit',
+                            description: 'Dengan melakukan deposit, Anda akan membuka akses penuh ke seluruh fitur eksklusif KargoKita, termasuk fitur Rating dan prioritas muatan.',
+                            side: "right",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '.bg-gray-50.p-8',
+                        popover: {
+                            title: 'Status & Pembayaran',
+                            description: 'Di sini Anda dapat melihat status deposit Anda saat ini atau memproses simulasi pembayaran jika belum aktif.',
+                            side: "left",
+                            align: 'center'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

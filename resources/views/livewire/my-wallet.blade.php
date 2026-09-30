@@ -92,3 +92,73 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isDriverUser = @json(Auth::user()->hasRole('driver'));
+        const isMerchantUser = @json(Auth::user()->hasRole('merchant'));
+        
+        if (isDriverUser || isMerchantUser) {
+            const driver = window.driver.js.driver;
+            
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: [
+                    {
+                        element: '.mb-8.bg-blue-50',
+                        popover: {
+                            title: 'Sistem Escrow / Rekening Bersama',
+                            description: 'Mohon baca informasi penting ini. Cargo Fee akan diamankan di pusat (Escrow) dan baru dicairkan setelah trip selesai untuk keamanan transaksi bersama.',
+                            side: "bottom",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '.bg-gradient-to-br',
+                        popover: {
+                            title: 'Saldo Aktif Dompet',
+                            description: 'Ini adalah saldo aktif Anda yang dapat digunakan untuk deposit atau ditarik ke rekening pribadi Anda.',
+                            side: "right",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '.md\\:col-span-2',
+                        popover: {
+                            title: 'Program Referral',
+                            description: 'Bagikan kode referral Anda ke rekan lain dan dapatkan komisi tambahan saat mereka bergabung dan bertransaksi di KargoKita!',
+                            side: "left",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '.divide-y',
+                        popover: {
+                            title: 'Riwayat Transaksi',
+                            description: 'Semua mutasi saldo (masuk/keluar) akan tercatat di sini secara transparan.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

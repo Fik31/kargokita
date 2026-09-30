@@ -1,5 +1,5 @@
 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <div class="mb-8">
+    <div class="mb-8" id="tour-branding-header">
         <h2 class="text-2xl font-bold text-gray-900">Program Branding VIP</h2>
         <p class="text-sm text-gray-500">Pasang stiker Lion Parcel di armada Anda dan dapatkan komisi tambahan serta bantuan biaya pajak tahunan.</p>
     </div>
@@ -18,7 +18,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <!-- Info Card -->
-        <div class="lg:col-span-1 space-y-6">
+        <div class="lg:col-span-1 space-y-6" id="tour-branding-apply">
             <div class="bg-gradient-to-br from-brand-blue to-blue-900 text-white rounded-3xl p-6 shadow-lg">
                 <h3 class="text-xl font-bold mb-4">Keuntungan Branding</h3>
                 <ul class="space-y-3 text-sm text-blue-100">
@@ -49,7 +49,7 @@
         </div>
 
         <!-- Applications List -->
-        <div class="lg:col-span-2">
+        <div class="lg:col-span-2" id="tour-branding-history">
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-5 border-b border-gray-100 bg-gray-50">
                     <h3 class="text-lg font-bold text-gray-900">Riwayat Pengajuan Branding</h3>
@@ -114,3 +114,63 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isDriverUser = @json(Auth::user()->hasRole('driver'));
+        
+        if (isDriverUser) {
+            const driver = window.driver.js.driver;
+            
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: [
+                    {
+                        element: '#tour-branding-header',
+                        popover: {
+                            title: 'Program Branding VIP',
+                            description: 'Bergabung dengan program Branding VIP untuk mendapatkan komisi tambahan dan subsidi pajak kendaraan.',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-branding-apply',
+                        popover: {
+                            title: 'Pengajuan & Keuntungan',
+                            description: 'Anda bisa mengajukan pendaftaran di sini. Jika disetujui, Anda wajib mengunggah bukti foto pemasangan stiker.',
+                            side: "bottom",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '#tour-branding-history',
+                        popover: {
+                            title: 'Riwayat & Status',
+                            description: 'Semua riwayat pengajuan dan status persetujuan dari Admin (termasuk upload bukti foto) akan tampil di kotak ini.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush

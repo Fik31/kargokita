@@ -43,7 +43,7 @@
 
     @if($isMerchant)
         <!-- Ad Banner for Merchant -->
-        <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg p-6 mb-8 flex flex-col md:flex-row items-center justify-between border border-gray-700">
+        <div id="tour-merchant-ad" class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg p-6 mb-8 flex flex-col md:flex-row items-center justify-between border border-gray-700">
             <div class="text-white mb-4 md:mb-0">
                 <h3 class="text-xl font-bold mb-1 flex items-center">
                     <svg class="w-6 h-6 text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -56,7 +56,7 @@
             </a>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-sm mb-8 border border-gray-100">
+        <div id="tour-merchant-form" class="bg-white p-6 rounded-2xl shadow-sm mb-8 border border-gray-100">
             <h2 class="text-2xl font-bold mb-6 text-brand-black">Buat Order Muatan</h2>
             
             @if($repost_suggested_price)
@@ -291,7 +291,7 @@
         </div>
 
         @if(isset($recommendedDrivers) && $recommendedDrivers->count() > 0)
-            <div class="mb-8 bg-gradient-to-r from-gray-50 to-white rounded-3xl p-6 border border-gray-200 shadow-sm">
+            <div id="tour-merchant-recommendation" class="mb-8 bg-gradient-to-r from-gray-50 to-white rounded-3xl p-6 border border-gray-200 shadow-sm">
                 <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
                     <svg class="w-6 h-6 text-brand-blue mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.514"></path></svg>
                     Rekomendasi Driver Dedicated Terbaik (Area Anda)
@@ -321,7 +321,7 @@
         @endif
 
     @else
-        <div class="flex justify-between items-center mb-6">
+        <div id="tour-bidding-header" class="flex justify-between items-center mb-6">
             <h3 class="text-xl font-bold text-brand-black uppercase tracking-wide">Flash Market (Bursa Muatan)</h3>
             <div class="w-64 hidden md:block">
                 <input type="text" wire:model.live="search" placeholder="Cari merchant atau tipe..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
@@ -329,7 +329,7 @@
         </div>
 
         <!-- FIXED TOP BOXES (Top Bid & Iklan) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div id="tour-bidding-topcards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- 3 Top Bids -->
             @for ($i = 0; $i < 3; $i++)
                 @php
@@ -388,7 +388,7 @@
                         setInterval(() => this.next(), 2000);
                     }
                 }
-            }" class="bg-gradient-to-br from-blue-900 to-blue-700 rounded-3xl shadow-lg overflow-hidden border-2 border-blue-500 flex flex-col relative transform transition hover:scale-105 text-white h-[320px] lg:h-auto">
+            }" id="tour-bidding-ads" class="bg-gradient-to-br from-blue-900 to-blue-700 rounded-3xl shadow-lg overflow-hidden border-2 border-blue-500 flex flex-col relative transform transition hover:scale-105 text-white h-[320px] lg:h-auto">
                 <div class="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-20">IKLAN SPONSOR</div>
                 
                 @if($activeAds->count() > 0)
@@ -462,7 +462,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="tour-bidding-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($loads as $load)
                 <div class="bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100 flex flex-col">
                     <!-- Header -->
@@ -592,3 +592,171 @@
         </div>
     @endif
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isCommonUser = @json(!Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse') && !Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver'));
+        const isDriverUser = @json(Auth::user()->hasRole('driver'));
+        
+        // UNTUK PRESENTASI: Nonaktifkan cek localStorage
+        // const hasSeenTour = localStorage.getItem('hasSeenTour_bidding_common');
+
+        if (isCommonUser || isDriverUser) {
+            const driver = window.driver.js.driver;
+            
+            let steps = [
+                {
+                    element: '#tour-bidding-header',
+                    popover: {
+                        title: 'Flash Market',
+                        description: 'Ini adalah halaman bursa muatan, tempat Anda bisa melihat seluruh order pengiriman yang tersedia.',
+                        side: "bottom",
+                        align: 'start'
+                    }
+                }
+            ];
+
+            if (isDriverUser) {
+                // Tambahkan langkah spesifik untuk driver
+                steps.push(
+                    {
+                        element: '#tour-bidding-topcards',
+                        popover: {
+                            title: 'Rekomendasi Merchant (Black Card)',
+                            description: 'Ketiga kartu hitam ini adalah Merchant unggulan kami. Ada Top 1 Bid Terbanyak, Top 1 Tier Tertinggi, dan Top 1 Bid Pilihan. Anda dapat memprioritaskan muatan dari mereka.',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-bidding-ads',
+                        popover: {
+                            title: 'Iklan Sponsor',
+                            description: 'Di bagian ini Anda akan melihat iklan dari Merchant yang membutuhkan driver secara reguler atau memiliki promo khusus. Klik untuk melihat profil mereka.',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-bidding-list',
+                        popover: {
+                            title: 'Jenis-Jenis Muatan',
+                            description: 'Di bawah ini adalah daftar muatan yang tersedia. Anda mungkin akan melihat label khusus seperti: <br><br><b>URGENT SOS (Merah)</b>: Muatan ini butuh driver darurat secepatnya.<br><b>Hanya Silver ke atas</b>: Muatan eksklusif yang dibatasi oleh merchant untuk tier tertentu.<br><b>Bid Normal</b>: Terbuka untuk semua driver.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '#tour-bidding-list',
+                        popover: {
+                            title: 'Informasi Detail Muatan',
+                            description: 'Pada setiap kartu muatan, Anda bisa melihat <b>Tipe Muatan</b> (FTL/LTL), <b>Rute Tujuan</b> (dari mana ke mana), dan <b>Tarif Maksimal</b> yang bersedia dibayarkan oleh Merchant.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    },
+                    {
+                        element: '#tour-bidding-list',
+                        popover: {
+                            title: 'Cara Melakukan Bidding',
+                            description: 'Jika muatan dirasa cocok, Anda bisa memasukkan harga penawaran Anda di kolom <b>Bid</b> (pastikan lebih rendah dari tarif maksimal merchant) dan klik <b>Kirim Bid</b>.<br><br>Jika Anda merasa harganya tidak masuk akal, Anda bisa mengisi saran harga dan klik <b>Tolak Bid</b> agar sistem memberitahu merchant.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    }
+                );
+            } else {
+                // Langkah untuk common
+                steps.push({
+                    element: '#tour-bidding-list',
+                    popover: {
+                        title: 'Daftar Muatan',
+                        description: 'Di sini akan tampil daftar muatan. Namun, karena Anda masih akun Common, fitur penawaran (bidding) dibatasi sampai Anda terverifikasi sebagai Driver.',
+                        side: "top",
+                        align: 'center'
+                    }
+                });
+            }
+
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: steps,
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        // localStorage.setItem('hasSeenTour_bidding_common', 'true');
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        } else if (isMerchantUser) {
+            const driver = window.driver.js.driver;
+            
+            let steps = [
+                {
+                    element: '#tour-merchant-form',
+                    popover: {
+                        title: 'Buat Order Muatan',
+                        description: 'Di sini Anda dapat mengisi detail muatan, menentukan tarif maksimal, serta memilih tipe layanan (FTL atau LTL).',
+                        side: "bottom",
+                        align: 'center'
+                    }
+                }
+            ];
+
+            if (document.querySelector('#tour-merchant-ad')) {
+                steps.unshift({
+                    element: '#tour-merchant-ad',
+                    popover: {
+                        title: 'Tingkatkan Exposure',
+                        description: 'Gunakan fitur Iklan agar muatan Anda tampil di baris teratas Flash Market dan lebih cepat diambil driver.',
+                        side: "bottom",
+                        align: 'center'
+                    }
+                });
+            }
+
+            if (document.querySelector('#tour-merchant-recommendation')) {
+                steps.push({
+                    element: '#tour-merchant-recommendation',
+                    popover: {
+                        title: 'Rekomendasi Driver',
+                        description: 'Kami merekomendasikan beberapa driver terbaik di sekitar area Anda. Anda bisa langsung menghubungi mereka.',
+                        side: "top",
+                        align: 'center'
+                    }
+                });
+            }
+
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: steps,
+                onDestroyStarted: () => {
+                    if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
+                        driverObj.destroy();
+                    }
+                },
+            });
+            
+            setTimeout(() => {
+                driverObj.drive();
+            }, 500);
+        }
+    });
+</script>
+@endpush
