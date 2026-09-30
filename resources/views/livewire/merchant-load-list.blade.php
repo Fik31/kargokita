@@ -136,7 +136,9 @@
                                                 </div>
                                                 <div>
                                                     <div class="flex items-center gap-1">
-                                                        <h6 class="font-bold text-gray-900 text-sm leading-tight">{{ $bid->driver->name }}</h6>
+                                                        <h6 class="font-bold text-gray-900 text-sm leading-tight hover:text-blue-500 transition-colors">
+                                                            <a href="{{ route('user.profile', $bid->driver_id) }}">{{ $bid->driver->name }}</a>
+                                                        </h6>
                                                         @if($bid->driver->tier)
                                                             <x-tier-badge :tier="$bid->driver->tier" class="scale-[0.8] origin-left" />
                                                         @endif
@@ -194,7 +196,9 @@
                                             {{ substr($bid->driver->name, 0, 1) }}
                                         </div>
                                         <div>
-                                            <h6 class="font-bold text-gray-700 text-xs">{{ $bid->driver->name }}</h6>
+                                            <h6 class="font-bold text-gray-700 text-xs hover:text-blue-500 transition-colors">
+                                                <a href="{{ route('user.profile', $bid->driver_id) }}">{{ $bid->driver->name }}</a>
+                                            </h6>
                                             <span class="bg-gray-200 text-gray-500 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">Menolak Bid</span>
                                         </div>
                                     </div>

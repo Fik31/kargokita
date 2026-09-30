@@ -81,6 +81,11 @@ class User extends Authenticatable
         return $this->hasMany(Rating::class, 'ratee_id');
     }
 
+    public function galleries()
+    {
+        return $this->hasMany(UserGallery::class);
+    }
+
     public function getSuccessfulDeliveryPercentageAttribute()
     {
         $total = $this->trips_count ?? $this->trips()->count();

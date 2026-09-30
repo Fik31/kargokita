@@ -283,8 +283,8 @@
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode($driver->name) }}&background=random" class="w-12 h-12 rounded-full border border-gray-200">
                             </div>
                             <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-1">
-                                    <p class="text-sm font-bold text-gray-900 truncate">{{ $driver->name }}</p>
+                                <div class="flex items-center gap-1 hover:text-blue-500 transition-colors">
+                                    <a href="{{ route('user.profile', $driver->id) }}" class="text-sm font-bold text-gray-900 truncate">{{ $driver->name }}</a>
                                     @if($driver->tier)
                                         <x-tier-badge :tier="$driver->tier" class="scale-[0.8] origin-left" />
                                     @endif
@@ -320,11 +320,16 @@
                     $dummyHarga = [1500000, 850000, 450000];
                     $dummyBerat = [2500, 1000, 800];
                 @endphp
-                <div class="bg-white rounded-3xl shadow-sm overflow-hidden border-2 border-yellow-400 flex flex-col relative transform transition hover:scale-105">
-                    <div class="absolute top-0 right-0 bg-yellow-400 text-xs font-bold px-3 py-1 rounded-bl-lg">TOP BID #{{ $i+1 }}</div>
+                <a href="{{ $merchant ? route('user.profile', $merchant->id) : '#' }}" class="bg-white rounded-3xl shadow-sm overflow-hidden border-2 border-yellow-400 flex flex-col relative transform transition hover:scale-105 block">
+                    <div class="absolute top-0 right-0 bg-yellow-400 text-xs font-bold px-3 py-1 rounded-bl-lg z-10">TOP BID #{{ $i+1 }}</div>
                     <div class="bg-gray-900 text-white p-5">
-                        <h4 class="text-lg font-bold mt-2 truncate">{{ $merchant ? $merchant->name : 'Merchant Premium' }}</h4>
-                        <p class="text-xs text-gray-400 truncate">{{ $merchant ? $dummyBarang[$i] : 'Muatan Menarik' }}</p>
+                        @if($merchant)
+                            <h4 class="text-lg font-bold mt-2 truncate group-hover:text-blue-400 transition-colors">{{ $merchant->name }}</h4>
+                            <p class="text-xs text-gray-400 truncate">{{ $dummyBarang[$i] }}</p>
+                        @else
+                            <h4 class="text-lg font-bold mt-2 truncate">Merchant Premium</h4>
+                            <p class="text-xs text-gray-400 truncate">Muatan Menarik</p>
+                        @endif
                     </div>
                     <div class="p-5 flex-grow flex flex-col justify-between">
                         <div>
@@ -344,19 +349,21 @@
                             <span class="text-[10px] text-gray-400 uppercase tracking-wider">Performa Tinggi</span>
                         </div>
                     </div>
-                </div>
+                </a>
             @endfor
 
             <!-- 1 Iklan -->
-            <div class="bg-gradient-to-br from-blue-900 to-blue-700 rounded-3xl shadow-lg overflow-hidden flex flex-col relative transform transition hover:scale-105 text-white">
-                <div class="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">IKLAN SPONSOR</div>
+            <a href="{{ $activeAd ? route('user.profile', $activeAd->id) : '#' }}" class="bg-gradient-to-br from-blue-900 to-blue-700 rounded-3xl shadow-lg overflow-hidden flex flex-col relative transform transition hover:scale-105 text-white block">
+                <div class="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10">IKLAN SPONSOR</div>
                 
                 @if($activeAd)
                     <div class="p-5 flex-grow flex flex-col justify-center text-center">
                         <div class="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-blue-900 font-bold text-2xl shadow-inner">
                             {{ substr($activeAd->name, 0, 1) }}
                         </div>
-                        <h4 class="text-lg font-bold mb-1">{{ $activeAd->name }}</h4>
+                        <h4 class="text-lg font-bold mb-1 hover:text-blue-300 transition-colors">
+                            {{ $activeAd->name }}
+                        </h4>
                         <p class="text-xs text-blue-200 mb-4">Mitra Terpercaya Kargokita</p>
                         
                         <div class="bg-white/20 rounded-xl p-3 backdrop-blur-sm">
@@ -371,7 +378,7 @@
                         <p class="text-xs text-blue-200">Hubungi Administrator untuk memasang iklan perusahaan Anda di sini.</p>
                     </div>
                 @endif
-            </div>
+            </a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -385,7 +392,9 @@
                         @endif
                         <h4 class="text-xl font-bold mt-6 mb-1">{{ $load->title ?? $load->merchant->name }}</h4>
                         <div class="flex items-center gap-1 mb-1">
-                            <p class="text-sm opacity-90">{{ $load->merchant->name }}</p>
+                            <a href="{{ route('user.profile', $load->merchant_id) }}" class="text-sm opacity-90 hover:text-blue-200 underline transition-colors">
+                                {{ $load->merchant->name }}
+                            </a>
                             @if($load->merchant->tier)
                                 <x-tier-badge :tier="$load->merchant->tier" class="scale-[0.7] origin-left" />
                             @endif

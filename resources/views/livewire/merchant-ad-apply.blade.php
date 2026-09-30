@@ -53,14 +53,14 @@
                         </div>
                         <h4 class="text-xl font-bold text-gray-900 mb-2">Menunggu Persetujuan</h4>
                         <p class="text-gray-500 mb-6">Pengajuan iklan Anda sedang ditinjau oleh Administrator. Silakan cek secara berkala.</p>
-                        <a href="{{ route('merchant.bidding') }}" class="text-brand-blue font-medium hover:underline">Kembali ke Bursa Muatan &rarr;</a>
+                        <a href="{{ route('bidding') }}" class="text-brand-blue font-medium hover:underline">Kembali ke Bursa Muatan &rarr;</a>
                     @elseif($activeApplication->status === 'approved')
                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 mb-4">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <h4 class="text-xl font-bold text-gray-900 mb-2">Iklan Aktif</h4>
                         <p class="text-gray-500 mb-6">Iklan Anda saat ini sedang tayang di Flash Market. Silakan cek di halaman bursa.</p>
-                        <a href="{{ route('merchant.bidding') }}" class="text-brand-blue font-medium hover:underline">Lihat Flash Market &rarr;</a>
+                        <a href="{{ route('bidding') }}" class="text-brand-blue font-medium hover:underline">Lihat Flash Market &rarr;</a>
                     @elseif($activeApplication->status === 'rejected')
                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 mb-4">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -78,7 +78,7 @@
                         </button>
                         
                         <div>
-                            <a href="{{ route('merchant.bidding') }}" class="text-gray-500 text-sm hover:text-gray-700 hover:underline">Kembali ke Bursa Muatan &rarr;</a>
+                            <a href="{{ route('bidding') }}" class="text-gray-500 text-sm hover:text-gray-700 hover:underline">Kembali ke Bursa Muatan &rarr;</a>
                         </div>
                     @endif
                 </div>
@@ -92,7 +92,7 @@
                     </button>
                     
                     <div class="mt-6">
-                        <a href="{{ route('merchant.bidding') }}" class="text-gray-500 text-sm hover:text-gray-700 hover:underline">Kembali</a>
+                        <a href="{{ route('bidding') }}" class="text-gray-500 text-sm hover:text-gray-700 hover:underline">Kembali</a>
                     </div>
                 </div>
             @endif

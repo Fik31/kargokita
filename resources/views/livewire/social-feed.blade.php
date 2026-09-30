@@ -79,8 +79,8 @@
                             <div class="flex items-center space-x-3">
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode($post->user->name) }}&background=random" class="w-12 h-12 rounded-full border border-gray-100 shadow-sm">
                                 <div>
-                                    <div class="font-bold text-gray-900 flex items-center">
-                                        {{ $post->user->name }}
+                                    <div class="font-bold text-gray-900 flex items-center hover:text-brand-blue transition-colors">
+                                        <a href="{{ route('user.profile', $post->user->id) }}">{{ $post->user->name }}</a>
                                         @if($post->user->tier)
                                             <x-tier-badge :tier="$post->user->tier" class="ml-2 scale-[0.8] origin-left" />
                                         @endif
@@ -98,7 +98,11 @@
                         <div class="text-gray-800 whitespace-pre-wrap text-sm leading-relaxed mb-4">{{ $post->content }}</div>
                         @if($post->image)
                             <div class="mb-4 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
-                                <img src="{{ Storage::url($post->image) }}" alt="Post image" class="w-full max-h-[500px] object-cover">
+                                @if(Str::startsWith($post->image, 'http'))
+                                    <img src="{{ $post->image }}" alt="Post image" class="w-full max-h-[500px] object-cover">
+                                @else
+                                    <img src="{{ Storage::url($post->image) }}" alt="Post image" class="w-full max-h-[500px] object-cover">
+                                @endif
                             </div>
                         @endif
                         <div class="pt-4 border-t border-gray-100 flex items-center space-x-6 text-gray-500">
@@ -150,7 +154,7 @@
                                 <span class="text-sm font-bold {{ $index < 3 ? 'text-gray-900' : 'text-gray-400' }} w-4">{{ $index + 1 }}.</span>
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode($driver->name) }}&background=random" class="w-9 h-9 rounded-full border border-gray-200 shadow-sm">
                                 <div>
-                                    <div class="text-sm font-bold text-gray-900 truncate w-32" title="{{ $driver->name }}">{{ $driver->name }}</div>
+                                    <a href="{{ route('user.profile', $driver->id) }}" class="text-sm font-bold text-gray-900 hover:text-brand-blue transition truncate w-32 block" title="{{ $driver->name }}">{{ $driver->name }}</a>
                                     <div class="text-[10px] text-gray-500">Mitra KargoKita</div>
                                 </div>
                             </div>

@@ -24,6 +24,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureDeposit::class])->group(fu
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/user/{user}', \App\Livewire\UserProfile::class)->name('user.profile');
 
     // Social Feed
     Route::get('/feed', SocialFeed::class)->name('feed');
