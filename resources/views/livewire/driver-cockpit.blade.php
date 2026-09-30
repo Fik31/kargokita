@@ -119,10 +119,14 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-4 mt-8">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
                         <button wire:click="toggleStopForm" class="bg-white text-brand-blue font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-blue-50 transition border border-gray-200 text-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
                             <span class="text-xs">Check-in<br>Berhenti</span>
+                        </button>
+                        <button wire:click="toggleFlashSaleForm" class="bg-white text-green-600 font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-green-50 transition border border-green-200 text-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="text-xs">Buka Bid<br>(LTL Sisa)</span>
                         </button>
                         <button wire:click="toggleDeviationForm" class="bg-white text-orange-500 font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-orange-50 transition border border-gray-200 text-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -133,6 +137,22 @@
                             <span class="text-xs">Darurat<br>(SOS)</span>
                         </button>
                     </div>
+
+                    @if($showFlashSaleForm)
+                        <div class="mt-4 bg-green-50 p-4 rounded-xl border border-green-200 shadow-sm">
+                            <form wire:submit.prevent="openFlashSale" class="space-y-4">
+                                <div class="text-green-700 bg-green-100 p-3 rounded text-sm mb-2">
+                                    <strong>Flash Sale (LTL)</strong><br>
+                                    Buka bid muatan parsial untuk sisa muatan Anda. Harga akan dihitung otomatis <strong>Rp1.000/kg</strong> secara sistem untuk membantu Merchant di rute Anda.
+                                </div>
+                                <div>
+                                    <label class="text-xs text-green-800 font-bold">Lokasi Penjemputan LTL (Misal: Solo)</label>
+                                    <input type="text" wire:model="flash_sale_pickup_location" class="w-full bg-white border border-green-300 rounded p-2 text-sm mt-1" placeholder="Masukkan kota penjemputan" required>
+                                </div>
+                                <button type="submit" class="w-full bg-green-600 text-white font-bold py-2 rounded shadow text-sm hover:bg-green-700">Buka Flash Sale LTL</button>
+                            </form>
+                        </div>
+                    @endif
 
                     @if($showStopForm)
                         <div class="mt-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">

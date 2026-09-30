@@ -343,16 +343,8 @@ class LoadBidding extends Component
             $query->where('merchant_id', $user->id)->where('id', -1); // don't load anything for merchant since we moved it
         } else {
             $query->where('status', 'open');
-            // Restrict LTL and Lion Parcel (Admin) loads to VIP Subscribers
-            if (! $user->is_subscribed) {
-                $query->where('type', '!=', 'LTL');
-
-                $query->whereHas('merchant', function ($q) {
-                    $q->whereDoesntHave('roles', function ($r) {
-                        $r->where('name', 'admin');
-                    });
-                });
-            }
+            // Remove VIP restriction
+            // (Everyone is verified/deposited to access here)
 
             // Restrict by tier
             $driverTier = strtolower($user->tier ?? 'common');
@@ -371,6 +363,20 @@ class LoadBidding extends Component
                     $q->orWhere('min_driver_tier', 'gold');
                 }
             });
+
+            // DO Value & Distance (Long Haul) Restriction based on Matrix
+            if ($driverRank === 1) { // Bronze
+                $query->where('max_price', '<=', 2000000); // Low limit DO Value
+                $query->where(function($q) {
+                    $q->whereNull('distance')->orWhere('distance', '<=', 100); // No long haul
+                });
+            } elseif ($driverRank === 2) { // Silver
+                $query->where('max_price', '<=', 10000000); // Medium DO Value
+                $query->where(function($q) {
+                    $q->whereNull('distance')->orWhere('distance', '<=', 500); // Limited long haul
+                });
+            }
+            // Gold has no limit (High/Full DO Value, Eligible Long Haul)
         }
 
         if (! empty($this->search)) {
@@ -439,9 +445,9 @@ class LoadBidding extends Component
         }
 
         $recommendedDrivers = collect();
-        if ($user->hasRole('merchant') && $user->is_subscribed) {
+        if ($user->hasRole('merchant')) {
             $recommendedDrivers = User::role('driver')
-                ->where('is_subscribed', true)
+                // ->where('is_subscribed', true) - Removed since all active drivers have paid deposit
                 ->withAvg('ratingsAsRatee', 'score')
                 ->orderByDesc('ratings_as_ratee_avg_score')
                 ->take(3)

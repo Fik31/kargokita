@@ -84,7 +84,16 @@ class HseDriverVerificationForm extends Component
 
         // Update user tier and role
         $user = $this->verificationRequest->user;
-        $user->update(['tier' => $tier]);
+        $user->update([
+            'tier' => $tier,
+            'is_liveness_verified' => $this->verify_identity,
+            'is_sim_verified' => $this->verify_sim,
+            'is_stnk_verified' => $this->verify_vehicle, // Assuming vehicle check includes STNK
+            'is_kir_verified' => $this->verify_compliance,
+            'is_bank_verified' => $this->verify_bank,
+            // For gold we require SIM to be matched with vehicle
+            'is_sim_matched_with_vehicle' => ($tier === 'gold') ? true : false,
+        ]);
         if (! $user->hasRole('driver')) {
             $user->assignRole('driver');
         }

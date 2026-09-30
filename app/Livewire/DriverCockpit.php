@@ -44,6 +44,10 @@ class DriverCockpit extends Component
 
     public $document_unloading;
 
+    // Flash Sale Properties
+    public $showFlashSaleForm = false;
+    public $flash_sale_pickup_location = '';
+
     // Report properties
     public $showStopForm = false;
 
@@ -526,12 +530,21 @@ class DriverCockpit extends Component
         }
     }
 
+    public function toggleFlashSaleForm()
+    {
+        $this->showFlashSaleForm = !$this->showFlashSaleForm;
+    }
+
     public function openFlashSale()
     {
+        $this->validate([
+            'flash_sale_pickup_location' => 'required|string|max:255',
+        ]);
+
         if ($this->activeTrip && $this->activeTrip->cargo) {
             $cargo = $this->activeTrip->cargo;
 
-            // Calculate available weight (assuming driver's vehicle has some capacity, but let's just use what's left or a default 1000kg for now)
+            // Calculate available weight
             $vehicleCapacity = 3000; // Mock 3000kg for now
             $availableWeight = $vehicleCapacity - ($cargo->weight_kg ?? 0);
 
@@ -541,28 +554,35 @@ class DriverCockpit extends Component
                     'flash_sale_expires_at' => now()->addHours(2),
                 ]);
 
+                // Harga 1000/kg otomatis by system
+                $price = $availableWeight * 1000;
+
                 // Create a new Flash Sale Load
                 $flashLoad = Load::create([
                     'merchant_id' => Auth::id(), // Driver acts as merchant for this LTL
                     'type' => 'LTL',
-                    'title' => 'Sisa Muatan '.$this->activeTrip->id,
+                    'title' => 'LTL Flash Sale ' . $this->flash_sale_pickup_location . ' - ' . ($cargo->receiver_address ?? 'Tujuan Akhir'),
                     'item_name' => 'Bebas',
                     'weight_kg' => $availableWeight,
                     'available_weight' => $availableWeight,
                     'vehicle_type_needed' => $cargo->vehicle_type_needed ?? 'Pickup',
-                    'max_price' => $cargo->max_price * 0.5, // 50% discount
+                    'max_price' => $price, // Fixed 1000/kg
+                    'sender_address' => $this->flash_sale_pickup_location,
+                    'receiver_address' => $cargo->receiver_address,
                     'status' => 'open',
                     'escrow_status' => 'pending',
                     'bid_deadline' => now()->addHours(2),
                 ]);
 
-                // Auto post to Social Feed
+                // Auto post to Social Feed as a broadcast / notification
                 Post::create([
                     'user_id' => Auth::id(),
-                    'content' => 'Sisa muatan '.$availableWeight.' KG rute '.($cargo->sender_address ?? 'Jakarta').' ke '.($cargo->receiver_address ?? 'Tujuan').' diskon 50%! Cek menu Bursa Muatan sekarang!',
+                    'content' => 'Sisa muatan '.$availableWeight.' KG rute '.$this->flash_sale_pickup_location.' ke '.($cargo->receiver_address ?? 'Tujuan').'. Tarif super miring otomatis by system (1000/kg). Cek menu Bursa Muatan sekarang!',
                 ]);
 
-                session()->flash('message', 'Flash Sale berhasil dibuka! 2 Jam batas waktu pencarian tambahan muatan.');
+                session()->flash('message', 'Flash Sale (LTL) berhasil dibuka dari titik '.$this->flash_sale_pickup_location.'. Harga otomatis diset Rp'.number_format($price, 0, ',', '.').' (1000/kg). Menunggu merchant.');
+                $this->showFlashSaleForm = false;
+                $this->flash_sale_pickup_location = '';
             } else {
                 session()->flash('error', 'Kapasitas kendaraan sudah penuh.');
             }

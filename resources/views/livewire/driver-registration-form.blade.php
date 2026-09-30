@@ -62,6 +62,12 @@
                             <input type="file" wire:model="profile_photo" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                             @error('profile_photo') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700">Foto Liveness (Selfie Bebas Bergerak)</label>
+                            <input type="file" wire:model="liveness_photo" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            <p class="text-xs text-gray-500 mt-1">Gunakan foto selfie terbaru dengan pencahayaan jelas untuk validasi biometrik.</p>
+                            @error('liveness_photo') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
                     </div>
                 </div>
 
@@ -257,10 +263,27 @@
                         <h3 class="text-lg font-bold text-gray-800">7. Bank / Payment Verification</h3>
                         <span class="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded text-sm">Bobot: 5%</span>
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Foto Buku Rekening Bank / Mutasi (Halaman Depan)</label>
-                        <input type="file" wire:model="bank_account_photo" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                        @error('bank_account_photo') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">Nama Bank</label>
+                            <input type="text" wire:model="bank_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring focus:ring-blue-200" placeholder="Contoh: BCA">
+                            @error('bank_name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700">Nomor Rekening</label>
+                            <input type="text" wire:model="bank_account_number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring focus:ring-blue-200" placeholder="Contoh: 1234567890">
+                            @error('bank_account_number') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700">Nama Pemilik Rekening</label>
+                            <input type="text" wire:model="bank_account_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring focus:ring-blue-200" placeholder="Sesuai dengan nama di buku tabungan">
+                            @error('bank_account_name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700">Foto Buku Rekening Bank / Mutasi (Halaman Depan)</label>
+                            <input type="file" wire:model="bank_account_photo" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            @error('bank_account_photo') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
                     </div>
                 </div>
 

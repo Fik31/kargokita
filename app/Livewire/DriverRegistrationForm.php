@@ -27,6 +27,8 @@ class DriverRegistrationForm extends Component
     public $emergency_contact = '';
 
     public $profile_photo;
+    
+    public $liveness_photo; // new field
 
     // SIM Verification (20%)
     public $sim_photo;
@@ -83,6 +85,12 @@ class DriverRegistrationForm extends Component
 
     // Bank/Payment Verification (5%)
     public $bank_account_photo;
+    
+    public $bank_name = '';
+    
+    public $bank_account_name = '';
+    
+    public $bank_account_number = '';
 
     public function submit()
     {
@@ -96,6 +104,7 @@ class DriverRegistrationForm extends Component
             'phone' => 'required|string',
             'emergency_contact' => 'required|string',
             'profile_photo' => 'required|image|max:5120',
+            'liveness_photo' => 'required|image|max:5120', // new field
 
             // SIM
             'sim_photo' => 'required|image|max:5120',
@@ -133,6 +142,9 @@ class DriverRegistrationForm extends Component
 
             // Bank
             'bank_account_photo' => 'required|image|max:5120',
+            'bank_name' => 'required|string',
+            'bank_account_name' => 'required|string',
+            'bank_account_number' => 'required|string',
         ], [
             'required' => 'Wajib diisi/diupload untuk mendapatkan bobot penuh.',
             'accepted' => 'Wajib dicentang (memiliki) untuk memenuhi Vehicle Compliance.',
@@ -143,12 +155,20 @@ class DriverRegistrationForm extends Component
         // Save files
         $ktpPath = $this->ktp_photo->store('driver_documents', 'public');
         $profilePath = $this->profile_photo->store('driver_documents', 'public');
+        $livenessPath = $this->liveness_photo->store('driver_documents', 'public');
         $simPath = $this->sim_photo->store('driver_documents', 'public');
         $stnkPath = $this->stnk_photo->store('driver_documents', 'public');
         $kirPath = $this->kir_photo->store('driver_documents', 'public');
         $vehiclePath = $this->vehicle_photo->store('driver_documents', 'public');
         $skckPath = $this->skck_photo->store('driver_documents', 'public');
         $bankPath = $this->bank_account_photo->store('driver_documents', 'public');
+
+        // Note: For now, updating users bank details directly here as well to persist it for the future
+        $user->update([
+            'bank_name' => $this->bank_name,
+            'bank_account_name' => $this->bank_account_name,
+            'bank_account_number' => $this->bank_account_number
+        ]);
 
         $data = [
             'identity' => [
@@ -160,6 +180,7 @@ class DriverRegistrationForm extends Component
                 'emergency_contact' => $this->emergency_contact,
                 'ktp_photo' => $ktpPath,
                 'profile_photo' => $profilePath,
+                'liveness_photo' => $livenessPath,
             ],
             'sim' => [
                 'sim_type' => $this->sim_type,
@@ -197,6 +218,9 @@ class DriverRegistrationForm extends Component
             ],
             'bank' => [
                 'bank_account_photo' => $bankPath,
+                'bank_name' => $this->bank_name,
+                'bank_account_name' => $this->bank_account_name,
+                'bank_account_number' => $this->bank_account_number,
             ],
         ];
 

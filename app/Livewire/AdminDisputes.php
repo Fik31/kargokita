@@ -13,7 +13,9 @@ class AdminDisputes extends Component
     {
         $disputes = Dispute::with(['trip.driver', 'cargoLoad.merchant', 'reporter'])
             ->leftJoin('loads', 'disputes.load_id', '=', 'loads.id')
+            ->leftJoin('users as reporters', 'disputes.reporter_id', '=', 'reporters.id')
             ->orderByRaw("CASE WHEN loads.sla_type = 'Premium' THEN 1 WHEN loads.sla_type = 'Priority' THEN 2 ELSE 3 END")
+            ->orderByRaw("CASE WHEN reporters.tier = 'gold' THEN 1 WHEN reporters.tier = 'silver' THEN 2 WHEN reporters.tier = 'bronze' THEN 3 ELSE 4 END")
             ->orderBy('disputes.created_at', 'desc')
             ->select('disputes.*')
             ->get();
