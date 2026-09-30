@@ -53,6 +53,17 @@ class AdminBidding extends Component
     {
         $load = Load::findOrFail($loadId);
         $load->update(['escrow_status' => $status]);
+        
+        // If released, find related notification and mark as read
+        if ($status === 'released') {
+            $acceptedBid = $load->bids->firstWhere('status', 'accepted');
+            if ($acceptedBid && $acceptedBid->trip) {
+                auth()->user()->unreadNotifications
+                    ->where('data.trip_id', $acceptedBid->trip->id)
+                    ->markAsRead();
+            }
+        }
+
         session()->flash('message', "Status pembayaran (escrow) muatan {$load->title} berhasil diubah menjadi {$status}.");
     }
 
@@ -73,9 +84,11 @@ class AdminBidding extends Component
         }
 
         $loads = $query->latest()->paginate(10);
+        $notifications = auth()->user()->unreadNotifications()->where('type', 'App\Notifications\TripCompletedEscrowNotification')->get();
 
         return view('livewire.admin-bidding', [
             'loads' => $loads,
+            'notifications' => $notifications,
         ]);
     }
 }

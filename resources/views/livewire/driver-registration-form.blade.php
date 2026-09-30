@@ -133,12 +133,18 @@
                             <label class="block text-sm font-semibold text-gray-700">Jenis Kendaraan</label>
                             <select wire:model="vehicle_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring focus:ring-blue-200">
                                 <option value="">Pilih Tipe...</option>
-                                <option value="Blindvan">Blindvan</option>
-                                <option value="CDE">CDE</option>
-                                <option value="CDD">CDD</option>
-                                <option value="Fuso">Fuso</option>
-                                <option value="Tronton">Tronton</option>
-                                <option value="Trailer">Trailer</option>
+                                <option value="Blindvan">Blindvan - Box (700–800 kg | 3–4 CBM)</option>
+                                <option value="Granmax / L300 Box">Granmax / L300 Box - Bak & Box (800–1.000 kg | 4–6 CBM)</option>
+                                <option value="CDE">CDE - Bak & Box (2.000–2.500 kg | 6–9 CBM)</option>
+                                <option value="CDE Long">CDE Long - Bak & Box (2.000–2.500 kg | 10–14 CBM)</option>
+                                <option value="CDD">CDD - Bak & Box (4.000–5.000 kg | 13–18 CBM)</option>
+                                <option value="CDD Long">CDD Long - Bak & Box (5.000–6.000 kg | 22–28 CBM)</option>
+                                <option value="Fuso">Fuso - Bak & Box (8.000–10.000 kg | 25–35 CBM)</option>
+                                <option value="Fuso Long / Wingbox">Fuso Long / Wingbox - Bak & Box (8.000–10.000 kg | 35–40 CBM)</option>
+                                <option value="Tronton">Tronton - Bak & Box (15.000–20.000 kg | 40–50 CBM)</option>
+                                <option value="Tronton Wingbox">Tronton Wingbox - Box (18.000–25.000 kg | 45–55 CBM)</option>
+                                <option value="Trailer 20">Trailer 20" - Container (25.000 - 27.000 kg | 20 Feet)</option>
+                                <option value="Trailer 40">Trailer 40" - Container (30.000 - 32.000 kg | 40 Feet)</option>
                             </select>
                             @error('vehicle_type') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>

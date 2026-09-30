@@ -235,6 +235,12 @@ class DriverCockpit extends Component
         $this->activeTrip->update(['status' => 'completed']);
         if ($this->activeTrip->cargo) {
             $this->activeTrip->cargo->update(['status' => 'done']);
+            
+            // Check if cargo uses paylater and escrow is still pending
+            if ($this->activeTrip->cargo->is_paylater && $this->activeTrip->cargo->escrow_status === 'pending') {
+                $admins = \App\Models\User::role('administrator')->get();
+                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\TripCompletedEscrowNotification($this->activeTrip));
+            }
         }
         
         // Update all unloading to completed
@@ -243,6 +249,11 @@ class DriverCockpit extends Component
                 $trip->update(['status' => 'completed']);
                 if ($trip->cargo) {
                     $trip->cargo->update(['status' => 'done']);
+                    
+                    if ($trip->cargo->is_paylater && $trip->cargo->escrow_status === 'pending') {
+                        $admins = \App\Models\User::role('administrator')->get();
+                        \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\TripCompletedEscrowNotification($trip));
+                    }
                 }
             }
         }

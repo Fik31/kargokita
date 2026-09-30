@@ -3,6 +3,7 @@
 @php
     $tier = strtolower($tier ?? 'common');
     $colors = [
+        'premium' => 'bg-purple-600 text-white border-purple-700 shadow-purple-300',
         'gold' => 'bg-yellow-400 text-yellow-900 border-yellow-500 shadow-yellow-200',
         'silver' => 'bg-gray-300 text-gray-800 border-gray-400 shadow-gray-200',
         'bronze' => 'bg-orange-300 text-orange-900 border-orange-400 shadow-orange-200',
@@ -14,6 +15,7 @@
     ];
 
     $icons = [
+        'premium' => '💎',
         'gold' => '👑',
         'silver' => '🥈',
         'bronze' => '🥉',

@@ -35,6 +35,12 @@ class LoadBidding extends Component
     public $receiver_address;
     public $distance;
     
+    // Additional Notes
+    public $sender_notes;
+    public $receiver_notes;
+
+    public $use_profile_data = true;
+    
     public $bid_deadline;
     public $is_paylater = false;
     public $min_driver_tier = null;
@@ -51,12 +57,31 @@ class LoadBidding extends Component
     {
         // Auto-fill sender info with current user's profile if merchant
         if (Auth::user()->hasRole('merchant')) {
-            $this->sender_name = Auth::user()->name;
+            $this->syncProfileData();
             
             if (session()->has('repost_load_id')) {
                 $this->repostLoad(session()->pull('repost_load_id'));
             }
         }
+    }
+
+    public function updatedUseProfileData($value)
+    {
+        if ($value) {
+            $this->syncProfileData();
+        } else {
+            $this->sender_name = '';
+            $this->sender_phone = '';
+            $this->sender_address = '';
+        }
+    }
+
+    private function syncProfileData()
+    {
+        $user = Auth::user();
+        $this->sender_name = $user->name;
+        $this->sender_phone = $user->phone ?? '';
+        $this->sender_address = $user->address ?? '';
     }
 
     public function createLoad()
@@ -76,10 +101,18 @@ class LoadBidding extends Component
             'receiver_phone' => 'required|string|max:255',
             'receiver_address' => 'required|string',
             'distance' => 'nullable|numeric',
+            'sender_notes' => 'nullable|string',
+            'receiver_notes' => 'nullable|string',
             'bid_deadline' => 'nullable|date',
             'is_paylater' => 'boolean',
             'min_driver_tier' => 'nullable|in:bronze,silver,gold',
         ]);
+        
+        $merchantTier = strtolower(Auth::user()->tier ?? '');
+        if (!in_array($merchantTier, ['trusted', 'premium'])) {
+            $this->is_paylater = false;
+            $this->min_driver_tier = null;
+        }
 
         Load::create([
             'merchant_id' => Auth::id(),
@@ -97,6 +130,8 @@ class LoadBidding extends Component
             'receiver_phone' => $this->receiver_phone,
             'receiver_address' => $this->receiver_address,
             'distance' => $this->distance,
+            'sender_notes' => $this->sender_notes,
+            'receiver_notes' => $this->receiver_notes,
             'bid_deadline' => $this->bid_deadline,
             'is_paylater' => $this->is_paylater,
             'min_driver_tier' => $this->min_driver_tier,
@@ -108,8 +143,10 @@ class LoadBidding extends Component
             'title', 'item_name', 'weight_kg', 'koli', 'vehicle_type_needed',
             'sender_name', 'sender_phone', 'sender_address',
             'receiver_name', 'receiver_phone', 'receiver_address',
-            'distance', 'bid_deadline', 'max_price', 'is_paylater'
+            'distance', 'bid_deadline', 'max_price', 'is_paylater',
+            'sender_notes', 'receiver_notes'
         ]);
+        $this->use_profile_data = false;
         
         session()->flash('message', 'Order muatan berhasil dibuat dan masuk ke bursa Bidding!');
     }
@@ -183,7 +220,10 @@ class LoadBidding extends Component
         $this->receiver_phone = $oldLoad->receiver_phone;
         $this->receiver_address = $oldLoad->receiver_address;
         $this->distance = $oldLoad->distance;
+        $this->sender_notes = $oldLoad->sender_notes;
+        $this->receiver_notes = $oldLoad->receiver_notes;
         $this->is_paylater = $oldLoad->is_paylater;
+        $this->use_profile_data = false;
         
         $this->reposting_load_id = $oldLoad->id;
         

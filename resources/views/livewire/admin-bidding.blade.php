@@ -13,6 +13,26 @@
             </div>
         @endif
 
+        @if($notifications->count() > 0)
+            <div class="mb-6 bg-blue-50 border-l-4 border-brand-blue p-4 rounded-r-lg shadow-sm">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-brand-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-bold text-brand-blue">Menunggu Pencairan Dana Escrow</h3>
+                        <ul class="mt-2 text-sm text-blue-800 list-disc list-inside space-y-1">
+                            @foreach($notifications as $notification)
+                                <li>{{ $notification->data['message'] }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="space-y-8">
             @forelse ($loads as $load)
                 <div class="border rounded-lg p-6">

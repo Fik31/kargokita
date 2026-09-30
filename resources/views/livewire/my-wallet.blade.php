@@ -4,6 +4,26 @@
         <p class="text-sm text-gray-500">Kelola saldo komisi referral dan penarikan dana Anda.</p>
     </div>
 
+    <!-- Escrow & Cargo Fee Info Banner -->
+    <div class="mb-8 bg-blue-50 border-l-4 border-brand-blue p-4 rounded-r-lg shadow-sm">
+        <div class="flex items-start">
+            <div class="flex-shrink-0 mt-0.5">
+                <svg class="h-5 w-5 text-brand-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-bold text-brand-blue">Informasi Cargo Fee (Escrow / Rekening Bersama)</h3>
+                <p class="mt-1 text-sm text-blue-800">
+                    Mohon diperhatikan bahwa <strong>Saldo Aktif Dompet</strong> di bawah ini digunakan HANYA untuk deposit langganan dan komisi referral. 
+                    Dana pembayaran ongkos kirim (Cargo Fee) yang ditransfer dari Merchant akan diamankan sementara di rekening pusat Administrator (Escrow).
+                    <br><br>
+                    Untuk <strong>Driver</strong>: Dana ongkos kirim baru akan ditransfer ke rekening pribadi Anda oleh Administrator setelah Trip selesai (POD tervalidasi) dan status Escrow menjadi <em>Released</em>.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Balance Card -->
         <div class="md:col-span-1 bg-gradient-to-br from-brand-blue to-blue-900 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">

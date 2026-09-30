@@ -117,13 +117,18 @@
                             <label class="block text-sm font-medium text-gray-700">Kebutuhan Kendaraan</label>
                             <select wire:model="vehicle_type_needed" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-blue focus:border-brand-blue">
                                 <option value="">-- Pilih Kendaraan --</option>
-                                <option value="Engkel Bak">Engkel Bak</option>
-                                <option value="Engkel Box">Engkel Box</option>
-                                <option value="CDD Bak">CDD Bak</option>
-                                <option value="CDD Box">CDD Box</option>
-                                <option value="Fuso">Fuso</option>
-                                <option value="Blindvan">Blindvan</option>
-                                <option value="Pickup">Pickup</option>
+                                <option value="Blindvan">Blindvan - Box (700–800 kg | 3–4 CBM)</option>
+                                <option value="Granmax / L300 Box">Granmax / L300 Box - Bak & Box (800–1.000 kg | 4–6 CBM)</option>
+                                <option value="CDE">CDE - Bak & Box (2.000–2.500 kg | 6–9 CBM)</option>
+                                <option value="CDE Long">CDE Long - Bak & Box (2.000–2.500 kg | 10–14 CBM)</option>
+                                <option value="CDD">CDD - Bak & Box (4.000–5.000 kg | 13–18 CBM)</option>
+                                <option value="CDD Long">CDD Long - Bak & Box (5.000–6.000 kg | 22–28 CBM)</option>
+                                <option value="Fuso">Fuso - Bak & Box (8.000–10.000 kg | 25–35 CBM)</option>
+                                <option value="Fuso Long / Wingbox">Fuso Long / Wingbox - Bak & Box (8.000–10.000 kg | 35–40 CBM)</option>
+                                <option value="Tronton">Tronton - Bak & Box (15.000–20.000 kg | 40–50 CBM)</option>
+                                <option value="Tronton Wingbox">Tronton Wingbox - Box (18.000–25.000 kg | 45–55 CBM)</option>
+                                <option value="Trailer 20">Trailer 20" - Container (25.000 - 27.000 kg | 20 Feet)</option>
+                                <option value="Trailer 40">Trailer 40" - Container (30.000 - 32.000 kg | 40 Feet)</option>
                             </select>
                             @error('vehicle_type_needed') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
@@ -165,7 +170,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Box 2: Info Pengirim -->
                     <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
-                        <h3 class="text-lg font-bold mb-4 text-blue-800 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> 2. Info Pengirim</h3>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
+                            <h3 class="text-lg font-bold text-blue-800 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> 2. Info Pengirim</h3>
+                            <div class="flex items-center">
+                                <input id="use_profile_data" type="checkbox" wire:model.live="use_profile_data" class="h-4 w-4 text-brand-blue focus:ring-brand-blue border-gray-300 rounded">
+                                <label for="use_profile_data" class="ml-2 block text-sm font-medium text-gray-700">
+                                    Gunakan Data Profil
+                                </label>
+                            </div>
+                        </div>
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Nama Pengirim</label>
@@ -181,6 +194,11 @@
                                 <label class="block text-sm font-medium text-gray-700">Alamat Penjemputan</label>
                                 <textarea wire:model="sender_address" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
                                 @error('sender_address') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Catatan Pengirim (Opsional)</label>
+                                <textarea wire:model="sender_notes" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Contoh: Barang diambil di pos satpam..."></textarea>
+                                @error('sender_notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     </div>
@@ -208,23 +226,30 @@
                                 <label class="block text-sm font-medium text-gray-700">Perkiraan Jarak (KM)</label>
                                 <input type="number" wire:model="distance" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm">
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Catatan Penerima (Opsional)</label>
+                                <textarea wire:model="receiver_notes" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm" placeholder="Contoh: Titip ke resepsionis atau hubungi sebelum sampai..."></textarea>
+                                @error('receiver_notes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Footer Settings -->
                 <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                    @if(in_array(strtolower(Auth::user()->tier ?? ''), ['trusted', 'premium']))
                     <div class="flex items-center">
                         <input id="paylater" type="checkbox" wire:model="is_paylater" class="h-5 w-5 text-brand-blue focus:ring-brand-blue border-gray-300 rounded">
                         <label for="paylater" class="ml-3 block text-sm font-medium text-gray-800">
                             Gunakan Hak Eksklusif <span class="font-bold">(Cargo Fee)</span>
                         </label>
                     </div>
+                    @endif
                     <div class="flex items-center gap-2">
                         <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Batas Bidding (Opsional):</label>
                         <input type="datetime-local" wire:model="bid_deadline" class="rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
                     </div>
-                    @if(!in_array(strtolower(Auth::user()->tier ?? 'common'), ['common', 'not_eligible']))
+                    @if(in_array(strtolower(Auth::user()->tier ?? ''), ['trusted', 'premium']))
                     <div class="flex items-center gap-2">
                         <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Min. Tier Driver (Opsional):</label>
                         <select wire:model="min_driver_tier" class="rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
@@ -441,6 +466,7 @@
                         @if($load->status === 'open')
                             <div class="mt-4 pt-4 border-t border-gray-100">
                                 <label class="block text-xs font-bold text-gray-700 mb-2">Penawaran Anda (Bid)</label>
+                                <p class="text-[10px] text-gray-500 mb-2 leading-tight">Pastikan harga penawaran Anda <strong>lebih rendah</strong> dari tarif maksimal (Rp {{ number_format($load->max_price, 0, ',', '.') }}) yang ditetapkan merchant.</p>
                                 <div class="flex space-x-2">
                                     <input type="number" wire:model="bid_amounts.{{ $load->id }}" placeholder="Cth: 800000" class="block w-full border-gray-200 bg-gray-50 rounded-xl shadow-sm focus:ring-brand-blue focus:border-brand-blue text-sm px-4">
                                     <button wire:click="submitBid({{ $load->id }})" class="bg-brand-blue text-white px-6 py-2 rounded-xl hover:bg-blue-700 text-sm font-bold shadow-sm whitespace-nowrap transition-colors">Kirim Bid</button>
