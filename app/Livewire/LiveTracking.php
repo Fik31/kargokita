@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Load;
 use App\Models\Trip;
 use App\Models\TripEvent;
 use Illuminate\Support\Facades\Auth;
@@ -72,7 +73,7 @@ class LiveTracking extends Component
                     'dest_lat' => -7.983908, // Malang
                     'dest_lng' => 112.621391,
                     'is_deviated' => false,
-                    'drop_points' => [['name' => 'Hub Kediri', 'lat' => -7.8228, 'lng' => 112.0118]]
+                    'drop_points' => [['name' => 'Hub Kediri', 'lat' => -7.8228, 'lng' => 112.0118]],
                 ];
             }
 
@@ -109,7 +110,7 @@ class LiveTracking extends Component
         $activeTrips = $query->get();
 
         // --- INJECT DUMMY TRK-012 ---
-        $dummyCargo = new \App\Models\Load();
+        $dummyCargo = new Load;
         $dummyCargo->origin_name = 'Yogyakarta';
         $dummyCargo->origin_lat = -7.797068;
         $dummyCargo->origin_lng = 110.370529;
@@ -117,10 +118,10 @@ class LiveTracking extends Component
         $dummyCargo->dest_lat = -7.983908;
         $dummyCargo->dest_lng = 112.621391;
         $dummyCargo->drop_points = json_encode([
-            ['name' => 'Hub Kediri', 'lat' => -7.8228, 'lng' => 112.0118]
+            ['name' => 'Hub Kediri', 'lat' => -7.8228, 'lng' => 112.0118],
         ]);
 
-        $dummyTrip = new Trip();
+        $dummyTrip = new Trip;
         $dummyTrip->id = 12; // TRK-012
         $dummyTrip->status = 'in_transit';
         $dummyTrip->is_deviated = false;
@@ -134,27 +135,27 @@ class LiveTracking extends Component
         $events = [];
         $trip = null;
         $allEventsCount = [];
-        
+
         if ($this->tripId) {
             if ($this->tripId == 12) {
-                $dummyCargo = new \App\Models\Load();
+                $dummyCargo = new Load;
                 $dummyCargo->origin_name = 'Yogyakarta';
                 $dummyCargo->dest_name = 'Malang';
-                $trip = new Trip();
+                $trip = new Trip;
                 $trip->id = 12;
                 $trip->is_deviated = false;
                 $trip->setRelation('cargo', $dummyCargo);
 
-                $dummyEvent = new TripEvent();
+                $dummyEvent = new TripEvent;
                 $dummyEvent->type = 'dwell';
                 $dummyEvent->location_name = 'Hub Solo (Bongkar Muat)';
                 $dummyEvent->notes = 'Proses bongkar muat reguler berjalan lancar.';
                 $dummyEvent->created_at = now()->subHours(1);
-                
+
                 if ($this->eventTab === 'dwell') {
                     $events = collect([$dummyEvent]);
                 }
-                
+
                 $allEventsCount = ['dwell' => 1, 'deviation' => 0];
             } else {
                 $trip = Trip::with(['cargo.merchant', 'driver'])->find($this->tripId);
@@ -162,7 +163,7 @@ class LiveTracking extends Component
                     ->where('type', $this->eventTab)
                     ->latest()
                     ->get();
-    
+
                 $allEventsCount = TripEvent::where('trip_id', $this->tripId)
                     ->selectRaw('type, count(*) as count')
                     ->groupBy('type')

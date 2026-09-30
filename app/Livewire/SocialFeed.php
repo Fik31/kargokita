@@ -110,8 +110,9 @@ class SocialFeed extends Component
 
     public function likePost($postId)
     {
-        if (!Auth::user()->is_subscribed) {
+        if (! Auth::user()->is_subscribed) {
             session()->flash('error', 'Fitur Like (Apresiasi) hanya tersedia untuk Member Resmi (telah deposit).');
+
             return;
         }
 

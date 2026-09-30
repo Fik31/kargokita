@@ -2,10 +2,9 @@
 
 namespace App\Livewire;
 
+use App\Models\AdApplication;
 use App\Models\Bid;
 use App\Models\Load;
-use App\Models\AdApplication;
-use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -15,42 +14,57 @@ use Livewire\Component;
 class LoadBidding extends Component
 {
     public $type = 'FTL';
+
     public $max_price;
-    
+
     // Box 1: Info Barang
     public $title;
+
     public $item_name;
+
     public $weight_kg;
+
     public $koli;
+
     public $vehicle_type_needed;
-    
+
     // Box 2: Info Pengirim
     public $sender_name;
+
     public $sender_phone;
+
     public $sender_address;
-    
+
     // Box 3: Info Penerima
     public $receiver_name;
+
     public $receiver_phone;
+
     public $receiver_address;
+
     public $distance;
-    
+
     // Additional Notes
     public $sender_notes;
+
     public $receiver_notes;
 
     public $use_profile_data = true;
-    
+
     public $bid_deadline;
+
     public $is_paylater = false;
+
     public $min_driver_tier = null;
 
     // For Driver
     public $bid_amounts = [];
+
     public $suggested_prices = [];
 
     // For Merchant Repost
     public $reposting_load_id = null;
+
     public $repost_suggested_price = null;
 
     public function mount()
@@ -58,7 +72,7 @@ class LoadBidding extends Component
         // Auto-fill sender info with current user's profile if merchant
         if (Auth::user()->hasRole('merchant')) {
             $this->syncProfileData();
-            
+
             if (session()->has('repost_load_id')) {
                 $this->repostLoad(session()->pull('repost_load_id'));
             }
@@ -107,9 +121,9 @@ class LoadBidding extends Component
             'is_paylater' => 'boolean',
             'min_driver_tier' => 'nullable|in:bronze,silver,gold',
         ]);
-        
+
         $merchantTier = strtolower(Auth::user()->tier ?? '');
-        if (!in_array($merchantTier, ['trusted', 'premium'])) {
+        if (! in_array($merchantTier, ['trusted', 'premium'])) {
             $this->is_paylater = false;
             $this->min_driver_tier = null;
         }
@@ -136,7 +150,7 @@ class LoadBidding extends Component
             'is_paylater' => $this->is_paylater,
             'min_driver_tier' => $this->min_driver_tier,
             'status' => 'open',
-            'escrow_status' => 'pending'
+            'escrow_status' => 'pending',
         ]);
 
         $this->reset([
@@ -144,17 +158,18 @@ class LoadBidding extends Component
             'sender_name', 'sender_phone', 'sender_address',
             'receiver_name', 'receiver_phone', 'receiver_address',
             'distance', 'bid_deadline', 'max_price', 'is_paylater',
-            'sender_notes', 'receiver_notes'
+            'sender_notes', 'receiver_notes',
         ]);
         $this->use_profile_data = false;
-        
+
         session()->flash('message', 'Order muatan berhasil dibuat dan masuk ke bursa Bidding!');
     }
 
     public function submitBid($loadId)
     {
-        if (!Auth::user()->hasRole('driver')) {
+        if (! Auth::user()->hasRole('driver')) {
             session()->flash('error', 'Silakan pilih role sebagai Driver terlebih dahulu untuk bisa melakukan bid.');
+
             return;
         }
 
@@ -176,8 +191,9 @@ class LoadBidding extends Component
 
     public function rejectBid($loadId)
     {
-        if (!Auth::user()->hasRole('driver')) {
+        if (! Auth::user()->hasRole('driver')) {
             session()->flash('error', 'Silakan pilih role sebagai Driver terlebih dahulu untuk bisa memberikan saran harga.');
+
             return;
         }
 
@@ -201,7 +217,7 @@ class LoadBidding extends Component
     public function repostLoad($loadId)
     {
         $oldLoad = Load::findOrFail($loadId);
-        
+
         if ($oldLoad->merchant_id !== Auth::id()) {
             abort(403);
         }
@@ -224,9 +240,9 @@ class LoadBidding extends Component
         $this->receiver_notes = $oldLoad->receiver_notes;
         $this->is_paylater = $oldLoad->is_paylater;
         $this->use_profile_data = false;
-        
+
         $this->reposting_load_id = $oldLoad->id;
-        
+
         // Check if there was an average suggested price from rejected bids
         $rejectedBids = Bid::where('load_id', $loadId)->where('status', 'rejected')->get();
         if ($rejectedBids->count() > 0) {
@@ -237,14 +253,13 @@ class LoadBidding extends Component
 
         session()->flash('message', 'Data muatan lama berhasil dimuat. Silakan sesuaikan harga atau batas waktu sebelum membuat ulang.');
     }
-    
+
     public function applySuggestedPrice()
     {
         if ($this->repost_suggested_price) {
             $this->max_price = $this->repost_suggested_price;
         }
     }
-
 
     public function approveBid($bidId)
     {
@@ -261,7 +276,7 @@ class LoadBidding extends Component
 
         $bid->update(['status' => 'accepted']);
         $load->update(['status' => 'in_transit']);
-        
+
         // Let DriverCockpit create the trip when driver visits, or create trip here.
         // Usually creating trip here is better.
         // We'll let DriverCockpit handle it (as it's currently doing) or we can create it here.
@@ -281,10 +296,10 @@ class LoadBidding extends Component
             },
             'bids.driver' => function ($q) {
                 $q->withAvg('ratingsAsRatee', 'score')
-                  ->withCount(['trips', 'trips as completed_trips_count' => function ($query) {
-                      $query->where('status', 'completed');
-                  }]);
-            }
+                    ->withCount(['trips', 'trips as completed_trips_count' => function ($query) {
+                        $query->where('status', 'completed');
+                    }]);
+            },
         ]);
 
         if ($user->hasRole('merchant')) {
@@ -292,9 +307,9 @@ class LoadBidding extends Component
         } else {
             $query->where('status', 'open');
             // Restrict LTL and Lion Parcel (Admin) loads to VIP Subscribers
-            if (!$user->is_subscribed) {
+            if (! $user->is_subscribed) {
                 $query->where('type', '!=', 'LTL');
-                
+
                 $query->whereHas('merchant', function ($q) {
                     $q->whereDoesntHave('roles', function ($r) {
                         $r->where('name', 'admin');
@@ -309,41 +324,80 @@ class LoadBidding extends Component
 
             $query->where(function ($q) use ($driverRank) {
                 $q->whereNull('min_driver_tier');
-                if ($driverRank >= 1) $q->orWhere('min_driver_tier', 'bronze');
-                if ($driverRank >= 2) $q->orWhere('min_driver_tier', 'silver');
-                if ($driverRank >= 3) $q->orWhere('min_driver_tier', 'gold');
+                if ($driverRank >= 1) {
+                    $q->orWhere('min_driver_tier', 'bronze');
+                }
+                if ($driverRank >= 2) {
+                    $q->orWhere('min_driver_tier', 'silver');
+                }
+                if ($driverRank >= 3) {
+                    $q->orWhere('min_driver_tier', 'gold');
+                }
             });
         }
 
-        if (!empty($this->search)) {
-            $query->where(function($q) {
-                $q->whereHas('merchant', function($q2) {
-                    $q2->where('name', 'like', '%' . $this->search . '%');
-                })->orWhere('type', 'like', '%' . $this->search . '%');
+        if (! empty($this->search)) {
+            $query->where(function ($q) {
+                $q->whereHas('merchant', function ($q2) {
+                    $q2->where('name', 'like', '%'.$this->search.'%');
+                })->orWhere('type', 'like', '%'.$this->search.'%');
             });
         }
 
         $loads = $query->latest()->get();
 
         $topBidMerchants = [];
-        $activeAd = null;
+        $activeAds = collect();
 
-        if (!$user->hasRole('merchant')) {
-            $modeSetting = Setting::where('key', 'top_bid_mode')->first();
-            $mode = $modeSetting ? $modeSetting->value : 'auto';
+        if (! $user->hasRole('merchant')) {
+            // 1. Merchant with most opened and completed bids
+            $topCompletedMerchant = User::role('merchant')
+                ->withCount(['loads' => function ($q) {
+                    $q->where('status', 'completed');
+                }])
+                ->orderByDesc('loads_count')
+                ->first();
 
-            if ($mode === 'manual') {
-                $merchantsSetting = Setting::where('key', 'top_bid_merchants')->first();
-                $merchantIds = $merchantsSetting && $merchantsSetting->value ? json_decode($merchantsSetting->value, true) : [];
-                $topBidMerchants = User::whereIn('id', $merchantIds)->get();
-            } else {
-                // Dummy Auto: just grab 3 merchants
-                $topBidMerchants = User::role('merchant')->take(3)->get();
+            // 2. Highest Tier Merchant (including complete data assessment)
+            $highestTierMerchant = User::role('merchant')
+                ->where('id', '!=', optional($topCompletedMerchant)->id)
+                ->orderByRaw("CASE tier WHEN 'premium' THEN 1 WHEN 'trusted' THEN 2 WHEN 'common' THEN 3 ELSE 4 END ASC")
+                ->first();
+
+            // 3. Admin Choice (Inkubasi)
+            $adminChoiceMerchant = User::role('merchant')
+                ->whereNotIn('id', array_filter([optional($topCompletedMerchant)->id, optional($highestTierMerchant)->id]))
+                ->first();
+
+            $topBidMerchants = [
+                $topCompletedMerchant,
+                $highestTierMerchant,
+                $adminChoiceMerchant,
+            ];
+
+            // Get up to 10 active ads for the carousel
+            $activeAdApps = AdApplication::where('status', 'approved')
+                ->latest()
+                ->take(10)
+                ->get();
+
+            $activeAds = collect();
+            foreach ($activeAdApps as $app) {
+                if ($app->merchant) {
+                    $activeAds->push($app->merchant);
+                }
             }
 
-            $activeAdApp = AdApplication::where('status', 'approved')->latest()->first();
-            if ($activeAdApp) {
-                $activeAd = $activeAdApp->merchant;
+            // Inject sample data for presentation if less than 3 ads
+            if ($activeAds->count() < 3) {
+                $needed = 3 - $activeAds->count();
+                $existingIds = $activeAds->pluck('id')->toArray();
+                $sampleAds = User::role('merchant')
+                    ->whereNotIn('id', $existingIds)
+                    ->inRandomOrder()
+                    ->take($needed)
+                    ->get();
+                $activeAds = $activeAds->merge($sampleAds);
             }
         }
 
@@ -361,7 +415,7 @@ class LoadBidding extends Component
             'loads' => $loads,
             'isMerchant' => $user->hasRole('merchant'),
             'topBidMerchants' => $topBidMerchants,
-            'activeAd' => $activeAd,
+            'activeAds' => $activeAds,
             'recommendedDrivers' => $recommendedDrivers,
         ]);
     }

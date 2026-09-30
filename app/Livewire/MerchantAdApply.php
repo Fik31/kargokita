@@ -27,6 +27,7 @@ class MerchantAdApply extends Component
 
         if ($hasActive) {
             session()->flash('error', 'Anda sudah memiliki pengajuan iklan yang aktif atau sedang diproses.');
+
             return;
         }
 

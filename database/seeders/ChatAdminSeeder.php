@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Load;
-use App\Models\Bid;
-use App\Models\Trip;
 use App\Models\Message;
+use App\Models\Trip;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class ChatAdminSeeder extends Seeder
 {
@@ -19,7 +18,9 @@ class ChatAdminSeeder extends Seeder
         $driver1 = User::where('email', 'adi@kargokita.com')->first();
         $driver2 = User::where('email', 'dodi@kargokita.com')->first();
 
-        if (!$admin || !$merchant || !$driver1 || !$driver2) return;
+        if (! $admin || ! $merchant || ! $driver1 || ! $driver2) {
+            return;
+        }
 
         // SCENARIO 1: ADMIN HANYA MEMANTAU (TIDAK ADA PERMINTAAN BANTUAN)
         $load1 = Load::create([
@@ -69,7 +70,6 @@ class ChatAdminSeeder extends Seeder
             'created_at' => Carbon::now()->subMinutes(30),
             'updated_at' => Carbon::now()->subMinutes(30),
         ]);
-
 
         // SCENARIO 2: ADMIN IKUT NIMBRUNG KARENA ADA KERIBUTAN
         $load2 = Load::create([

@@ -119,14 +119,18 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 mt-8">
-                        <button wire:click="toggleStopForm" class="bg-white text-brand-blue font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-blue-50 transition border border-gray-200">
+                    <div class="grid grid-cols-3 gap-4 mt-8">
+                        <button wire:click="toggleStopForm" class="bg-white text-brand-blue font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-blue-50 transition border border-gray-200 text-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-                            <span class="text-sm">Check-in Berhenti</span>
+                            <span class="text-xs">Check-in<br>Berhenti</span>
                         </button>
-                        <button wire:click="toggleDeviationForm" class="bg-white text-orange-500 font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-orange-50 transition border border-gray-200">
+                        <button wire:click="toggleDeviationForm" class="bg-white text-orange-500 font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-orange-50 transition border border-gray-200 text-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            <span class="text-sm">Lapor Deviasi</span>
+                            <span class="text-xs">Lapor<br>Deviasi</span>
+                        </button>
+                        <button wire:click="toggleUrgentForm" class="bg-red-50 text-red-600 font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 shadow-sm hover:bg-red-100 transition border border-red-200 text-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <span class="text-xs">Darurat<br>(SOS)</span>
                         </button>
                     </div>
 
@@ -147,6 +151,29 @@
                                 <x-camera-input modelName="photo" title="Foto Deviasi (Opsional)" requiredStatus="in_transit" :activeTrip="$activeTrip" :photoVar="$photo" />
                                 <div><label class="text-xs text-orange-800">Alasan Deviasi</label><textarea wire:model="deviationReason" class="w-full bg-white border border-orange-300 rounded p-2 text-sm mt-1" rows="2" required></textarea></div>
                                 <button type="submit" class="w-full bg-orange-500 text-white font-bold py-2 rounded shadow text-sm hover:bg-orange-600">Simpan Laporan</button>
+                            </form>
+                        </div>
+                    @endif
+
+                    @if($showUrgentForm)
+                        <div class="mt-4 bg-red-50 p-4 rounded-xl border border-red-200">
+                            <div class="mb-4 text-red-700 bg-red-100 p-3 rounded text-sm">
+                                <strong>Peringatan!</strong> Gunakan tombol ini HANYA jika Anda tidak bisa melanjutkan perjalanan (ban pecah, mogok parah, atau over-kapasitas). Sistem akan membatalkan trip Anda dan mencarikan driver pengganti otomatis.
+                            </div>
+                            <form wire:submit.prevent="reportUrgentIssue" class="space-y-4">
+                                <x-camera-input modelName="photo" title="Foto Bukti Kendala (Wajib)" requiredStatus="in_transit" :activeTrip="$activeTrip" :photoVar="$photo" />
+                                <div>
+                                    <label class="text-xs text-red-800 font-bold">Jenis Kendala</label>
+                                    <select wire:model="urgentType" class="w-full bg-white border border-red-300 rounded p-2 text-sm mt-1" required>
+                                        <option value="">Pilih Kendala...</option>
+                                        <option value="vehicle_breakdown">Truk Mogok / Ban Pecah / Laka</option>
+                                        <option value="capacity_mismatch">Kapasitas / Tonase Tidak Sesuai (Fraud Merchant)</option>
+                                        <option value="driver_sick">Driver Sakit / Force Majeure</option>
+                                        <option value="other">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div><label class="text-xs text-red-800 font-bold">Detail Alasan & Kondisi</label><textarea wire:model="urgentReason" class="w-full bg-white border border-red-300 rounded p-2 text-sm mt-1" rows="3" placeholder="Ceritakan detail kendala. Jika indikasi fraud, jelaskan aktual di lapangan." required></textarea></div>
+                                <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded-xl shadow text-sm hover:bg-red-700 mt-2">Laporkan & Batalkan Trip (SOS)</button>
                             </form>
                         </div>
                     @endif

@@ -2,22 +2,25 @@
 
 namespace App\Livewire;
 
+use App\Enums\AssessmentLevel;
+use App\Enums\AssessmentStatus;
+use App\Enums\ComplianceStatus;
+use App\Models\Assessment;
+use App\Models\AssessmentCriterion;
+use App\Models\AssessmentItem;
+use App\Models\Vehicle;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use App\Models\AssessmentCriterion;
-use App\Models\Assessment;
-use App\Models\AssessmentItem;
-use App\Enums\AssessmentStatus;
-use App\Enums\AssessmentLevel;
-use App\Enums\ComplianceStatus;
-use Illuminate\Support\Facades\Auth;
 
 class DriverSelfAssessmentForm extends Component
 {
     use WithFileUploads;
 
     public $criteriaGrouped = [];
-    public $answers = []; 
+
+    public $answers = [];
+
     public $activeTab = 'DRIVER';
 
     public function mount()
@@ -36,6 +39,7 @@ class DriverSelfAssessmentForm extends Component
     }
 
     public $vehicle_type = '';
+
     public $license_plate = '';
 
     public function submit()
@@ -49,7 +53,7 @@ class DriverSelfAssessmentForm extends Component
         $user = Auth::user();
 
         // Check if vehicle exists or create new
-        $vehicle = \App\Models\Vehicle::updateOrCreate(
+        $vehicle = Vehicle::updateOrCreate(
             ['license_plate' => $this->license_plate],
             [
                 'owner_id' => $user->id,
@@ -86,12 +90,13 @@ class DriverSelfAssessmentForm extends Component
         }
 
         // Assign the driver role tentatively (if they don't have it)
-        if (!$user->hasRole('driver')) {
+        if (! $user->hasRole('driver')) {
             $user->assignRole('driver');
         }
 
         session()->flash('message', 'Data Assessment berhasil dikirim! Langkah terakhir, silakan selesaikan Deposit Jaminan untuk mengaktifkan akun Anda.');
-        return redirect()->route('subscription'); 
+
+        return redirect()->route('subscription');
     }
 
     public function render()

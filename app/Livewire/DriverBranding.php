@@ -14,13 +14,14 @@ class DriverBranding extends Component
     use WithFileUploads;
 
     public $proof_image;
-    
+
     public function apply()
     {
         $user = Auth::user();
-        
-        if (!$user->is_subscribed) {
+
+        if (! $user->is_subscribed) {
             session()->flash('error', 'Hanya Member Resmi (telah deposit) yang dapat mengajukan branding.');
+
             return;
         }
 
@@ -30,6 +31,7 @@ class DriverBranding extends Component
 
         if ($existing) {
             session()->flash('error', 'Anda sudah memiliki pengajuan branding yang sedang diproses.');
+
             return;
         }
 
@@ -55,7 +57,7 @@ class DriverBranding extends Component
 
         $app->update([
             'proof_image' => $path,
-            'status' => 'ditinjau'
+            'status' => 'ditinjau',
         ]);
 
         $this->proof_image = null;
@@ -65,6 +67,7 @@ class DriverBranding extends Component
     public function render()
     {
         $applications = BrandingApplication::where('driver_id', Auth::id())->latest()->get();
+
         return view('livewire.driver-branding', ['applications' => $applications]);
     }
 }

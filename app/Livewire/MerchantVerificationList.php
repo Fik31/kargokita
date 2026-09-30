@@ -2,8 +2,9 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
+use App\Enums\AssessmentStatus;
 use App\Models\Assessment;
+use Livewire\Component;
 
 class MerchantVerificationList extends Component
 {
@@ -13,7 +14,7 @@ class MerchantVerificationList extends Component
             ->whereHas('items.criterion', function ($query) {
                 $query->where('target_role', 'merchant');
             })
-            ->where('status', \App\Enums\AssessmentStatus::SUBMITTED)
+            ->where('status', AssessmentStatus::SUBMITTED)
             ->latest()
             ->get();
 

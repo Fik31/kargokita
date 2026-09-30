@@ -59,7 +59,6 @@ class RoleAndUserSeeder extends Seeder
         );
         $merchantDeposit->assignRole('merchant');
 
-
         // Create Dummy Drivers
         $driverKosong = User::firstOrCreate(
             ['email' => 'adi@kargokita.com'],

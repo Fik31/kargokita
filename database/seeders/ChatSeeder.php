@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\Load;
 use App\Models\Bid;
-use App\Models\Trip;
+use App\Models\Load;
 use App\Models\Message;
-use App\Models\Notification; // Assuming this exists or we can just use posts or banners
+use App\Models\Trip;
+use App\Models\User;
 use Carbon\Carbon;
+// Assuming this exists or we can just use posts or banners
+use Illuminate\Database\Seeder;
 
 class ChatSeeder extends Seeder
 {
@@ -19,17 +19,23 @@ class ChatSeeder extends Seeder
         $merchant = User::where('email', 'maju.logistik@kargokita.com')->first();
         $driver = User::where('email', 'bambang@kargokita.com')->first();
 
-        if (!$merchant || !$driver) return;
+        if (! $merchant || ! $driver) {
+            return;
+        }
 
         $load = Load::where('merchant_id', $merchant->id)->where('status', 'open')->latest()->first();
-        if (!$load) return;
+        if (! $load) {
+            return;
+        }
 
         $bid = Bid::where('load_id', $load->id)->where('driver_id', $driver->id)->first();
-        if (!$bid) return;
+        if (! $bid) {
+            return;
+        }
 
         // 2. Merchant menerima bid dari driver Bambang
         $bid->update(['status' => 'accepted']);
-        
+
         // Ubah status load menjadi assigned
         $load->update(['status' => 'assigned']);
 
@@ -50,7 +56,7 @@ class ChatSeeder extends Seeder
             'message' => 'Halo Pak Bambang, bid sudah saya terima ya. Kapan bisa mulai muat?',
             'created_at' => Carbon::now()->subMinutes(15),
             'updated_at' => Carbon::now()->subMinutes(15),
-            'is_read' => true
+            'is_read' => true,
         ]);
 
         Message::create([
@@ -60,7 +66,7 @@ class ChatSeeder extends Seeder
             'message' => 'Siap Pak. Saya sedang meluncur ke lokasi penjemputan di Tanjung Priok. Estimasi 30 menit lagi sampai.',
             'created_at' => Carbon::now()->subMinutes(10),
             'updated_at' => Carbon::now()->subMinutes(10),
-            'is_read' => true
+            'is_read' => true,
         ]);
 
         Message::create([
@@ -70,9 +76,9 @@ class ChatSeeder extends Seeder
             'message' => 'Baik, tolong hubungi Pak Ahmad (081234567890) kalau sudah di gerbang ya. Nanti minta form Surat Jalan Elektroniknya sekalian.',
             'created_at' => Carbon::now()->subMinutes(5),
             'updated_at' => Carbon::now()->subMinutes(5),
-            'is_read' => false
+            'is_read' => false,
         ]);
-        
+
         // Buat trip kedua yang sudah selesai untuk ngetes read-only chat (Closed Chat)
         $completedLoad = Load::create([
             'merchant_id' => $merchant->id,
@@ -101,7 +107,7 @@ class ChatSeeder extends Seeder
             'message' => 'Barang sudah sampai dengan aman ya pak. Terima kasih.',
             'created_at' => Carbon::now()->subDays(2)->addHours(2),
             'updated_at' => Carbon::now()->subDays(2)->addHours(2),
-            'is_read' => true
+            'is_read' => true,
         ]);
     }
 }

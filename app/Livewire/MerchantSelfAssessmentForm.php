@@ -2,25 +2,28 @@
 
 namespace App\Livewire;
 
+use App\Enums\AssessmentLevel;
+use App\Enums\AssessmentStatus;
+use App\Enums\ComplianceStatus;
+use App\Models\Assessment;
+use App\Models\AssessmentCriterion;
+use App\Models\AssessmentItem;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use App\Models\AssessmentCriterion;
-use App\Models\Assessment;
-use App\Models\AssessmentItem;
-use App\Enums\AssessmentStatus;
-use App\Enums\AssessmentLevel;
-use App\Enums\ComplianceStatus;
-use Illuminate\Support\Facades\Auth;
 
 class MerchantSelfAssessmentForm extends Component
 {
     use WithFileUploads;
 
     public $criteriaGrouped = [];
-    public $answers = []; 
+
+    public $answers = [];
+
     public $activeTab = 'LEGAL IDENTITY';
 
     public $company_name = '';
+
     public $nib_number = '';
 
     public function mount()
@@ -74,12 +77,9 @@ class MerchantSelfAssessmentForm extends Component
             ]);
         }
 
-        if (!$user->hasRole('merchant')) {
-            $user->assignRole('merchant');
-        }
+        session()->flash('message', 'Data Registrasi Merchant berhasil dikirim! Data Anda sedang diverifikasi oleh admin, silakan tunggu maksimal 1x24 jam.');
 
-        session()->flash('message', 'Data Registrasi Merchant berhasil dikirim! Langkah terakhir, silakan selesaikan Deposit Jaminan untuk mengaktifkan akun Anda.');
-        return redirect()->route('subscription'); 
+        return redirect()->route('dashboard');
     }
 
     public function render()

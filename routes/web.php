@@ -1,16 +1,34 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Middleware\EnsureDeposit;
 use App\Livewire\AdminBidding;
+use App\Livewire\AdminBiddingSettings;
+use App\Livewire\AdminDisputes;
 use App\Livewire\AdminVerification;
+use App\Livewire\AssessmentDashboard;
+use App\Livewire\AssessmentForm;
 use App\Livewire\ChatInterface;
+use App\Livewire\DriverBranding;
 use App\Livewire\DriverCockpit;
+use App\Livewire\DriverRegistrationForm;
+use App\Livewire\DriverSelfAssessmentForm;
+use App\Livewire\HseDriverVerificationForm;
+use App\Livewire\HseVerificationList;
 use App\Livewire\LiveTracking;
 use App\Livewire\LoadBidding;
-use App\Livewire\SocialFeed;
-use App\Livewire\TripHistory;
-use App\Livewire\VerificationForm;
+use App\Livewire\MerchantAdApply;
+use App\Livewire\MerchantAssessmentDashboard;
+use App\Livewire\MerchantLoadList;
+use App\Livewire\MerchantSelfAssessmentForm;
+use App\Livewire\MerchantVerificationList;
+use App\Livewire\MyWallet;
 use App\Livewire\ReportView;
+use App\Livewire\SocialFeed;
+use App\Livewire\SubscriptionPayment;
+use App\Livewire\TripHistory;
+use App\Livewire\UserProfile;
+use App\Livewire\WaybillView;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,11 +38,11 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', \App\Http\Middleware\EnsureDeposit::class])->group(function () {
+Route::middleware(['auth', EnsureDeposit::class])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/user/{user}', \App\Livewire\UserProfile::class)->name('user.profile');
+    Route::get('/user/{user}', UserProfile::class)->name('user.profile');
 
     // Social Feed
     Route::get('/feed', SocialFeed::class)->name('feed');
@@ -36,13 +54,13 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureDeposit::class])->group(fu
     Route::get('/chat', ChatInterface::class)->name('chat');
 
     // Merchant Verification Form (Self Assessment)
-    Route::get('/verification', \App\Livewire\MerchantSelfAssessmentForm::class)->name('verification');
+    Route::get('/verification', MerchantSelfAssessmentForm::class)->name('verification');
 
     // Driver Registration Form (Bundled Info)
-    Route::get('/driver-verification', \App\Livewire\DriverRegistrationForm::class)->name('driver.verification');
+    Route::get('/driver-verification', DriverRegistrationForm::class)->name('driver.verification');
 
     // Driver HSE Assessment Form (Detailed)
-    Route::get('/driver-hse-assessment', \App\Livewire\DriverSelfAssessmentForm::class)->name('driver.hse-assessment');
+    Route::get('/driver-hse-assessment', DriverSelfAssessmentForm::class)->name('driver.hse-assessment');
 
     // Tracking (Can be accessed by Merchant and Administrator)
     Route::get('/tracking', LiveTracking::class)
@@ -50,25 +68,26 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureDeposit::class])->group(fu
         ->name('tracking');
 
     // Electronic Waybill (Surat Jalan Elektronik)
-    Route::get('/waybill/{trip_id}', \App\Livewire\WaybillView::class)->name('waybill');
+    Route::get('/waybill/{trip_id}', WaybillView::class)->name('waybill');
 
     // Admin Routes
     Route::middleware('role:administrator')->group(function () {
-        Route::get('/admin/merchant-assessment/dashboard', \App\Livewire\MerchantAssessmentDashboard::class)->name('admin.merchant-assessment.dashboard');
-        Route::get('/admin/merchant-verifications', \App\Livewire\MerchantVerificationList::class)->name('admin.merchant-assessment.verification-list');
-        Route::get('/admin/merchant-verify/{assessment_id?}', \App\Livewire\AssessmentForm::class)->name('admin.merchant-assessment.form');
-        
+        Route::get('/admin/merchant-assessment/dashboard', MerchantAssessmentDashboard::class)->name('admin.merchant-assessment.dashboard');
+        Route::get('/admin/merchant-verifications', MerchantVerificationList::class)->name('admin.merchant-assessment.verification-list');
+        Route::get('/admin/merchant-verify/{assessment_id?}', AssessmentForm::class)->name('admin.merchant-assessment.form');
+
         Route::get('/admin/verification', AdminVerification::class)->name('admin.verification');
         Route::get('/admin/bidding', AdminBidding::class)->name('admin.bidding');
-        Route::get('/admin/bidding-settings', \App\Livewire\AdminBiddingSettings::class)->name('admin.bidding-settings');
+        Route::get('/admin/bidding-settings', AdminBiddingSettings::class)->name('admin.bidding-settings');
     });
 
     // HSE / Admin Assessment Routes
     Route::middleware('role:hse|administrator')->group(function () {
-        Route::get('/admin/assessment/dashboard', \App\Livewire\AssessmentDashboard::class)->name('admin.assessment.dashboard');
-        Route::get('/admin/assessment/verifications', \App\Livewire\HseVerificationList::class)->name('admin.assessment.verification-list');
-        Route::get('/admin/assessment/verify/{assessment_id?}', \App\Livewire\AssessmentForm::class)->name('admin.assessment.form');
-        Route::get('/admin/assessment/driver-verify/{request_id}', \App\Livewire\HseDriverVerificationForm::class)->name('admin.assessment.driver-verify');
+        Route::get('/admin/assessment/dashboard', AssessmentDashboard::class)->name('admin.assessment.dashboard');
+        Route::get('/admin/assessment/verifications', HseVerificationList::class)->name('admin.assessment.verification-list');
+        Route::get('/admin/assessment/verify/{assessment_id?}', AssessmentForm::class)->name('admin.assessment.form');
+        Route::get('/admin/assessment/driver-verify/{request_id}', HseDriverVerificationForm::class)->name('admin.assessment.driver-verify');
+        Route::get('/admin/assessment/disputes', AdminDisputes::class)->name('admin.assessment.disputes');
     });
 
     // Bidding Routes (Accessible by auth, handled inside component)
@@ -76,8 +95,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureDeposit::class])->group(fu
 
     // Merchant Routes
     Route::middleware('role:merchant')->group(function () {
-        Route::get('/merchant/ad-apply', \App\Livewire\MerchantAdApply::class)->name('merchant.ad-apply');
-        Route::get('/merchant/loads', \App\Livewire\MerchantLoadList::class)->name('merchant.loads');
+        Route::get('/merchant/ad-apply', MerchantAdApply::class)->name('merchant.ad-apply');
+        Route::get('/merchant/loads', MerchantLoadList::class)->name('merchant.loads');
     });
 
     // Driver Routes
@@ -87,10 +106,10 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureDeposit::class])->group(fu
 
     // Report Route (Merchant & Driver)
     Route::middleware('role:merchant|driver')->group(function () {
-        Route::get('/reports', \App\Livewire\ReportView::class)->name('reports');
-        Route::get('/subscription', \App\Livewire\SubscriptionPayment::class)->name('subscription');
-        Route::get('/wallet', \App\Livewire\MyWallet::class)->name('wallet');
-        Route::get('/driver-branding', \App\Livewire\DriverBranding::class)->name('branding');
+        Route::get('/reports', ReportView::class)->name('reports');
+        Route::get('/subscription', SubscriptionPayment::class)->name('subscription');
+        Route::get('/wallet', MyWallet::class)->name('wallet');
+        Route::get('/driver-branding', DriverBranding::class)->name('branding');
     });
 });
 

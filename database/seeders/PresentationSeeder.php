@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\Load;
 use App\Models\Bid;
+use App\Models\Load;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class PresentationSeeder extends Seeder
 {
@@ -56,7 +56,7 @@ class PresentationSeeder extends Seeder
                     'driver_id' => $driver1->id,
                     'amount' => 0,
                     'suggested_price' => 1500000,
-                    'status' => 'rejected'
+                    'status' => 'rejected',
                 ]);
             }
 
@@ -66,7 +66,7 @@ class PresentationSeeder extends Seeder
                     'driver_id' => $driver2->id,
                     'amount' => 0,
                     'suggested_price' => 2000000,
-                    'status' => 'rejected'
+                    'status' => 'rejected',
                 ]);
             }
 
@@ -76,7 +76,7 @@ class PresentationSeeder extends Seeder
                     'driver_id' => $driver4->id,
                     'amount' => 0,
                     'suggested_price' => 3000000,
-                    'status' => 'rejected'
+                    'status' => 'rejected',
                 ]);
             }
 
@@ -86,7 +86,7 @@ class PresentationSeeder extends Seeder
                     'load_id' => $load->id,
                     'driver_id' => $driver3->id,
                     'amount' => 950000, // Driver ini malah bid sedikit di bawah harga maksimal
-                    'status' => 'pending'
+                    'status' => 'pending',
                 ]);
             }
         }

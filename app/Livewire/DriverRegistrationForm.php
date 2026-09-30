@@ -208,13 +208,9 @@ class DriverRegistrationForm extends Component
             'status' => 'pending',
         ]);
 
-        if (! $user->hasRole('driver')) {
-            $user->assignRole('driver');
-        }
+        session()->flash('message', 'Pendaftaran Driver berhasil dikirim! Data Anda sedang diverifikasi oleh tim HSE, silakan tunggu maksimal 1x24 jam.');
 
-        session()->flash('message', 'Pendaftaran Driver berhasil dikirim! Silakan selesaikan Deposit Jaminan untuk mengaktifkan akun Anda.');
-
-        return redirect()->route('subscription');
+        return redirect()->route('dashboard');
     }
 
     public function render()

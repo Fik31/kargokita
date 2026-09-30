@@ -2,16 +2,17 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class ProfileGallery extends Component
 {
     use WithFileUploads;
 
     public $photo;
+
     public $caption = '';
 
     public function save()
@@ -22,9 +23,10 @@ class ProfileGallery extends Component
         ]);
 
         $user = Auth::user();
-        
+
         if ($user->galleries()->count() >= 6) {
             session()->flash('error', 'Maksimal 6 foto diperbolehkan.');
+
             return;
         }
 
@@ -42,7 +44,7 @@ class ProfileGallery extends Component
     public function delete($id)
     {
         $gallery = Auth::user()->galleries()->find($id);
-        
+
         if ($gallery) {
             Storage::disk('public')->delete($gallery->image_path);
             $gallery->delete();

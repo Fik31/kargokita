@@ -2,14 +2,15 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\Load;
 use App\Models\Bid;
+use App\Models\Load;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class MerchantLoadList extends Component
 {
     public $search = '';
+
     public $activeTab = 'open'; // open, waiting, completed/in_transit
 
     public function setTab($tab)
@@ -37,12 +38,13 @@ class MerchantLoadList extends Component
     public function repostLoad($loadId)
     {
         $oldLoad = Load::findOrFail($loadId);
-        
+
         if ($oldLoad->merchant_id !== Auth::id()) {
             abort(403);
         }
 
         session()->put('repost_load_id', $oldLoad->id);
+
         return redirect()->route('bidding');
     }
 
@@ -52,14 +54,14 @@ class MerchantLoadList extends Component
 
         $query = Load::with(['merchant', 'bids.driver'])->where('merchant_id', $user->id);
 
-        if (!empty($this->search)) {
-            $query->where(function($q) {
-                $q->where('title', 'like', '%' . $this->search . '%')
-                  ->orWhere('item_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('type', 'like', '%' . $this->search . '%');
+        if (! empty($this->search)) {
+            $query->where(function ($q) {
+                $q->where('title', 'like', '%'.$this->search.'%')
+                    ->orWhere('item_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('type', 'like', '%'.$this->search.'%');
             });
         }
-        
+
         if ($this->activeTab === 'open') {
             $query->where('status', 'open')->doesntHave('bids');
         } elseif ($this->activeTab === 'waiting') {
@@ -71,7 +73,7 @@ class MerchantLoadList extends Component
         $loads = $query->latest()->get();
 
         return view('livewire.merchant-load-list', [
-            'loads' => $loads
+            'loads' => $loads,
         ])->layout('layouts.app');
     }
 }

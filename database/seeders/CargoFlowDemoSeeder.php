@@ -2,16 +2,14 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\Load;
 use App\Models\Bid;
+use App\Models\Load;
 use App\Models\Trip;
-use App\Models\Rating;
-use App\Models\VerificationRequest;
+use App\Models\User;
+use App\Notifications\TripCompletedEscrowNotification;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
-use App\Notifications\TripCompletedEscrowNotification;
 
 class CargoFlowDemoSeeder extends Seeder
 {
@@ -24,23 +22,29 @@ class CargoFlowDemoSeeder extends Seeder
                 'name' => 'PT Sinar Jaya',
                 'password' => Hash::make('password'),
                 'is_subscribed' => true,
-                'tier' => 'premium'
+                'tier' => 'premium',
             ]
         );
-        if (!$merchant->hasRole('merchant')) $merchant->assignRole('merchant');
+        if (! $merchant->hasRole('merchant')) {
+            $merchant->assignRole('merchant');
+        }
 
         // 2. Driver Users (Berbagai Tier)
         $driverC = User::updateOrCreate(
             ['email' => 'candra.gunawan@kargokita.com'],
             ['name' => 'Candra Gunawan', 'password' => Hash::make('password'), 'tier' => 'gold', 'is_subscribed' => true]
         );
-        if (!$driverC->hasRole('driver')) $driverC->assignRole('driver');
-        
+        if (! $driverC->hasRole('driver')) {
+            $driverC->assignRole('driver');
+        }
+
         $driverB = User::updateOrCreate(
             ['email' => 'bambang.suryadi@kargokita.com'],
             ['name' => 'Bambang Suryadi', 'password' => Hash::make('password'), 'tier' => 'silver', 'is_subscribed' => true]
         );
-        if (!$driverB->hasRole('driver')) $driverB->assignRole('driver');
+        if (! $driverB->hasRole('driver')) {
+            $driverB->assignRole('driver');
+        }
 
         // 3. Load 1: Open Bidding (Menggunakan Cargo Fee, Min Driver Tier: silver)
         $loadOpen = Load::create([
@@ -62,14 +66,14 @@ class CargoFlowDemoSeeder extends Seeder
             'is_paylater' => true,
             'min_driver_tier' => 'silver',
             'status' => 'open',
-            'escrow_status' => 'pending'
+            'escrow_status' => 'pending',
         ]);
 
         Bid::create([
             'load_id' => $loadOpen->id,
             'driver_id' => $driverB->id,
             'amount' => 1400000,
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         // 4. Load 2: Selesai Perjalanan (Trip Completed), Menunggu Pencairan Escrow
@@ -91,22 +95,22 @@ class CargoFlowDemoSeeder extends Seeder
             'max_price' => 2500000,
             'is_paylater' => true,
             'status' => 'closed', // Cargo selesai diproses di Bidding
-            'escrow_status' => 'pending' // Tapi uangnya masih ditahan sistem
+            'escrow_status' => 'pending', // Tapi uangnya masih ditahan sistem
         ]);
 
         $bidAccepted = Bid::create([
             'load_id' => $loadCompleted->id,
             'driver_id' => $driverC->id,
             'amount' => 2400000,
-            'status' => 'accepted'
+            'status' => 'accepted',
         ]);
 
         $trip = Trip::create([
-            'driver_id' => $driverC->id, 
-            'load_id' => $loadCompleted->id, 
-            'status' => 'completed'
+            'driver_id' => $driverC->id,
+            'load_id' => $loadCompleted->id,
+            'status' => 'completed',
         ]);
-        
+
         // Simulasikan notifikasi dikirim ke admin
         $admins = User::role('administrator')->get();
         if ($admins->count() > 0) {

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Rating;
 use App\Models\Trip;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -19,8 +20,11 @@ class TripHistory extends Component
     public $showPhotoModal = false;
 
     public $showRatingModal = false;
+
     public $ratingScore = 5;
+
     public $ratingReview = '';
+
     public $ratingTargetId = null;
 
     public $search = '';
@@ -54,15 +58,17 @@ class TripHistory extends Component
 
     public function openRatingModal($tripId, $targetId)
     {
-        if (!Auth::user()->is_subscribed) {
+        if (! Auth::user()->is_subscribed) {
             session()->flash('error', 'Fitur Penilaian (Rating) hanya tersedia untuk Member Resmi (telah deposit).');
+
             return;
         }
 
         // Check if already rated
-        $existing = \App\Models\Rating::where('trip_id', $tripId)->where('rater_id', Auth::id())->first();
+        $existing = Rating::where('trip_id', $tripId)->where('rater_id', Auth::id())->first();
         if ($existing) {
             session()->flash('error', 'Anda sudah memberikan penilaian untuk trip ini.');
+
             return;
         }
 
@@ -78,7 +84,7 @@ class TripHistory extends Component
             'ratingReview' => 'nullable|string|max:1000',
         ]);
 
-        \App\Models\Rating::create([
+        Rating::create([
             'trip_id' => $this->selectedTripId,
             'rater_id' => Auth::id(),
             'ratee_id' => $this->ratingTargetId,
@@ -108,14 +114,14 @@ class TripHistory extends Component
             $query->where('driver_id', $user->id);
         }
 
-        if (!empty($this->search)) {
-            $query->where(function($subQuery) {
+        if (! empty($this->search)) {
+            $query->where(function ($subQuery) {
                 $subQuery->whereHas('cargo', function ($q) {
-                    $q->whereHas('merchant', function($q2) {
-                        $q2->where('name', 'like', '%' . $this->search . '%');
+                    $q->whereHas('merchant', function ($q2) {
+                        $q2->where('name', 'like', '%'.$this->search.'%');
                     });
                 })->orWhereHas('driver', function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', '%'.$this->search.'%');
                 });
             });
         }

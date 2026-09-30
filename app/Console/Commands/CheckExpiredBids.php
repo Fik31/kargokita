@@ -3,9 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Load;
-use App\Models\User;
-use Illuminate\Console\Command;
 use App\Notifications\BidExpiredNotification;
+use Illuminate\Console\Command;
 
 class CheckExpiredBids extends Command
 {
@@ -44,7 +43,7 @@ class CheckExpiredBids extends Command
                 if ($rejectedBidsCount > 0) {
                     // Case 2: All drivers who interacted rejected it
                     $avgPrice = $load->bids()->where('status', 'rejected')->avg('suggested_price');
-                    $message = "Bid untuk muatan '{$load->title}' telah berakhir dan ditolak oleh {$rejectedBidsCount} driver. Rata-rata saran harga dari driver adalah Rp " . number_format($avgPrice, 0, ',', '.') . ". Silakan buat bid baru dengan penyesuaian harga.";
+                    $message = "Bid untuk muatan '{$load->title}' telah berakhir dan ditolak oleh {$rejectedBidsCount} driver. Rata-rata saran harga dari driver adalah Rp ".number_format($avgPrice, 0, ',', '.').'. Silakan buat bid baru dengan penyesuaian harga.';
                 } else {
                     // Case 1: Nobody interacted
                     $message = "Bid untuk muatan '{$load->title}' telah berakhir dan tidak ada driver yang merespon. Saran: Coba naikkan harga, turunkan berat muatan, atau perpendek jarak.";
@@ -57,7 +56,7 @@ class CheckExpiredBids extends Command
 
                 // Close the load
                 $load->update(['status' => 'closed']);
-                
+
                 $this->info("Load {$load->id} closed and notification sent to merchant.");
             } else {
                 // Drivers have bid, leave it open for merchant to choose or close it manually?
@@ -65,7 +64,7 @@ class CheckExpiredBids extends Command
                 $this->info("Load {$load->id} expired but has active bids. Left for merchant to decide.");
             }
         }
-        
+
         $this->info('Checked all expired bids.');
     }
 }

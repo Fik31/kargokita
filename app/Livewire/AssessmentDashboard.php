@@ -2,11 +2,12 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
+use App\Enums\AssessmentLevel;
+use App\Enums\AssessmentStatus;
+use App\Enums\CaStatus;
 use App\Models\Assessment;
 use App\Models\CorrectiveAction;
-use App\Enums\AssessmentLevel;
-use App\Enums\CaStatus;
+use Livewire\Component;
 
 class AssessmentDashboard extends Component
 {
@@ -15,10 +16,10 @@ class AssessmentDashboard extends Component
         $assessments = Assessment::whereHas('items.criterion', function ($query) {
             $query->where('target_role', 'driver');
         })->get();
-        
+
         $totalAssessments = $assessments->count();
         $avgScore = $totalAssessments > 0 ? $assessments->avg('total_score') : 0;
-        
+
         $goldCount = $assessments->where('level', AssessmentLevel::GOLD)->count();
         $silverCount = $assessments->where('level', AssessmentLevel::SILVER)->count();
         $bronzeCount = $assessments->where('level', AssessmentLevel::BRONZE)->count();
@@ -37,7 +38,7 @@ class AssessmentDashboard extends Component
             ->whereHas('items.criterion', function ($query) {
                 $query->where('target_role', 'driver');
             })
-            ->where('status', \App\Enums\AssessmentStatus::SUBMITTED)
+            ->where('status', AssessmentStatus::SUBMITTED)
             ->latest()
             ->get();
 

@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Load;
 use App\Models\Subscription;
+use App\Models\Trip;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -40,13 +42,13 @@ class CheckSubscriptionStatus extends Command
 
                 if ($user->hasRole('driver')) {
                     // Check if driver had any trips during the subscription period
-                    $hasActivity = \App\Models\Trip::where('driver_id', $user->id)
+                    $hasActivity = Trip::where('driver_id', $user->id)
                         ->where('created_at', '>=', $sub->started_at)
                         ->where('created_at', '<=', $sub->expires_at)
                         ->exists();
                 } elseif ($user->hasRole('merchant')) {
                     // Check if merchant had any loads that got a driver (in_transit or completed status)
-                    $hasActivity = \App\Models\Load::where('merchant_id', $user->id)
+                    $hasActivity = Load::where('merchant_id', $user->id)
                         ->whereIn('status', ['in_transit', 'completed'])
                         ->where('created_at', '>=', $sub->started_at)
                         ->where('created_at', '<=', $sub->expires_at)

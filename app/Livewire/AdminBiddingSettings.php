@@ -12,13 +12,16 @@ use Livewire\Component;
 class AdminBiddingSettings extends Component
 {
     public $topBidMode = 'auto'; // 'auto' or 'manual'
+
     public $selectedMerchants = []; // array of user IDs
+
     public $availableMerchants = [];
-    
+
     public $adApplications = [];
 
     // For rejection modal/input
     public $rejectingAppId = null;
+
     public $rejectReason = '';
 
     public function mount()
@@ -35,7 +38,7 @@ class AdminBiddingSettings extends Component
         }
 
         $this->availableMerchants = User::role('merchant')->where('is_subscribed', true)->get();
-        
+
         $this->loadAdApplications();
     }
 
@@ -48,6 +51,7 @@ class AdminBiddingSettings extends Component
     {
         if ($this->topBidMode === 'manual' && count($this->selectedMerchants) > 3) {
             session()->flash('error', 'Maksimal hanya 3 merchant yang dapat dipilih.');
+
             return;
         }
 
@@ -67,12 +71,12 @@ class AdminBiddingSettings extends Component
     public function approveAd($id)
     {
         $app = AdApplication::findOrFail($id);
-        
+
         // Optionally reject others if we only allow 1 active ad at a time
         // AdApplication::where('id', '!=', $id)->where('status', 'approved')->update(['status' => 'pending']);
-        
+
         $app->update(['status' => 'approved', 'admin_notes' => null]);
-        
+
         $this->loadAdApplications();
         session()->flash('message', 'Iklan berhasil disetujui.');
     }
@@ -86,24 +90,24 @@ class AdminBiddingSettings extends Component
     public function rejectAd()
     {
         $this->validate([
-            'rejectReason' => 'required|string|min:3'
+            'rejectReason' => 'required|string|min:3',
         ]);
 
         if ($this->rejectingAppId) {
             $app = AdApplication::findOrFail($this->rejectingAppId);
             $app->update([
                 'status' => 'rejected',
-                'admin_notes' => $this->rejectReason
+                'admin_notes' => $this->rejectReason,
             ]);
-            
+
             $this->rejectingAppId = null;
             $this->rejectReason = '';
-            
+
             $this->loadAdApplications();
             session()->flash('message', 'Iklan berhasil ditolak.');
         }
     }
-    
+
     public function cancelReject()
     {
         $this->rejectingAppId = null;

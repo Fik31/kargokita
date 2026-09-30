@@ -2,14 +2,16 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
+use App\Enums\AssessmentStatus;
 use App\Models\Assessment;
+use App\Models\VerificationRequest;
+use Livewire\Component;
 
 class HseVerificationList extends Component
 {
     public function render()
     {
-        $pendingDataVerifications = \App\Models\VerificationRequest::with('user')
+        $pendingDataVerifications = VerificationRequest::with('user')
             ->where('type', 'driver')
             ->where('status', 'pending')
             ->latest()
@@ -19,7 +21,7 @@ class HseVerificationList extends Component
             ->whereHas('items.criterion', function ($query) {
                 $query->where('target_role', 'driver');
             })
-            ->where('status', \App\Enums\AssessmentStatus::SUBMITTED)
+            ->where('status', AssessmentStatus::SUBMITTED)
             ->latest()
             ->get();
 

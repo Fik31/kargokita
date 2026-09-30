@@ -8,6 +8,7 @@ use App\Models\Assessment;
 use App\Models\AssessmentCriterion;
 use App\Models\AssessmentItem;
 use App\Models\CorrectiveAction;
+use App\Models\User;
 use App\Services\AssessmentScoringService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -127,6 +128,11 @@ class AssessmentForm extends Component
         $targetRole = 'driver';
         if ($this->assessment->items->count() > 0) {
             $targetRole = $this->assessment->items->first()->criterion->target_role;
+        }
+
+        $user = User::find($this->assessment->driver_id);
+        if ($user && ! $user->hasRole($targetRole)) {
+            $user->assignRole($targetRole);
         }
 
         if ($targetRole === 'merchant') {

@@ -25,6 +25,7 @@ class SubscriptionPayment extends Component
     {
         if ($this->hasActiveSubscription) {
             session()->flash('error', 'Anda sudah memiliki langganan aktif.');
+
             return;
         }
 
@@ -49,16 +50,16 @@ class SubscriptionPayment extends Component
             $pendingReferral = Referral::where('referred_id', $user->id)->where('status', 'pending')->first();
             if ($pendingReferral) {
                 $pendingReferral->update(['status' => 'paid']);
-                
+
                 // Credit the referrer's wallet
                 $referrerWallet = Wallet::firstOrCreate(['user_id' => $pendingReferral->referrer_id]);
                 $referrerWallet->increment('balance', $pendingReferral->commission_amount);
-                
+
                 WalletTransaction::create([
                     'wallet_id' => $referrerWallet->id,
                     'type' => 'credit',
                     'amount' => $pendingReferral->commission_amount,
-                    'description' => 'Komisi referral dari pendaftaran ' . $user->name,
+                    'description' => 'Komisi referral dari pendaftaran '.$user->name,
                     'reference_type' => 'referral',
                     'reference_id' => $pendingReferral->id,
                 ]);

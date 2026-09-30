@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Enums\AssessmentLevel;
 use App\Enums\AssessmentStatus;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Assessment extends Model
 {

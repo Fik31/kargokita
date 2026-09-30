@@ -2,10 +2,17 @@
 
 namespace App\Livewire;
 
+use App\Models\Bid;
+use App\Models\Dispute;
+use App\Models\Load;
+use App\Models\Post;
 use App\Models\Trip;
 use App\Models\TripEvent;
 use App\Models\TripPhoto;
+use App\Models\User;
+use App\Notifications\TripCompletedEscrowNotification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -23,19 +30,30 @@ class DriverCockpit extends Component
 
     // Loading photos
     public $photo_arrival;
+
     public $photo_loading;
+
     public $photo_loaded;
+
     public $document_loading;
 
     // Unloading photos
     public $photo_destination;
+
     public $photo_unloading;
+
     public $document_unloading;
 
     // Report properties
     public $showStopForm = false;
 
     public $showDeviationForm = false;
+
+    public $showUrgentForm = false;
+
+    public $urgentType = '';
+
+    public $urgentReason = '';
 
     public $stopReason = '';
 
@@ -103,7 +121,7 @@ class DriverCockpit extends Component
     {
         $path = $photo->store('trip-photos', 'public');
         // $this->processWatermark($path); // Disabled because watermark is now generated on client canvas
-        
+
         TripPhoto::create([
             'trip_id' => $this->activeTrip->id,
             'type' => $type,
@@ -113,8 +131,10 @@ class DriverCockpit extends Component
 
     private function processWatermark($path)
     {
-        $fullPath = storage_path('app/public/' . $path);
-        if (!file_exists($fullPath)) return $path;
+        $fullPath = storage_path('app/public/'.$path);
+        if (! file_exists($fullPath)) {
+            return $path;
+        }
 
         $mime = mime_content_type($fullPath);
         if ($mime == 'image/jpeg') {
@@ -125,7 +145,9 @@ class DriverCockpit extends Component
             return $path;
         }
 
-        if (!$image) return $path;
+        if (! $image) {
+            return $path;
+        }
 
         $width = imagesx($image);
         $height = imagesy($image);
@@ -154,13 +176,13 @@ class DriverCockpit extends Component
         $lat = $this->activeTrip->current_lat ?? 'Menunggu GPS';
         $lng = $this->activeTrip->current_lng ?? 'Menunggu GPS';
         $timestamp = now()->format('Y-m-d H:i:s');
-        $text1 = "Waktu : " . $timestamp;
-        $text2 = "Lokasi: " . $lat . ", " . $lng;
-        $text3 = "Driver: " . Auth::user()->name;
+        $text1 = 'Waktu : '.$timestamp;
+        $text2 = 'Lokasi: '.$lat.', '.$lng;
+        $text3 = 'Driver: '.Auth::user()->name;
 
         $boxWidth = 350;
         $boxHeight = 65;
-        
+
         imagefilledrectangle($image, 10, $height - $boxHeight - 10, 10 + $boxWidth, $height - 10, $black);
         imagestring($image, 5, 20, $height - $boxHeight, $text1, $white);
         imagestring($image, 5, 20, $height - $boxHeight + 20, $text2, $white);
@@ -173,6 +195,7 @@ class DriverCockpit extends Component
         }
 
         imagedestroy($image);
+
         return $path;
     }
 
@@ -185,13 +208,21 @@ class DriverCockpit extends Component
             'document_loading' => 'nullable|image|max:5120',
         ]);
 
-        if ($this->photo_arrival) $this->storeAndWatermark($this->photo_arrival, 'arrival');
-        if ($this->photo_loading) $this->storeAndWatermark($this->photo_loading, 'loading_process');
-        if ($this->photo_loaded) $this->storeAndWatermark($this->photo_loaded, 'loading_completed');
-        if ($this->document_loading) $this->storeAndWatermark($this->document_loading, 'document_loading');
+        if ($this->photo_arrival) {
+            $this->storeAndWatermark($this->photo_arrival, 'arrival');
+        }
+        if ($this->photo_loading) {
+            $this->storeAndWatermark($this->photo_loading, 'loading_process');
+        }
+        if ($this->photo_loaded) {
+            $this->storeAndWatermark($this->photo_loaded, 'loading_completed');
+        }
+        if ($this->document_loading) {
+            $this->storeAndWatermark($this->document_loading, 'document_loading');
+        }
 
         $this->activeTrip->update(['status' => 'in_transit']);
-        
+
         // Also update all loading trips to in_transit if LTL
         foreach ($this->activeTrips as $trip) {
             if ($trip->status === 'loading') {
@@ -207,7 +238,7 @@ class DriverCockpit extends Component
     {
         if ($this->activeTrip && $this->activeTrip->status === 'in_transit') {
             $this->activeTrip->update(['status' => 'unloading']);
-            
+
             // Update all to unloading if they were in transit
             foreach ($this->activeTrips as $trip) {
                 if ($trip->status === 'in_transit') {
@@ -228,31 +259,37 @@ class DriverCockpit extends Component
             'document_unloading' => 'nullable|image|max:5120',
         ]);
 
-        if ($this->photo_destination) $this->storeAndWatermark($this->photo_destination, 'destination');
-        if ($this->photo_unloading) $this->storeAndWatermark($this->photo_unloading, 'unloading_process');
-        if ($this->document_unloading) $this->storeAndWatermark($this->document_unloading, 'document_unloading');
+        if ($this->photo_destination) {
+            $this->storeAndWatermark($this->photo_destination, 'destination');
+        }
+        if ($this->photo_unloading) {
+            $this->storeAndWatermark($this->photo_unloading, 'unloading_process');
+        }
+        if ($this->document_unloading) {
+            $this->storeAndWatermark($this->document_unloading, 'document_unloading');
+        }
 
         $this->activeTrip->update(['status' => 'completed']);
         if ($this->activeTrip->cargo) {
             $this->activeTrip->cargo->update(['status' => 'done']);
-            
+
             // Check if cargo uses paylater and escrow is still pending
             if ($this->activeTrip->cargo->is_paylater && $this->activeTrip->cargo->escrow_status === 'pending') {
-                $admins = \App\Models\User::role('administrator')->get();
-                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\TripCompletedEscrowNotification($this->activeTrip));
+                $admins = User::role('administrator')->get();
+                Notification::send($admins, new TripCompletedEscrowNotification($this->activeTrip));
             }
         }
-        
+
         // Update all unloading to completed
         foreach ($this->activeTrips as $trip) {
             if ($trip->status === 'unloading') {
                 $trip->update(['status' => 'completed']);
                 if ($trip->cargo) {
                     $trip->cargo->update(['status' => 'done']);
-                    
+
                     if ($trip->cargo->is_paylater && $trip->cargo->escrow_status === 'pending') {
-                        $admins = \App\Models\User::role('administrator')->get();
-                        \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\TripCompletedEscrowNotification($trip));
+                        $admins = User::role('administrator')->get();
+                        Notification::send($admins, new TripCompletedEscrowNotification($trip));
                     }
                 }
             }
@@ -331,6 +368,7 @@ class DriverCockpit extends Component
         $this->showStopForm = ! $this->showStopForm;
         if ($this->showStopForm) {
             $this->showDeviationForm = false;
+            $this->showUrgentForm = false;
         }
     }
 
@@ -339,6 +377,16 @@ class DriverCockpit extends Component
         $this->showDeviationForm = ! $this->showDeviationForm;
         if ($this->showDeviationForm) {
             $this->showStopForm = false;
+            $this->showUrgentForm = false;
+        }
+    }
+
+    public function toggleUrgentForm()
+    {
+        $this->showUrgentForm = ! $this->showUrgentForm;
+        if ($this->showUrgentForm) {
+            $this->showStopForm = false;
+            $this->showDeviationForm = false;
         }
     }
 
@@ -402,11 +450,86 @@ class DriverCockpit extends Component
         }
     }
 
+    public function reportUrgentIssue()
+    {
+        $this->validate([
+            'urgentType' => 'required|string',
+            'urgentReason' => 'required|string|min:10',
+            'photo' => 'required|image|max:5120',
+        ]);
+
+        if ($this->activeTrip && $this->activeTrip->cargo) {
+            $cargo = $this->activeTrip->cargo;
+
+            // 1. Mark current trip as SOS / failed
+            $this->activeTrip->update(['status' => 'sos']);
+
+            // 2. Upload photo
+            $path = $this->photo->store('dispute-photos', 'public');
+
+            // 3. Create Dispute/Arbitration
+            Dispute::create([
+                'trip_id' => $this->activeTrip->id,
+                'load_id' => $cargo->id,
+                'reporter_id' => Auth::id(),
+                'type' => $this->urgentType,
+                'reason' => $this->urgentReason,
+                'status' => 'open',
+                'resolution_notes' => 'Foto kejadian: '.$path,
+            ]);
+
+            // 4. Republish Load as Urgent to find replacement driver
+            // Get original winning bid price if possible, or use max_price
+            $winningBid = Bid::where('load_id', $cargo->id)->where('status', 'accepted')->first();
+            $newPrice = $winningBid ? $winningBid->amount : $cargo->max_price;
+
+            // We can either update existing load or create a new one. Let's create a new urgent load
+            $newLoad = Load::create([
+                'merchant_id' => $cargo->merchant_id,
+                'type' => $cargo->type,
+                'title' => '[URGENT] '.$cargo->title,
+                'item_name' => $cargo->item_name,
+                'total_weight' => $cargo->total_weight,
+                'available_weight' => $cargo->available_weight,
+                'weight_kg' => $cargo->weight_kg,
+                'koli' => $cargo->koli,
+                'vehicle_type_needed' => $cargo->vehicle_type_needed,
+                'max_price' => $newPrice, // Keep the same price
+                'status' => 'open',
+                'origin_lat' => $this->activeTrip->current_lat ?? $cargo->origin_lat,
+                'origin_lng' => $this->activeTrip->current_lng ?? $cargo->origin_lng,
+                'dest_lat' => $cargo->dest_lat,
+                'dest_lng' => $cargo->dest_lng,
+                'route_polyline' => $cargo->route_polyline,
+                'sender_name' => $cargo->sender_name,
+                'sender_phone' => $cargo->sender_phone,
+                'sender_address' => 'Lokasi Terkini Driver Sebelumnya',
+                'receiver_name' => $cargo->receiver_name,
+                'receiver_phone' => $cargo->receiver_phone,
+                'receiver_address' => $cargo->receiver_address,
+                'distance' => $cargo->distance, // Should ideally recalculate
+                'bid_deadline' => now()->addHours(6),
+                'escrow_status' => 'pending',
+                'is_paylater' => $cargo->is_paylater,
+                'is_urgent' => true,
+            ]);
+
+            // Also set old cargo to done/failed
+            $cargo->update(['status' => 'sos']);
+
+            session()->flash('message', 'Keadaan Darurat berhasil dilaporkan. Muatan telah dipublikasikan ulang sebagai URGENT dan tim Admin/HSE akan segera melakukan mediasi.');
+            $this->showUrgentForm = false;
+            $this->activeTab = 'sos';
+
+            return redirect()->route('dashboard');
+        }
+    }
+
     public function openFlashSale()
     {
         if ($this->activeTrip && $this->activeTrip->cargo) {
             $cargo = $this->activeTrip->cargo;
-            
+
             // Calculate available weight (assuming driver's vehicle has some capacity, but let's just use what's left or a default 1000kg for now)
             $vehicleCapacity = 3000; // Mock 3000kg for now
             $availableWeight = $vehicleCapacity - ($cargo->weight_kg ?? 0);
@@ -414,14 +537,14 @@ class DriverCockpit extends Component
             if ($availableWeight > 0) {
                 // Set flash sale expiration to 2 hours from now
                 $this->activeTrip->update([
-                    'flash_sale_expires_at' => now()->addHours(2)
+                    'flash_sale_expires_at' => now()->addHours(2),
                 ]);
 
                 // Create a new Flash Sale Load
-                $flashLoad = \App\Models\Load::create([
+                $flashLoad = Load::create([
                     'merchant_id' => Auth::id(), // Driver acts as merchant for this LTL
                     'type' => 'LTL',
-                    'title' => 'Sisa Muatan ' . $this->activeTrip->id,
+                    'title' => 'Sisa Muatan '.$this->activeTrip->id,
                     'item_name' => 'Bebas',
                     'weight_kg' => $availableWeight,
                     'available_weight' => $availableWeight,
@@ -433,9 +556,9 @@ class DriverCockpit extends Component
                 ]);
 
                 // Auto post to Social Feed
-                \App\Models\Post::create([
+                Post::create([
                     'user_id' => Auth::id(),
-                    'content' => 'Sisa muatan ' . $availableWeight . ' KG rute ' . ($cargo->sender_address ?? 'Jakarta') . ' ke ' . ($cargo->receiver_address ?? 'Tujuan') . ' diskon 50%! Cek menu Bursa Muatan sekarang!',
+                    'content' => 'Sisa muatan '.$availableWeight.' KG rute '.($cargo->sender_address ?? 'Jakarta').' ke '.($cargo->receiver_address ?? 'Tujuan').' diskon 50%! Cek menu Bursa Muatan sekarang!',
                 ]);
 
                 session()->flash('message', 'Flash Sale berhasil dibuka! 2 Jam batas waktu pencarian tambahan muatan.');

@@ -14,7 +14,7 @@ class WaybillSeeder extends Seeder
     public function run(): void
     {
         $trips = Trip::where('status', 'completed')->get();
-        
+
         foreach ($trips as $trip) {
             Waybill::create([
                 'trip_id' => $trip->id,

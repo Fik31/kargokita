@@ -27,21 +27,28 @@ class VerificationForm extends Component
 
     // Basic (Bronze)
     public $phone = '';
+
     public $address = '';
 
     // Advanced (Silver)
     public $ktp_number = '';
+
     public $npwp_number = '';
 
     // Merchant (Gold)
     public $nib = '';
+
     public $company_name = '';
 
     // Driver (Gold)
     public $sim_number = '';
+
     public $stnk_number = '';
+
     public $vehicle_plate = '';
+
     public $vehicle_type = '';
+
     public $vehicle_capacity = '';
 
     public function submit()
@@ -81,13 +88,13 @@ class VerificationForm extends Component
 
         // Determine Tier
         $tier = 'bronze';
-        
-        $hasBasic = !empty($this->phone) && !empty($this->address);
-        $hasSilver = $hasBasic && !empty($this->ktp_number) && !empty($this->npwp_number);
-        
+
+        $hasBasic = ! empty($this->phone) && ! empty($this->address);
+        $hasSilver = $hasBasic && ! empty($this->ktp_number) && ! empty($this->npwp_number);
+
         if ($this->type === 'merchant') {
-            $hasGold = $hasSilver && !empty($this->nib) && !empty($this->company_name);
-            
+            $hasGold = $hasSilver && ! empty($this->nib) && ! empty($this->company_name);
+
             if ($hasGold) {
                 $tier = 'gold';
             } elseif ($hasSilver) {
@@ -96,14 +103,14 @@ class VerificationForm extends Component
         }
 
         $user = Auth::user();
-        
+
         // Update tier HANYA untuk merchant. Untuk driver, tier ditentukan dari penilaian HSE (Pembobotan).
         if ($this->type === 'merchant') {
             $user->update(['tier' => $tier]);
         }
-        
+
         // Ensure user has correct role based on type selected
-        if (!$user->hasRole($this->type)) {
+        if (! $user->hasRole($this->type)) {
             $user->syncRoles([$this->type]);
         }
 
@@ -115,9 +122,9 @@ class VerificationForm extends Component
         ]);
 
         if ($this->type === 'merchant') {
-            session()->flash('message', "Profil berhasil disimpan. Anda mendapatkan tier: " . strtoupper($tier));
+            session()->flash('message', 'Profil berhasil disimpan. Anda mendapatkan tier: '.strtoupper($tier));
         } else {
-            session()->flash('message', "Profil berhasil disimpan. Silakan lanjut ke menu Penilaian HSE (Driver Cockpit) untuk menentukan Tier Anda.");
+            session()->flash('message', 'Profil berhasil disimpan. Silakan lanjut ke menu Penilaian HSE (Driver Cockpit) untuk menentukan Tier Anda.');
         }
     }
 

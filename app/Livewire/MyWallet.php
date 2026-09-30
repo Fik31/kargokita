@@ -15,7 +15,7 @@ class MyWallet extends Component
     public function mount()
     {
         $this->wallet = Wallet::with('transactions')->firstOrCreate([
-            'user_id' => Auth::id()
+            'user_id' => Auth::id(),
         ]);
     }
 

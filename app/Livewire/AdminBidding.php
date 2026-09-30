@@ -14,7 +14,9 @@ class AdminBidding extends Component
     use WithPagination;
 
     public $editingLoadId = null;
+
     public $total_weight;
+
     public $available_weight;
 
     public function editLoadWeight($loadId)
@@ -53,7 +55,7 @@ class AdminBidding extends Component
     {
         $load = Load::findOrFail($loadId);
         $load->update(['escrow_status' => $status]);
-        
+
         // If released, find related notification and mark as read
         if ($status === 'released') {
             $acceptedBid = $load->bids->firstWhere('status', 'accepted');
@@ -73,13 +75,13 @@ class AdminBidding extends Component
     {
         // Get all loads that have an accepted bid, to manage escrow
         // Or get all loads generally
-        $query = Load::with(['merchant', 'bids' => function($q) {
+        $query = Load::with(['merchant', 'bids' => function ($q) {
             $q->where('status', 'accepted')->with('driver');
         }]);
 
-        if (!empty($this->search)) {
-            $query->whereHas('merchant', function($q) {
-                $q->where('name', 'like', '%' . $this->search . '%');
+        if (! empty($this->search)) {
+            $query->whereHas('merchant', function ($q) {
+                $q->where('name', 'like', '%'.$this->search.'%');
             });
         }
 

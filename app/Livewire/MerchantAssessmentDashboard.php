@@ -2,11 +2,12 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
+use App\Enums\AssessmentLevel;
+use App\Enums\AssessmentStatus;
+use App\Enums\CaStatus;
 use App\Models\Assessment;
 use App\Models\CorrectiveAction;
-use App\Enums\AssessmentLevel;
-use App\Enums\CaStatus;
+use Livewire\Component;
 
 class MerchantAssessmentDashboard extends Component
 {
@@ -15,10 +16,10 @@ class MerchantAssessmentDashboard extends Component
         $assessments = Assessment::whereHas('items.criterion', function ($query) {
             $query->where('target_role', 'merchant');
         })->get();
-        
+
         $totalAssessments = $assessments->count();
         $avgScore = $totalAssessments > 0 ? $assessments->avg('total_score') : 0;
-        
+
         $trustedCount = $assessments->where('level', AssessmentLevel::GOLD)->count();
         $verifiedCount = $assessments->where('level', AssessmentLevel::SILVER)->count();
         $basicCount = $assessments->where('level', AssessmentLevel::BRONZE)->count();
@@ -36,7 +37,7 @@ class MerchantAssessmentDashboard extends Component
             ->whereHas('items.criterion', function ($query) {
                 $query->where('target_role', 'merchant');
             })
-            ->where('status', \App\Enums\AssessmentStatus::SUBMITTED)
+            ->where('status', AssessmentStatus::SUBMITTED)
             ->latest()
             ->get();
 

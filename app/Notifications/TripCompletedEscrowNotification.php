@@ -41,7 +41,7 @@ class TripCompletedEscrowNotification extends Notification
             'trip_id' => $this->trip->id,
             'load_title' => $this->trip->cargo->title ?? 'Muatan Cargo',
             'driver_name' => $this->trip->driver->name,
-            'message' => 'Driver ' . $this->trip->driver->name . ' telah menyelesaikan perjalanan. Mohon review POD dan segera cairkan Cargo Fee (Escrow) kepada driver.',
+            'message' => 'Driver '.$this->trip->driver->name.' telah menyelesaikan perjalanan. Mohon review POD dan segera cairkan Cargo Fee (Escrow) kepada driver.',
             'url' => route('admin.bidding'),
         ];
     }

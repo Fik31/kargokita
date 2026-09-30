@@ -150,6 +150,61 @@
         </div>
     </div>
     
+    <!-- Feedback Form -->
+    @if($waybill->status === 'completed')
+        <div class="mt-8 bg-white shadow-lg rounded-lg border border-gray-200 p-6 no-print">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Kuesioner & Feedback</h3>
+            
+            @if($has_submitted_feedback)
+                <div class="bg-green-50 border border-green-200 text-green-700 p-4 rounded">
+                    Terima kasih, Anda telah memberikan feedback untuk transaksi ini.
+                </div>
+            @else
+                <form wire:submit.prevent="submitFeedback">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">Penilaian untuk {{ Auth::user()->hasRole('driver') ? 'Merchant' : 'Driver' }} (1-5 Bintang)</label>
+                        <select wire:model="partner_rating" class="w-full border-gray-300 rounded-md shadow-sm focus:border-brand-blue focus:ring focus:ring-brand-blue focus:ring-opacity-50" required>
+                            <option value="">Pilih Bintang...</option>
+                            <option value="5">⭐⭐⭐⭐⭐ (Sangat Baik)</option>
+                            <option value="4">⭐⭐⭐⭐ (Baik)</option>
+                            <option value="3">⭐⭐⭐ (Cukup)</option>
+                            <option value="2">⭐⭐ (Kurang)</option>
+                            <option value="1">⭐ (Sangat Kurang)</option>
+                        </select>
+                        @error('partner_rating') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">Ulasan untuk {{ Auth::user()->hasRole('driver') ? 'Merchant' : 'Driver' }}</label>
+                        <textarea wire:model="partner_feedback" rows="3" class="w-full border-gray-300 rounded-md shadow-sm focus:border-brand-blue focus:ring focus:ring-brand-blue focus:ring-opacity-50" placeholder="Berikan ulasan Anda..."></textarea>
+                        @error('partner_feedback') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">Apakah aplikasi ini membantu Anda? Berikan penilaian aplikasi (1-5 Bintang)</label>
+                        <select wire:model="app_rating" class="w-full border-gray-300 rounded-md shadow-sm focus:border-brand-blue focus:ring focus:ring-brand-blue focus:ring-opacity-50" required>
+                            <option value="">Pilih Bintang...</option>
+                            <option value="5">⭐⭐⭐⭐⭐ (Sangat Membantu)</option>
+                            <option value="4">⭐⭐⭐⭐ (Membantu)</option>
+                            <option value="3">⭐⭐⭐ (Cukup)</option>
+                            <option value="2">⭐⭐ (Kurang Membantu)</option>
+                            <option value="1">⭐ (Tidak Membantu)</option>
+                        </select>
+                        @error('app_rating') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-bold mb-2">Kritik & Saran untuk Aplikasi Kargokita</label>
+                        <textarea wire:model="app_feedback" rows="3" class="w-full border-gray-300 rounded-md shadow-sm focus:border-brand-blue focus:ring focus:ring-brand-blue focus:ring-opacity-50" placeholder="Apa yang bisa kami tingkatkan?"></textarea>
+                        @error('app_feedback') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                    
+                    <button type="submit" class="bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-6 rounded shadow">Kirim Feedback</button>
+                </form>
+            @endif
+        </div>
+    @endif
+    
     <!-- Include signature pad JS -->
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <style>

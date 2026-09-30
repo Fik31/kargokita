@@ -319,9 +319,10 @@
                     $dummyBarang = ['Sparepart Motor', 'Elektronik', 'Kain Tekstil'];
                     $dummyHarga = [1500000, 850000, 450000];
                     $dummyBerat = [2500, 1000, 800];
+                    $badges = ['TOP 1 BID TERBANYAK', 'TOP 1 TIER TERTINGGI', 'TOP 1 BID PILIHAN'];
                 @endphp
                 <a href="{{ $merchant ? route('user.profile', $merchant->id) : '#' }}" class="bg-white rounded-3xl shadow-sm overflow-hidden border-2 border-yellow-400 flex flex-col relative transform transition hover:scale-105 block">
-                    <div class="absolute top-0 right-0 bg-yellow-400 text-xs font-bold px-3 py-1 rounded-bl-lg z-10">TOP BID #{{ $i+1 }}</div>
+                    <div class="absolute top-0 right-0 bg-yellow-400 text-xs font-bold px-3 py-1 rounded-bl-lg z-10">{{ $badges[$i] }}</div>
                     <div class="bg-gray-900 text-white p-5">
                         @if($merchant)
                             <h4 class="text-lg font-bold mt-2 truncate group-hover:text-blue-400 transition-colors">{{ $merchant->name }}</h4>
@@ -352,41 +353,104 @@
                 </a>
             @endfor
 
-            <!-- 1 Iklan -->
-            <a href="{{ $activeAd ? route('user.profile', $activeAd->id) : '#' }}" class="bg-gradient-to-br from-blue-900 to-blue-700 rounded-3xl shadow-lg overflow-hidden flex flex-col relative transform transition hover:scale-105 text-white block">
-                <div class="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10">IKLAN SPONSOR</div>
+            <!-- Iklan Carousel -->
+            <div x-data="{
+                activeSlide: 0,
+                slides: {{ $activeAds->count() }},
+                next() {
+                    this.activeSlide = (this.activeSlide === this.slides - 1) ? 0 : this.activeSlide + 1;
+                },
+                prev() {
+                    this.activeSlide = (this.activeSlide === 0) ? this.slides - 1 : this.activeSlide - 1;
+                },
+                init() {
+                    if (this.slides > 1) {
+                        setInterval(() => this.next(), 2000);
+                    }
+                }
+            }" class="bg-gradient-to-br from-blue-900 to-blue-700 rounded-3xl shadow-lg overflow-hidden border-2 border-blue-500 flex flex-col relative transform transition hover:scale-105 text-white h-[320px] lg:h-auto">
+                <div class="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-20">IKLAN SPONSOR</div>
                 
-                @if($activeAd)
-                    <div class="p-5 flex-grow flex flex-col justify-center text-center">
-                        <div class="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-blue-900 font-bold text-2xl shadow-inner">
-                            {{ substr($activeAd->name, 0, 1) }}
-                        </div>
-                        <h4 class="text-lg font-bold mb-1 hover:text-blue-300 transition-colors">
-                            {{ $activeAd->name }}
-                        </h4>
-                        <p class="text-xs text-blue-200 mb-4">Mitra Terpercaya Kargokita</p>
-                        
-                        <div class="bg-white/20 rounded-xl p-3 backdrop-blur-sm">
-                            <p class="text-sm font-semibold">Tersedia banyak muatan setiap hari!</p>
-                            <p class="text-xs mt-1">Gunakan fitur pencarian untuk menemukan muatan dari kami.</p>
-                        </div>
+                @if($activeAds->count() > 0)
+                    @php
+                        $adTitles = [
+                            "Tersedia banyak muatan setiap hari!",
+                            "Dapatkan rute terbaik bersama kami!",
+                            "Harga kompetitif, proses cepat!",
+                            "Partner andalan logistik Anda.",
+                            "Kirim barang lebih mudah & aman."
+                        ];
+                        $adSubtitles = [
+                            "Gunakan fitur pencarian untuk menemukan muatan dari kami.",
+                            "Kami siap melayani kebutuhan logistik perusahaan Anda.",
+                            "Jadilah mitra pengemudi setia untuk muatan reguler.",
+                            "Cek profil kami untuk melihat daftar rute yang tersedia.",
+                            "Bergabunglah dan dapatkan pengalaman pengiriman terbaik."
+                        ];
+                    @endphp
+                    <div class="relative w-full h-full flex-grow overflow-hidden">
+                        @foreach($activeAds as $index => $ad)
+                            <a href="{{ route('user.profile', $ad->id) }}" 
+                               x-show="activeSlide === {{ $index }}"
+                               x-transition:enter="transition ease-out duration-500"
+                               x-transition:enter-start="opacity-0 transform translate-x-full"
+                               x-transition:enter-end="opacity-100 transform translate-x-0"
+                               x-transition:leave="transition ease-in duration-300 absolute"
+                               x-transition:leave-start="opacity-100 transform translate-x-0"
+                               x-transition:leave-end="opacity-0 transform -translate-x-full"
+                               class="absolute inset-0 p-5 flex flex-col justify-center text-center">
+                                
+                                <div class="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-blue-900 font-bold text-2xl shadow-inner flex-shrink-0">
+                                    {{ substr($ad->name, 0, 1) }}
+                                </div>
+                                <h4 class="text-lg font-bold mb-1 hover:text-blue-300 transition-colors">
+                                    {{ $ad->name }}
+                                </h4>
+                                <p class="text-xs text-blue-200 mb-4">Mitra Terpercaya Kargokita</p>
+                                
+                                <div class="bg-white/20 rounded-xl p-3 backdrop-blur-sm">
+                                    <p class="text-sm font-semibold">{{ $adTitles[$index % count($adTitles)] }}</p>
+                                    <p class="text-xs mt-1">{{ $adSubtitles[$index % count($adSubtitles)] }}</p>
+                                </div>
+                            </a>
+                        @endforeach
                     </div>
+                    
+                    <!-- Carousel Controls -->
+                    @if($activeAds->count() > 1)
+                        <button @click.prevent="prev()" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-2 z-30 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <button @click.prevent="next()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-2 z-30 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                        
+                        <!-- Indicators -->
+                        <div class="absolute bottom-3 left-0 right-0 flex justify-center space-x-2 z-30">
+                            @foreach($activeAds as $index => $ad)
+                                <button @click.prevent="activeSlide = {{ $index }}" :class="{'bg-white': activeSlide === {{ $index }}, 'bg-white/40': activeSlide !== {{ $index }}}" class="w-2 h-2 rounded-full transition-colors"></button>
+                            @endforeach
+                        </div>
+                    @endif
                 @else
-                    <div class="p-5 flex-grow flex flex-col justify-center text-center border-2 border-dashed border-blue-400/50 m-2 rounded-2xl">
+                    <div class="p-5 flex-grow flex flex-col justify-center text-center border-2 border-dashed border-blue-400/50 m-2 rounded-2xl relative z-10">
                         <svg class="w-10 h-10 mx-auto text-blue-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                         <h4 class="text-lg font-bold mb-1">Space Iklan Tersedia</h4>
                         <p class="text-xs text-blue-200">Hubungi Administrator untuk memasang iklan perusahaan Anda di sini.</p>
                     </div>
                 @endif
-            </a>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($loads as $load)
                 <div class="bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100 flex flex-col">
                     <!-- Header -->
-                    <div class="bg-brand-blue text-white p-6 relative">
-                        <span class="bg-white text-brand-blue text-xs font-bold px-2 py-1 rounded absolute top-4 left-4">FLS-{{ str_pad($load->id, 3, '0', STR_PAD_LEFT) }}</span>
+                    <div class="{{ $load->is_urgent ? 'bg-red-600' : 'bg-brand-blue' }} text-white p-6 relative">
+                        <span class="bg-white {{ $load->is_urgent ? 'text-red-600' : 'text-brand-blue' }} text-xs font-bold px-2 py-1 rounded absolute top-4 left-4">FLS-{{ str_pad($load->id, 3, '0', STR_PAD_LEFT) }}</span>
+                        @if($load->is_urgent)
+                            <div class="absolute top-4 right-1/2 translate-x-1/2 bg-white text-red-600 text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse uppercase flex items-center"><svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>URGENT SOS</div>
+                        @endif
                         @if($load->type === 'LTL')
                             <div class="absolute top-4 right-4 bg-yellow-400 text-brand-black text-xs font-bold px-2 py-1 rounded">-40% OFF</div>
                         @endif
@@ -400,7 +464,7 @@
                             @endif
                             <span class="text-sm opacity-90">• {{ $load->item_name ?? 'Barang Umum' }}</span>
                         </div>
-                        @if($load->min_driver_tier)
+                        @if($load->min_driver_tier && $load->min_driver_tier !== 'bronze')
                             <div class="mt-2 text-xs font-medium bg-red-500/20 text-white rounded px-2 py-1 inline-block border border-red-500/50">
                                 🔒 Hanya {{ ucfirst($load->min_driver_tier) }} ke atas
                             </div>
