@@ -207,9 +207,9 @@ class DriverCockpit extends Component
     public function submitLoadingPhotos()
     {
         $this->validate([
-            'photo_arrival' => 'required|image|max:5120',
-            'photo_loading' => 'required|image|max:5120',
-            'photo_loaded' => 'required|image|max:5120',
+            'photo_arrival' => 'nullable|image|max:5120',
+            'photo_loading' => 'nullable|image|max:5120',
+            'photo_loaded' => 'nullable|image|max:5120',
             'document_loading' => 'nullable|image|max:5120',
         ]);
 
@@ -259,8 +259,8 @@ class DriverCockpit extends Component
     public function submitUnloadingPhotos()
     {
         $this->validate([
-            'photo_destination' => 'required|image|max:5120',
-            'photo_unloading' => 'required|image|max:5120',
+            'photo_destination' => 'nullable|image|max:5120',
+            'photo_unloading' => 'nullable|image|max:5120',
             'document_unloading' => 'nullable|image|max:5120',
         ]);
 

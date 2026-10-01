@@ -73,7 +73,8 @@ class CargoFlowDemoSeeder extends Seeder
             'load_id' => $loadOpen->id,
             'driver_id' => $driverB->id,
             'amount' => 1400000,
-            'status' => 'pending',
+            'status' => 'rejected',
+            'suggested_price' => 1800000,
         ]);
 
         // 4. Load 2: Selesai Perjalanan (Trip Completed), Menunggu Pencairan Escrow

@@ -81,11 +81,7 @@
                             <x-camera-input modelName="photo_loaded" title="Bukti Selesai Muat" requiredStatus="loading" :activeTrip="$activeTrip" :photoVar="$photo_loaded" />
                             <x-camera-input modelName="document_loading" title="Dokumen Pendukung (Opsional)" requiredStatus="loading" :activeTrip="$activeTrip" :photoVar="$document_loading" />
 
-                            @if($activeTrip->status === 'loading')
-                                <button type="submit" class="bg-brand-blue hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow w-full transition mt-4">Mulai Perjalanan</button>
-                            @else
-                                <div class="bg-gray-100 text-gray-500 text-center font-bold py-3 px-4 rounded-xl mt-4 text-sm">Mode Lihat (Hanya View)</div>
-                            @endif
+                            <button type="submit" class="bg-brand-blue hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow w-full transition mt-4">Mulai Perjalanan</button>
                         </form>
                     </div>
                 @endif
@@ -137,7 +133,7 @@
                         </div>
                         <div class="space-y-3">
                             <div class="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-0 shadow-sm">
-                                <div><h4 class="text-gray-800 font-bold text-xs sm:text-sm">1. Muatan Dedicated FTL (2.5 Ton)</h4><p class="text-gray-500 text-[10px] sm:text-xs mt-1">Tujuan: Gudang SIER Rungkut Surabaya</p></div>
+                                <div><h4 class="text-gray-800 font-bold text-xs sm:text-sm">1. Muatan LTL Utama (2.5 Ton)</h4><p class="text-gray-500 text-[10px] sm:text-xs mt-1">Tujuan: Gudang SIER Rungkut Surabaya</p></div>
                                 <span class="bg-blue-50 text-brand-blue text-[10px] px-3 py-1 rounded-full border border-blue-100 self-start sm:self-auto">Terkunci</span>
                             </div>
                             <div class="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-0 shadow-sm">
@@ -147,7 +143,6 @@
                         </div>
                     </div>
 
-                    @if($activeTrip->status === 'in_transit')
                         <div id="tour-transit-actions" class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-8">
                             <button wire:click="toggleStopForm" class="bg-white text-brand-blue font-bold py-3 sm:py-4 px-2 rounded-2xl flex flex-col items-center justify-center gap-1 sm:gap-2 shadow-sm hover:bg-blue-50 transition border border-gray-200 text-center">
                                 <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
@@ -166,11 +161,6 @@
                                 <span class="text-[10px] sm:text-xs leading-tight">Darurat<br>(SOS)</span>
                             </button>
                         </div>
-                    @else
-                        <div class="mt-8 bg-gray-100 text-gray-500 text-center font-bold py-4 px-4 rounded-xl text-sm shadow-sm border border-gray-200">
-                            Aksi Dinonaktifkan (Mode Lihat)
-                        </div>
-                    @endif
 
                     @if($showFlashSaleForm)
                         <div class="mt-4 bg-green-50 p-4 rounded-xl border border-green-200 shadow-sm">
@@ -232,11 +222,9 @@
                         </div>
                     @endif
 
-                    @if($activeTrip->status === 'in_transit')
                         <div class="mt-8 border-t border-gray-200 pt-6 flex flex-col items-center">
                             <button wire:click="setTab('unloading')" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-xl shadow transition">Lanjut ke Proses Bongkar</button>
                         </div>
-                    @endif
                 @endif
                 
                 <!-- Tab 3: Bongkar -->
@@ -257,11 +245,7 @@
                             <x-camera-input modelName="photo_unloading" title="Bukti Proses Bongkar" requiredStatus="unloading" :activeTrip="$activeTrip" :photoVar="$photo_unloading" />
                             <x-camera-input modelName="document_unloading" title="Dokumen Pendukung (Opsional)" requiredStatus="unloading" :activeTrip="$activeTrip" :photoVar="$document_unloading" />
                             
-                            @if($activeTrip->status === 'unloading')
-                                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl shadow w-full transition mt-4">Selesaikan Perjalanan</button>
-                            @else
-                                <div class="bg-gray-100 text-gray-500 text-center font-bold py-3 px-4 rounded-xl mt-4 text-sm">Mode Lihat (Hanya View)</div>
-                            @endif
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl shadow w-full transition mt-4">Selesaikan Perjalanan</button>
                         </form>
                     </div>
                 @endif

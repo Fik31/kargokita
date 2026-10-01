@@ -67,7 +67,7 @@
                     @elseif(isset($contact['is_read_only']) && !$contact['is_read_only'])
                         @if(isset($contact['admin_assistance_requested']) && $contact['admin_assistance_requested'])
                             <span class="text-xs font-bold text-red-500 px-3 py-1 bg-red-50 rounded-full border border-red-100">Bantuan Admin Aktif</span>
-                        @else
+                        @elseif(isset($contact['can_request_admin']) && $contact['can_request_admin'])
                             <button wire:click="requestAdminAssistance" class="text-xs font-bold text-white bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded-full transition shadow-sm">
                                 Minta Bantuan Admin
                             </button>

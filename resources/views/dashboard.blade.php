@@ -166,7 +166,7 @@
                             {
                                 element: '#nav-bidding',
                                 popover: {
-                                    title: 'Pasar Muatan (Bidding)',
+                                    title: 'Bursa DO (Bidding)',
                                     description: 'Menu ini adalah tempat Anda mencari dan melakukan penawaran (bidding) pada muatan yang tersedia.',
                                     side: "right",
                                     align: 'start'

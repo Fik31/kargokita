@@ -171,7 +171,11 @@
                             @foreach($selectedPhotos as $photo)
                                 <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                                     <div class="h-48 bg-gray-100 relative">
-                                        <img src="{{ Storage::url($photo->path) }}" alt="Foto {{ $photo->type }}" class="w-full h-full object-cover">
+                                        @if(Str::startsWith($photo->path, 'http'))
+                                            <img src="{{ $photo->path }}" alt="Foto {{ $photo->type }}" class="w-full h-full object-cover">
+                                        @else
+                                            <img src="{{ Storage::url($photo->path) }}" alt="Foto {{ $photo->type }}" class="w-full h-full object-cover">
+                                        @endif
                                         <div class="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
                                             {{ ucfirst($photo->type) }}
                                         </div>

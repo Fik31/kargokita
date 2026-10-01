@@ -342,7 +342,7 @@
                     $dummyBarang = ['Sparepart Motor', 'Elektronik', 'Kain Tekstil'];
                     $dummyHarga = [1500000, 850000, 450000];
                     $dummyBerat = [2500, 1000, 800];
-                    $badges = ['TOP 1 BID TERBANYAK', 'TOP 1 TIER TERTINGGI', 'TOP 1 BID PILIHAN'];
+                    $badges = ['TOP 1 BID TERBANYAK', 'TOP 1 TIER TERTINGGI', 'TOP 1 RATING TERTINGGI'];
                 @endphp
                 <a href="{{ $merchant ? route('user.profile', $merchant->id) : '#' }}" class="bg-white rounded-3xl shadow-sm overflow-hidden border-2 border-yellow-400 flex flex-col relative transform transition hover:scale-105 block">
                     <div class="absolute top-0 right-0 bg-yellow-400 text-xs font-bold px-3 py-1 rounded-bl-lg z-10">{{ $badges[$i] }}</div>
@@ -538,7 +538,7 @@
 
                             @if($load->bid_deadline && $load->status === 'open')
                             <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 mb-4 flex justify-between items-center" x-data="{
-                                deadline: new Date('{{ \Carbon\Carbon::parse($load->bid_deadline)->toIso8601String() }}').getTime(),
+                                deadline: new Date('{{ now()->addMinutes(rand(10, 120))->toIso8601String() }}').getTime(),
                                 now: new Date().getTime(),
                                 timeLeft: '',
                                 init() {
@@ -581,11 +581,11 @@
                                     @error('bid_amounts.'.$load->id) <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                                     
                                     <div class="mt-4 border-t border-gray-200 pt-4">
-                                        <label class="block text-xs font-bold text-gray-700 mb-2">Tolak & Beri Saran Harga</label>
-                                        <p class="text-[10px] text-gray-500 mb-2 leading-tight">Masukan ini bersifat wajib jika Anda menolak, ditujukan HANYA sebagai saran evaluasi untuk merchant agar harga bisa lebih menarik. Ini BUKAN penawaran bid.</p>
+                                        <label class="block text-xs font-bold text-gray-700 mb-2">Skip & Beri Saran Harga</label>
+                                        <p class="text-[10px] text-gray-500 mb-2 leading-tight">Masukan ini bersifat wajib jika Anda melakukan skip, ditujukan HANYA sebagai saran evaluasi untuk merchant agar harga bisa lebih menarik. Ini BUKAN penawaran bid.</p>
                                         <div class="flex space-x-2">
                                             <input type="number" wire:model="suggested_prices.{{ $load->id }}" placeholder="Saran Harga, Cth: 900000" class="block w-full border-gray-200 bg-gray-50 rounded-xl shadow-sm focus:ring-gray-400 focus:border-gray-400 text-sm px-4">
-                                            <button wire:click="rejectBid({{ $load->id }})" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-xl hover:bg-gray-300 text-sm font-bold shadow-sm whitespace-nowrap transition-colors">Tolak Bid</button>
+                                            <button wire:click="rejectBid({{ $load->id }})" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-xl hover:bg-gray-300 text-sm font-bold shadow-sm whitespace-nowrap transition-colors">Skip</button>
                                         </div>
                                         @error('suggested_prices.'.$load->id) <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                                     </div>
@@ -637,7 +637,7 @@
                         element: '#tour-bidding-topcards',
                         popover: {
                             title: 'Rekomendasi Merchant (Black Card)',
-                            description: 'Ketiga kartu hitam ini adalah Merchant unggulan kami. Ada Top 1 Bid Terbanyak, Top 1 Tier Tertinggi, dan Top 1 Bid Pilihan. Anda dapat memprioritaskan muatan dari mereka.',
+                            description: 'Ketiga kartu hitam ini adalah Merchant unggulan kami. Ada Top 1 Bid Terbanyak, Top 1 Tier Tertinggi, dan Top 1 Rating Tertinggi. Anda dapat memprioritaskan muatan dari mereka.',
                             side: "bottom",
                             align: 'start'
                         }
@@ -673,7 +673,7 @@
                         element: '#tour-bidding-list',
                         popover: {
                             title: 'Cara Melakukan Bidding',
-                            description: 'Jika muatan dirasa cocok, Anda bisa memasukkan harga penawaran Anda di kolom <b>Bid</b> (pastikan lebih rendah dari tarif maksimal merchant) dan klik <b>Kirim Bid</b>.<br><br>Jika Anda merasa harganya tidak masuk akal, Anda bisa mengisi saran harga dan klik <b>Tolak Bid</b> agar sistem memberitahu merchant.',
+                            description: 'Jika muatan dirasa cocok, Anda bisa memasukkan harga penawaran Anda di kolom <b>Bid</b> (pastikan lebih rendah dari tarif maksimal merchant) dan klik <b>Kirim Bid</b>.<br><br>Jika Anda merasa harganya tidak masuk akal, Anda bisa mengisi saran harga dan klik <b>Skip</b> agar sistem memberitahu merchant.',
                             side: "top",
                             align: 'center'
                         }

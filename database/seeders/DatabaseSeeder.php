@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             MerchantAssessmentCriteriaSeeder::class,
             CargoFlowDemoSeeder::class,
             WaybillSeeder::class,
+            FinalPresentationSeeder::class,
         ]);
     }
 }

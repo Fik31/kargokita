@@ -112,6 +112,14 @@ class ChatInterface extends Component
 
                 $unreadCount = Message::where('sender_id', $u->id)->where('receiver_id', $userId)->where('is_read', false)->count();
 
+                $can_request_admin = false;
+                if ($activeTrip && $activeTrip->cargo) {
+                    $merchant = User::find($activeTrip->cargo->merchant_id);
+                    if ($merchant && in_array(strtolower($merchant->tier ?? ''), ['trusted', 'premium'])) {
+                        $can_request_admin = true;
+                    }
+                }
+
                 $this->contacts[] = [
                     'id' => $u->id,
                     'name' => $u->name,
@@ -122,6 +130,7 @@ class ChatInterface extends Component
                     'unread' => $unreadCount,
                     'is_read_only' => ! $activeTrip,
                     'admin_assistance_requested' => $activeTrip ? $activeTrip->admin_assistance_requested : false,
+                    'can_request_admin' => $can_request_admin,
                     'is_admin_view' => false,
                 ];
             }
@@ -234,9 +243,12 @@ class ChatInterface extends Component
             });
         })->where('status', '!=', 'completed')->first();
 
-        if ($activeTrip) {
-            $activeTrip->update(['admin_assistance_requested' => true]);
-            $this->loadContacts();
+        if ($activeTrip && $activeTrip->cargo) {
+            $merchant = User::find($activeTrip->cargo->merchant_id);
+            if ($merchant && in_array(strtolower($merchant->tier ?? ''), ['trusted', 'premium'])) {
+                $activeTrip->update(['admin_assistance_requested' => true]);
+                $this->loadContacts();
+            }
         }
     }
 

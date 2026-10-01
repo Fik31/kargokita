@@ -124,7 +124,7 @@ class LiveTracking extends Component
         $dummyTrip = new Trip;
         $dummyTrip->id = 12; // TRK-012
         $dummyTrip->status = 'in_transit';
-        $dummyTrip->is_deviated = false;
+        $dummyTrip->is_deviated = true;
         $dummyTrip->current_lat = -7.549416; // Presisi pada rute tol OSRM
         $dummyTrip->current_lng = 111.538442;
         $dummyTrip->setRelation('cargo', $dummyCargo);
@@ -143,20 +143,40 @@ class LiveTracking extends Component
                 $dummyCargo->dest_name = 'Malang';
                 $trip = new Trip;
                 $trip->id = 12;
-                $trip->is_deviated = false;
+                $trip->is_deviated = true;
                 $trip->setRelation('cargo', $dummyCargo);
 
-                $dummyEvent = new TripEvent;
-                $dummyEvent->type = 'dwell';
-                $dummyEvent->location_name = 'Hub Solo (Bongkar Muat)';
-                $dummyEvent->notes = 'Proses bongkar muat reguler berjalan lancar.';
-                $dummyEvent->created_at = now()->subHours(1);
+                $dwell1 = new TripEvent;
+                $dwell1->type = 'dwell';
+                $dwell1->location_name = 'Rest Area KM 429';
+                $dwell1->notes = 'Istirahat driver dan pengecekan ban (30 menit).';
+                $dwell1->created_at = now()->subHours(4);
+
+                $dwell2 = new TripEvent;
+                $dwell2->type = 'dwell';
+                $dwell2->location_name = 'Hub Solo (Bongkar Muat)';
+                $dwell2->notes = 'Proses bongkar muat reguler berjalan lancar (1 jam 15 menit).';
+                $dwell2->created_at = now()->subHours(2);
+
+                $dwell3 = new TripEvent;
+                $dwell3->type = 'dwell';
+                $dwell3->location_name = 'SPBU Nganjuk';
+                $dwell3->notes = 'Pengisian bahan bakar Solar (15 menit).';
+                $dwell3->created_at = now()->subMinutes(45);
+
+                $dev1 = new TripEvent;
+                $dev1->type = 'deviation';
+                $dev1->location_name = 'Keluar Tol Ngawi';
+                $dev1->notes = 'Driver keluar jalur tol (deviasi 5km) diduga mencari rute alternatif atau bengkel.';
+                $dev1->created_at = now()->subHours(1)->subMinutes(30);
 
                 if ($this->eventTab === 'dwell') {
-                    $events = collect([$dummyEvent]);
+                    $events = collect([$dwell3, $dwell2, $dwell1]);
+                } else if ($this->eventTab === 'deviation') {
+                    $events = collect([$dev1]);
                 }
 
-                $allEventsCount = ['dwell' => 1, 'deviation' => 0];
+                $allEventsCount = ['dwell' => 3, 'deviation' => 1];
             } else {
                 $trip = Trip::with(['cargo.merchant', 'driver'])->find($this->tripId);
                 $events = TripEvent::where('trip_id', $this->tripId)

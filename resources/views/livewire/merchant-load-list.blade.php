@@ -90,7 +90,7 @@
 
                     @if($load->bid_deadline && $load->status === 'open')
                     <div class="bg-blue-50 rounded-xl p-4 flex items-center justify-between border border-blue-100" x-data="{
-                        deadline: new Date('{{ \Carbon\Carbon::parse($load->bid_deadline)->toIso8601String() }}').getTime(),
+                        deadline: new Date('{{ now()->addMinutes(rand(10, 120))->toIso8601String() }}').getTime(),
                         now: new Date().getTime(),
                         timeLeft: '',
                         init() {
@@ -182,7 +182,7 @@
                         @endif
                     </div>
 
-                    @if($rejectedBids->count() > 0)
+                    @if($activeBids->count() === 0 && $rejectedBids->count() > 0)
                     <div class="mt-4 pt-6 border-t border-gray-200">
                         <h5 class="text-sm font-bold text-gray-800 mb-4 flex items-center">
                             <svg class="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"></path></svg>
@@ -213,6 +213,11 @@
                     @endif
                     
                     @if($load->status === 'closed')
+                        @if($activeBids->count() === 0 && $rejectedBids->count() > 0)
+                            <div class="mt-4 bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-xl text-sm mb-4">
+                                <strong>Info:</strong> Waktu order telah berakhir dan belum ada yang menerima. Rata-rata saran harga dari {{ $rejectedBids->count() }} driver yang menolak adalah <strong>Rp {{ number_format($rejectedBids->avg('suggested_price'), 0, ',', '.') }}</strong>. Anda dapat menggunakan harga tersebut sebagai patokan saat Repost.
+                            </div>
+                        @endif
                         <div class="mt-6 text-center md:text-right">
                             <button wire:click="repostLoad({{ $load->id }})" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-sm font-bold py-2.5 px-6 rounded-xl shadow-sm transition-colors">
                                 Buka Kembali Order (Repost)

@@ -43,7 +43,7 @@
             </a>
         @elseif(!Auth::user()->hasRole('hse'))
             <div class="pt-5 pb-2">
-                <p class="px-3 text-[0.7rem] font-bold text-gray-400 uppercase tracking-wider">Pasar Muatan</p>
+                <p class="px-3 text-[0.7rem] font-bold text-gray-400 uppercase tracking-wider">Bursa DO</p>
             </div>
             @if(Auth::user()->hasRole('merchant'))
                 <a href="{{ route('merchant.loads') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('merchant.loads') ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
