@@ -14,11 +14,16 @@
         </div>
 
         <!-- Right Side: Login Form -->
-        <div class="w-full md:w-1/2 flex items-center justify-center p-8 bg-white">
+        <div class="w-full md:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-white">
             <div class="w-full max-w-md">
-                <div class="text-center mb-10">
-                    <h2 class="text-3xl font-extrabold text-brand-black">Selamat Datang Kembali</h2>
-                    <p class="text-gray-500 mt-2">Masuk ke akun KargoKita Anda untuk melanjutkan</p>
+                <div class="text-center mb-8 md:mb-10">
+                    <!-- Mobile Logo -->
+                    <div class="md:hidden flex justify-center mb-6">
+                        <img src="{{ asset('assets/images/logo-white3.png') }}" alt="Kargokita Logo" class="h-12 w-auto object-contain">
+                    </div>
+                    
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-brand-black">Selamat Datang Kembali</h2>
+                    <p class="text-sm sm:text-base text-gray-500 mt-2">Masuk ke akun KargoKita Anda untuk melanjutkan</p>
                 </div>
 
                 <!-- Session Status -->

@@ -24,7 +24,7 @@
         <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
         <!-- Driver.js CSS & Custom Theme -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
         <style>
             .driver-popover {
                 background-color: #0D8ABC !important; /* brand-blue */
@@ -61,7 +61,7 @@
         </style>
     </head>
     <body class="font-sans antialiased">
-        <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-gray-100 overflow-hidden">
+        <div x-data="{ sidebarOpen: false }" @close-sidebar.window="sidebarOpen = false" class="flex h-screen bg-gray-100 overflow-hidden">
             <!-- Sidebar -->
             @include('layouts.navigation')
 
@@ -120,5 +120,6 @@
             </div>
         </div>
         @stack('scripts')
+        @livewireScripts
     </body>
 </html>

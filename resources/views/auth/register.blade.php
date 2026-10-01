@@ -1,15 +1,15 @@
 <x-guest-layout>
-    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-        <div class="max-w-xl w-full bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+    <div class="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div class="max-w-xl w-full bg-white p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-100">
             
-            <div class="text-center mb-8">
-                <a href="/">
-                    <h2 class="text-3xl font-extrabold text-brand-black tracking-tight">Kargokita</h2>
+            <div class="text-center mb-6 sm:mb-8">
+                <a href="/" class="flex justify-center">
+                    <img src="{{ asset('assets/images/logo-white3.png') }}" alt="Kargokita Logo" class="h-10 sm:h-12 w-auto object-contain">
                 </a>
-                <h2 class="mt-4 text-2xl font-bold text-gray-900">
+                <h2 class="mt-4 sm:mt-6 text-xl sm:text-2xl font-bold text-gray-900">
                     Buat Akun Baru
                 </h2>
-                <p class="text-sm text-gray-500 mt-2">Daftar sekarang untuk melihat bursa muatan.</p>
+                <p class="text-xs sm:text-sm text-gray-500 mt-2">Daftar sekarang untuk melihat bursa muatan.</p>
             </div>
 
             <form method="POST" action="{{ route('register') }}" class="space-y-6">

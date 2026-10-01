@@ -94,7 +94,7 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const isDriverUser = @json(Auth::user()->hasRole('driver'));
@@ -151,8 +151,9 @@
                 onDestroyStarted: () => {
                     if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
                         driverObj.destroy();
-                    }
-                },
+                            document.body.classList.remove('driver-active', 'driver-fix-stacking');
+                        }
+                    },
             });
             
             setTimeout(() => {

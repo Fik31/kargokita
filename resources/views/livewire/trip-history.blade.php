@@ -1,8 +1,8 @@
 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
             <h2 id="tour-history-header" class="text-2xl font-bold text-gray-900">Riwayat Perjalanan (History)</h2>
-            <div class="w-64">
+            <div class="w-full sm:w-64">
                 <input type="text" wire:model.live="search" placeholder="Cari merchant atau driver..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
             </div>
         </div>
@@ -245,7 +245,7 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const isDriverUser = @json(Auth::user()->hasRole('driver'));
@@ -302,8 +302,9 @@
                 onDestroyStarted: () => {
                     if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
                         driverObj.destroy();
-                    }
-                },
+                            document.body.classList.remove('driver-active', 'driver-fix-stacking');
+                        }
+                    },
             });
             
             setTimeout(() => {

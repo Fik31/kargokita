@@ -1,6 +1,6 @@
-<div class="max-w-6xl mx-auto h-[80vh] flex bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+<div class="max-w-6xl mx-auto h-[80vh] flex flex-col md:flex-row bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
     <!-- Sidebar -->
-    <div id="tour-chat-sidebar" class="w-1/3 border-r border-gray-200 bg-gray-50 flex flex-col">
+    <div id="tour-chat-sidebar" class="{{ $selectedContactId ? 'hidden md:flex' : 'flex' }} w-full md:w-1/3 border-r border-gray-200 bg-gray-50 flex-col h-full md:h-auto">
         <div class="p-4 border-b border-gray-200 bg-white">
             <h2 class="text-xl font-bold text-gray-800">Pesan</h2>
             <div class="mt-4 relative">
@@ -38,7 +38,7 @@
     </div>
 
     <!-- Main Chat Area -->
-    <div id="tour-chat-area" class="w-2/3 flex flex-col bg-slate-50">
+    <div id="tour-chat-area" class="{{ $selectedContactId ? 'flex' : 'hidden md:flex' }} w-full md:w-2/3 flex-col bg-slate-50 h-full md:h-auto">
         @if($selectedContactId)
             @php 
                 $contact = collect($contacts)->firstWhere('id', $selectedContactId);
@@ -50,6 +50,9 @@
             </div>
             <div class="p-4 border-b border-gray-200 bg-white flex items-center justify-between">
                 <div class="flex items-center">
+                    <button wire:click="$set('selectedContactId', null)" class="md:hidden mr-3 text-gray-500 hover:text-gray-700 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
                     <img src="{{ $contact['avatar'] }}" alt="{{ $contact['name'] }}" class="w-10 h-10 rounded-full border border-gray-200">
                     <div class="ml-3">
                         <h3 class="text-sm font-bold text-gray-900">{{ $contact['name'] }}</h3>
@@ -186,7 +189,7 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const isCommonUser = @json(!Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse') && !Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver'));
@@ -200,23 +203,22 @@
         if (isCommonUser || isHseUser || isDriverUser || isMerchantUser) {
             const driver = window.driver.js.driver;
             
-            const driverObj = driver({
-                showProgress: true,
-                animate: true,
-                doneBtnText: 'Oke, Saya Mengerti',
-                closeBtnText: 'Skip Tutorial',
-                nextBtnText: 'Selanjutnya',
-                prevBtnText: 'Kembali',
-                steps: [
-                    {
-                        element: '#tour-chat-sidebar',
-                        popover: {
-                            title: 'Daftar Kontak',
-                            description: 'Di sini Anda dapat melihat daftar orang yang sedang atau pernah bertransaksi dengan Anda.',
-                            side: "right",
-                            align: 'start'
-                        }
-                    },
+            const isMobile = window.innerWidth < 768;
+            
+            let steps = [
+                {
+                    element: '#tour-chat-sidebar',
+                    popover: {
+                        title: 'Daftar Kontak',
+                        description: 'Di sini Anda dapat melihat daftar orang yang sedang atau pernah bertransaksi dengan Anda.',
+                        side: "right",
+                        align: 'start'
+                    }
+                }
+            ];
+
+            if (!isMobile) {
+                steps.push(
                     {
                         element: '#tour-chat-area',
                         popover: {
@@ -235,13 +237,24 @@
                             align: 'center'
                         }
                     }
-                ],
+                );
+            }
+
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                doneBtnText: 'Oke, Saya Mengerti',
+                closeBtnText: 'Skip Tutorial',
+                nextBtnText: 'Selanjutnya',
+                prevBtnText: 'Kembali',
+                steps: steps,
                 onDestroyStarted: () => {
                     if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
                         // localStorage.setItem('hasSeenTour_chat_common', 'true');
                         driverObj.destroy();
-                    }
-                },
+                            document.body.classList.remove('driver-active', 'driver-fix-stacking');
+                        }
+                    },
             });
             
             setTimeout(() => {

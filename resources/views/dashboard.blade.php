@@ -83,7 +83,7 @@
     </div>
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const isCommonUser = @json(!$hasRole && !$hasPendingDriver && !$hasPendingMerchant);
@@ -93,14 +93,9 @@
             if (isCommonUser) { //  && !hasSeenTour
                 const driver = window.driver.js.driver;
                 
-                const driverObj = driver({
-                    showProgress: true,
-                    animate: true,
-                    doneBtnText: 'Oke, Saya Mengerti',
-                    closeBtnText: 'Skip Tutorial',
-                    nextBtnText: 'Selanjutnya',
-                    prevBtnText: 'Kembali',
-                    steps: [
+                    const isMobile = window.innerWidth < 768;
+                    
+                    let steps = [
                         {
                             element: '#tour-welcome',
                             popover: {
@@ -145,55 +140,71 @@
                                 side: "left",
                                 align: 'center'
                             }
-                        },
-                        {
-                            element: '#nav-feed',
-                            popover: {
-                                title: 'Feed Utama',
-                                description: 'Menu ini menampilkan informasi dan update terbaru seputar KargoKita.',
-                                side: "right",
-                                align: 'start'
-                            }
-                        },
-                        {
-                            element: '#nav-chat',
-                            popover: {
-                                title: 'Pesan (Chat)',
-                                description: 'Gunakan fitur ini untuk berkomunikasi dengan pengguna lain terkait pengiriman atau order Anda.',
-                                side: "right",
-                                align: 'start'
-                            }
-                        },
-                        {
-                            element: '#nav-bidding',
-                            popover: {
-                                title: 'Pasar Muatan (Bidding)',
-                                description: 'Menu ini adalah tempat Anda mencari dan melakukan penawaran (bidding) pada muatan yang tersedia.',
-                                side: "right",
-                                align: 'start'
-                            }
-                        },
-                        {
-                            element: '#nav-profile',
-                            popover: {
-                                title: 'Profil & Pengaturan',
-                                description: 'Di sini Anda dapat melihat detail profil, mengajukan verifikasi lanjutan, serta keluar dari aplikasi.',
-                                side: "right",
-                                align: 'start'
-                            }
                         }
-                    ],
+                    ];
+
+                    if (!isMobile) {
+                        steps.push(
+                            {
+                                element: '#nav-feed',
+                                popover: {
+                                    title: 'Feed Utama',
+                                    description: 'Menu ini menampilkan informasi dan update terbaru seputar KargoKita.',
+                                    side: "right",
+                                    align: 'start'
+                                }
+                            },
+                            {
+                                element: '#nav-chat',
+                                popover: {
+                                    title: 'Pesan (Chat)',
+                                    description: 'Gunakan fitur ini untuk berkomunikasi dengan pengguna lain terkait pengiriman atau order Anda.',
+                                    side: "right",
+                                    align: 'start'
+                                }
+                            },
+                            {
+                                element: '#nav-bidding',
+                                popover: {
+                                    title: 'Pasar Muatan (Bidding)',
+                                    description: 'Menu ini adalah tempat Anda mencari dan melakukan penawaran (bidding) pada muatan yang tersedia.',
+                                    side: "right",
+                                    align: 'start'
+                                }
+                            },
+                            {
+                                element: '#nav-profile',
+                                popover: {
+                                    title: 'Profil & Pengaturan',
+                                    description: 'Di sini Anda dapat melihat detail profil, mengajukan verifikasi lanjutan, serta keluar dari aplikasi.',
+                                    side: "right",
+                                    align: 'start'
+                                }
+                            }
+                        );
+                    }
+
+                    const driverObj = driver({
+                        showProgress: true,
+                        animate: true,
+                        doneBtnText: 'Oke, Saya Mengerti',
+                        closeBtnText: 'Skip Tutorial',
+                        nextBtnText: 'Selanjutnya',
+                        prevBtnText: 'Kembali',
+                        steps: steps,
                     onDestroyStarted: () => {
                         if (!driverObj.hasNextStep() || confirm("Skip tutorial ini? Anda selalu bisa memulainya nanti.")) {
                             localStorage.setItem('hasSeenTour_common', 'true');
                             driverObj.destroy();
+                            document.body.classList.remove('driver-active', 'driver-fix-stacking');
                         }
                     },
                 });
                 
+                window.dispatchEvent(new CustomEvent('close-sidebar'));
                 setTimeout(() => {
                     driverObj.drive();
-                }, 500);
+                }, 400);
             }
         });
     </script>

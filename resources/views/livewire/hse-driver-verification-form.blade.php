@@ -3,12 +3,12 @@
         <h2 class="text-2xl font-bold text-gray-800">Verifikasi Data Diri Driver (Tiering)</h2>
         <p class="text-sm text-gray-500 mt-1">Review data pendaftaran driver. Centang "Data Valid" pada setiap section jika bukti sesuai.</p>
         
-        <div class="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-between">
+        <div class="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
                 <div class="font-bold text-lg text-blue-900">{{ $verificationRequest->user->name }}</div>
                 <div class="text-sm text-blue-700">{{ $verificationRequest->user->email }}</div>
             </div>
-            <div class="text-right">
+            <div class="text-left sm:text-right">
                 <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full uppercase">Status: {{ $verificationRequest->status }}</span>
             </div>
         </div>
@@ -18,7 +18,7 @@
         
         <!-- 1. Identity Verification -->
         <div class="bg-white shadow rounded-lg border border-gray-200 overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+            <div class="bg-gray-50 px-6 py-4 border-b flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                 <h3 class="font-bold text-gray-800">1. Identity Verification <span class="text-sm font-normal text-gray-500">(Bobot 20%)</span></h3>
                 <label class="flex items-center space-x-2 bg-white px-3 py-1 border rounded shadow-sm cursor-pointer hover:bg-gray-50">
                     <input type="checkbox" wire:model="verify_identity" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
@@ -59,7 +59,7 @@
 
         <!-- 2. SIM Verification -->
         <div class="bg-white shadow rounded-lg border border-gray-200 overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+            <div class="bg-gray-50 px-6 py-4 border-b flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                 <h3 class="font-bold text-gray-800">2. SIM Verification <span class="text-sm font-normal text-gray-500">(Bobot 20%)</span></h3>
                 <label class="flex items-center space-x-2 bg-white px-3 py-1 border rounded shadow-sm cursor-pointer hover:bg-gray-50">
                     <input type="checkbox" wire:model="verify_sim" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
@@ -90,7 +90,7 @@
 
         <!-- 3. Vehicle Verification -->
         <div class="bg-white shadow rounded-lg border border-gray-200 overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+            <div class="bg-gray-50 px-6 py-4 border-b flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                 <h3 class="font-bold text-gray-800">3. Vehicle Verification <span class="text-sm font-normal text-gray-500">(Bobot 20%)</span></h3>
                 <label class="flex items-center space-x-2 bg-white px-3 py-1 border rounded shadow-sm cursor-pointer hover:bg-gray-50">
                     <input type="checkbox" wire:model="verify_vehicle" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
@@ -139,7 +139,7 @@
 
         <!-- 4. Vehicle Compliance -->
         <div class="bg-white shadow rounded-lg border border-gray-200 overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+            <div class="bg-gray-50 px-6 py-4 border-b flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                 <h3 class="font-bold text-gray-800">4. Vehicle Compliance <span class="text-sm font-normal text-gray-500">(Bobot 20%)</span></h3>
                 <label class="flex items-center space-x-2 bg-white px-3 py-1 border rounded shadow-sm cursor-pointer hover:bg-gray-50">
                     <input type="checkbox" wire:model="verify_compliance" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
@@ -158,7 +158,7 @@
 
         <!-- 5. Risk Screening -->
         <div class="bg-white shadow rounded-lg border border-gray-200 overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+            <div class="bg-gray-50 px-6 py-4 border-b flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                 <h3 class="font-bold text-gray-800">5. Risk Screening <span class="text-sm font-normal text-gray-500">(Bobot 10%)</span></h3>
                 <label class="flex items-center space-x-2 bg-white px-3 py-1 border rounded shadow-sm cursor-pointer hover:bg-gray-50">
                     <input type="checkbox" wire:model="verify_risk" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
@@ -177,7 +177,7 @@
 
         <!-- 6. Area Coverage -->
         <div class="bg-white shadow rounded-lg border border-gray-200 overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+            <div class="bg-gray-50 px-6 py-4 border-b flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                 <h3 class="font-bold text-gray-800">6. Area Coverage <span class="text-sm font-normal text-gray-500">(Bobot 5%)</span></h3>
                 <label class="flex items-center space-x-2 bg-white px-3 py-1 border rounded shadow-sm cursor-pointer hover:bg-gray-50">
                     <input type="checkbox" wire:model="verify_area" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
@@ -191,7 +191,7 @@
 
         <!-- 7. Bank/Payment Verification -->
         <div class="bg-white shadow rounded-lg border border-gray-200 overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+            <div class="bg-gray-50 px-6 py-4 border-b flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                 <h3 class="font-bold text-gray-800">7. Bank / Payment <span class="text-sm font-normal text-gray-500">(Bobot 5%)</span></h3>
                 <label class="flex items-center space-x-2 bg-white px-3 py-1 border rounded shadow-sm cursor-pointer hover:bg-gray-50">
                     <input type="checkbox" wire:model="verify_bank" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
@@ -223,11 +223,11 @@
             </div>
         </div>
 
-        <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
-            <button type="button" wire:click="reject" wire:confirm="Yakin ingin menolak pendaftaran ini?" class="bg-white py-2 px-6 border border-red-300 rounded-lg shadow-sm text-sm font-bold text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-8 pt-6 border-t border-gray-200">
+            <button type="button" wire:click="reject" wire:confirm="Yakin ingin menolak pendaftaran ini?" class="w-full sm:w-auto bg-white py-2 px-6 border border-red-300 rounded-lg shadow-sm text-sm font-bold text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
                 Tolak Pendaftaran
             </button>
-            <button type="submit" class="bg-green-600 border border-transparent rounded-lg shadow-md py-2 px-8 inline-flex justify-center text-sm font-bold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition transform hover:-translate-y-0.5">
+            <button type="submit" class="w-full sm:w-auto bg-green-600 border border-transparent rounded-lg shadow-md py-2 px-8 inline-flex justify-center text-sm font-bold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition transform hover:-translate-y-0.5">
                 Approve & Hitung Tier
             </button>
         </div>

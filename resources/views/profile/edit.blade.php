@@ -13,7 +13,7 @@
     </x-slot>
 
     <div class="py-8 bg-gray-50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             
             @if(!Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver') && !Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse'))
                 <div id="tour-profile-upgrade" class="relative overflow-hidden bg-gradient-to-r from-brand-blue to-blue-800 rounded-3xl p-8 shadow-xl flex flex-col sm:flex-row items-center justify-between text-white border border-blue-900/30">
@@ -32,7 +32,7 @@
             @endif
 
             <!-- Profile Overview Card -->
-            <div class="bg-white shadow-sm sm:rounded-3xl border border-gray-100 p-8 sm:p-10 relative overflow-hidden">
+            <div class="bg-white shadow-sm rounded-2xl sm:rounded-3xl border border-gray-100 p-6 sm:p-10 relative overflow-hidden">
                 <!-- Decorative accents -->
                 <div class="absolute top-0 right-0 w-64 h-64 bg-brand-blue/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
                 <div class="absolute bottom-0 left-0 w-40 h-40 bg-brand-tosca/5 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
@@ -74,9 +74,9 @@
             <!-- Settings Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Personal Info -->
-                <div id="tour-profile-info" class="bg-white shadow-sm sm:rounded-3xl border border-gray-100 overflow-hidden relative">
+                <div id="tour-profile-info" class="bg-white shadow-sm rounded-2xl sm:rounded-3xl border border-gray-100 overflow-hidden relative">
                     <div class="h-1 w-full bg-brand-blue"></div>
-                    <div class="p-8">
+                    <div class="p-5 sm:p-8">
                         <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
                             <div class="p-2.5 bg-blue-50 rounded-xl text-brand-blue">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
@@ -88,9 +88,9 @@
                 </div>
 
                 <!-- Password -->
-                <div id="tour-profile-password" class="bg-white shadow-sm sm:rounded-3xl border border-gray-100 overflow-hidden relative">
+                <div id="tour-profile-password" class="bg-white shadow-sm rounded-2xl sm:rounded-3xl border border-gray-100 overflow-hidden relative">
                     <div class="h-1 w-full bg-brand-tosca"></div>
-                    <div class="p-8">
+                    <div class="p-5 sm:p-8">
                         <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
                             <div class="p-2.5 bg-teal-50 rounded-xl text-brand-tosca">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
@@ -104,9 +104,9 @@
 
             <!-- Profile Gallery -->
             @if(Auth::user()->hasRole('driver') || Auth::user()->hasRole('merchant'))
-            <div class="bg-white shadow-sm sm:rounded-3xl border border-gray-100 overflow-hidden relative">
+            <div class="bg-white shadow-sm rounded-2xl sm:rounded-3xl border border-gray-100 overflow-hidden relative">
                 <div class="h-1 w-full bg-blue-500"></div>
-                <div class="p-8">
+                <div class="p-5 sm:p-8">
                     <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
                         <div class="p-2.5 bg-blue-50 rounded-xl text-blue-500">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -122,9 +122,9 @@
             @endif
 
             <!-- Danger Zone -->
-            <div class="bg-white shadow-sm sm:rounded-3xl border border-red-100 overflow-hidden mt-8 relative">
+            <div class="bg-white shadow-sm rounded-2xl sm:rounded-3xl border border-red-100 overflow-hidden mt-8 relative">
                 <div class="h-1 w-full bg-red-500"></div>
-                <div class="p-8">
+                <div class="p-5 sm:p-8">
                     <div class="flex items-center gap-3 mb-6 pb-4 border-b border-red-50">
                         <div class="p-2.5 bg-red-50 rounded-xl text-red-600">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -139,7 +139,7 @@
     </div>
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const isCommonUser = @json(!Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse') && !Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver'));
@@ -199,13 +199,15 @@
                         if (!driverObj.hasNextStep() || confirm("Akhiri tutorial profil?")) {
                             // localStorage.setItem('hasSeenTour_profile_common', 'true');
                             driverObj.destroy();
+                            document.body.classList.remove('driver-active', 'driver-fix-stacking');
                         }
                     },
                 });
                 
+                window.dispatchEvent(new CustomEvent('close-sidebar'));
                 setTimeout(() => {
                     driverObj.drive();
-                }, 500);
+                }, 400);
             }
         });
     </script>

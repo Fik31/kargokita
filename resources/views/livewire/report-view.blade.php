@@ -1,13 +1,13 @@
 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
         <h2 id="tour-report-header" class="text-2xl font-bold text-gray-900">Laporan & Analitik</h2>
-        <div class="flex gap-2">
-            <select class="bg-white border border-gray-300 text-gray-700 rounded-lg px-3 py-2 text-sm shadow-sm focus:ring-brand-blue focus:border-brand-blue">
+        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <select class="w-full sm:w-auto bg-white border border-gray-300 text-gray-700 rounded-lg px-3 py-2 text-sm shadow-sm focus:ring-brand-blue focus:border-brand-blue">
                 <option>Bulan Ini</option>
                 <option>Bulan Lalu</option>
                 <option>Tahun Ini</option>
             </select>
-            <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-sm border border-gray-300 transition flex items-center text-sm">
+            <button class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-sm border border-gray-300 transition flex items-center justify-center text-sm">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Export PDF
             </button>
@@ -150,7 +150,7 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const isDriverUser = @json(Auth::user()->hasRole('driver'));
@@ -198,8 +198,9 @@
                 onDestroyStarted: () => {
                     if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
                         driverObj.destroy();
-                    }
-                },
+                            document.body.classList.remove('driver-active', 'driver-fix-stacking');
+                        }
+                    },
             });
             
             setTimeout(() => {

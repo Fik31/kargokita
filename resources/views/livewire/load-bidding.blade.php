@@ -321,9 +321,9 @@
         @endif
 
     @else
-        <div id="tour-bidding-header" class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-brand-black uppercase tracking-wide">Flash Market (Bursa Muatan)</h3>
-            <div class="w-64 hidden md:block">
+        <div id="tour-bidding-header" class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+            <h3 class="text-lg md:text-xl font-bold text-brand-black uppercase tracking-wide">Flash Market (Bursa Muatan)</h3>
+            <div class="w-full md:w-64">
                 <input type="text" wire:model.live="search" placeholder="Cari merchant atau tipe..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
             </div>
         </div>
@@ -594,7 +594,7 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const isCommonUser = @json(!Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse') && !Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver'));
@@ -692,8 +692,9 @@
                     if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
                         // localStorage.setItem('hasSeenTour_bidding_common', 'true');
                         driverObj.destroy();
-                    }
-                },
+                            document.body.classList.remove('driver-active', 'driver-fix-stacking');
+                        }
+                    },
             });
             
             setTimeout(() => {
@@ -749,8 +750,9 @@
                 onDestroyStarted: () => {
                     if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
                         driverObj.destroy();
-                    }
-                },
+                            document.body.classList.remove('driver-active', 'driver-fix-stacking');
+                        }
+                    },
             });
             
             setTimeout(() => {

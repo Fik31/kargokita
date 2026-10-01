@@ -25,7 +25,7 @@
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
                 <a href="#" class="flex-shrink-0 flex items-center gap-3 group">
-                    <img src="{{ asset('assets/images/logo-white3.png') }}" alt="Kargokita Logo" class="w-72 md:w-[320px] h-auto object-cover object-left">
+                    <img src="{{ asset('assets/images/logo-white3.png') }}" alt="Kargokita Logo" class="w-48 sm:w-64 md:w-[320px] h-auto object-cover object-left">
                 </a>
                 
                 <!-- Desktop Menu -->
@@ -49,26 +49,26 @@
                 
                 <!-- Mobile Menu Toggle -->
                 <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-600 focus:outline-none">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-600 focus:outline-none p-2">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                     </button>
                 </div>
             </div>
         </div>
         
         <!-- Mobile Dropdown -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-100 shadow-lg absolute w-full">
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-100 shadow-xl absolute top-20 left-0 w-full z-40">
             <div class="px-4 pt-2 pb-6 space-y-2 flex flex-col">
-                <a href="#tentang" class="block px-3 py-2 text-gray-700 font-medium rounded-md hover:bg-blue-50 hover:text-blue-600">Tentang</a>
-                <a href="#masalah" class="block px-3 py-2 text-gray-700 font-medium rounded-md hover:bg-blue-50 hover:text-blue-600">Solusi</a>
-                <a href="#pengguna" class="block px-3 py-2 text-gray-700 font-medium rounded-md hover:bg-blue-50 hover:text-blue-600">Mitra</a>
-                <a href="#alur" class="block px-3 py-2 text-gray-700 font-medium rounded-md hover:bg-blue-50 hover:text-blue-600">Cara Kerja</a>
-                <div class="border-t border-gray-100 my-2 pt-2">
+                <a href="#tentang" class="block px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">Tentang</a>
+                <a href="#masalah" class="block px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">Solusi</a>
+                <a href="#pengguna" class="block px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">Mitra</a>
+                <a href="#alur" class="block px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">Cara Kerja</a>
+                <div class="border-t border-gray-100 my-2 pt-4 flex flex-col gap-3">
                     @auth
-                        <a href="{{ url('/feed') }}" class="block px-3 py-2 font-bold text-blue-600 rounded-md hover:bg-blue-50">Dashboard Anda</a>
+                        <a href="{{ url('/feed') }}" class="block px-4 py-3 font-bold text-white bg-blue-600 text-center rounded-xl shadow-md">Dashboard Anda</a>
                     @else
-                        <a href="{{ route('login') }}" class="block px-3 py-2 text-gray-700 font-medium rounded-md hover:bg-blue-50">Masuk</a>
-                        <a href="{{ route('register') }}" class="block px-3 py-2 mt-1 bg-blue-600 text-white font-bold rounded-md text-center shadow-md">Daftar Gratis</a>
+                        <a href="{{ route('login') }}" class="block px-4 py-3 text-gray-700 font-medium text-center rounded-xl border border-gray-200 hover:bg-gray-50 transition">Masuk</a>
+                        <a href="{{ route('register') }}" class="block px-4 py-3 bg-blue-600 text-white font-bold rounded-xl text-center shadow-lg shadow-blue-600/30 transition">Daftar Gratis</a>
                     @endauth
                 </div>
             </div>
@@ -90,26 +90,27 @@
     </script>
 
     <!-- Hero Section -->
-    <div class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+    <div class="relative pt-28 pb-16 lg:pt-48 lg:pb-32 overflow-hidden">
         <div class="absolute inset-0 z-0">
             <div class="absolute inset-0 bg-gradient-to-b from-blue-50/80 via-white to-gray-50"></div>
             <!-- Decorative blobs -->
-            <div class="absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] rounded-full bg-blue-100/50 blur-[100px] opacity-70 animate-pulse-slow"></div>
-            <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-[500px] h-[500px] rounded-full bg-blue-200/40 blur-[80px] opacity-60"></div>
+            <div class="absolute top-0 right-0 -mr-20 -mt-20 w-[300px] md:w-[600px] h-[300px] md:h-[600px] rounded-full bg-blue-100/50 blur-[60px] md:blur-[100px] opacity-70 animate-pulse-slow"></div>
+            <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-[250px] md:w-[500px] h-[250px] md:h-[500px] rounded-full bg-blue-200/40 blur-[50px] md:blur-[80px] opacity-60"></div>
         </div>
         
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div class="text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/80 text-blue-700 font-semibold text-sm mb-6 border border-blue-200 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+                <div class="text-center lg:text-left pt-4 lg:pt-0">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/80 text-blue-700 font-semibold text-xs sm:text-sm mb-6 border border-blue-200 shadow-sm">
                         <span class="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
                         Platform Lelang Kargo No.1 di Indonesia
                     </div>
-                    <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-gray-900 mb-6 leading-[1.1]">
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-gray-900 mb-6 leading-[1.2] lg:leading-[1.1]">
                         Hubungkan Muatan & Armada dalam <br class="hidden lg:block" />
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">Satu Ketukan.</span>
                     </h1>
-                    <p class="mt-4 max-w-2xl text-xl text-gray-600 mb-10 leading-relaxed mx-auto lg:mx-0">
+                    <p class="mt-4 max-w-2xl text-lg sm:text-xl text-gray-600 mb-8 sm:mb-10 leading-relaxed mx-auto lg:mx-0">
+
                         Maksimalkan efisiensi pengiriman barang Anda dengan sistem lelang cerdas, harga kompetitif, dan pelacakan real-time. Tidak ada lagi truk yang pulang kosong!
                     </p>
                     <div class="flex flex-col sm:flex-row justify-center lg:justify-start items-center gap-4">

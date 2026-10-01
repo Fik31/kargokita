@@ -128,13 +128,57 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const isHseUser = @json(Auth::user()->hasRole('hse') || Auth::user()->hasRole('administrator'));
         
         if (isHseUser) {
             const driver = window.driver.js.driver;
+            const isMobile = window.innerWidth < 768;
+            
+            let steps = [
+                {
+                    element: '#tour-hse-header',
+                    popover: {
+                        title: 'Dashboard HSE',
+                        description: 'Selamat datang di Dashboard HSE. Halaman ini memberikan ringkasan status keselamatan dan verifikasi armada.',
+                        side: "bottom",
+                        align: 'start'
+                    }
+                },
+                {
+                    element: '#tour-hse-kpi',
+                    popover: {
+                        title: 'Metrik Utama (KPI)',
+                        description: 'Di sini Anda dapat memantau jumlah total asesmen, skor rata-rata, dan distribusi Tier (Gold, Silver, Bronze) yang telah diberikan.',
+                        side: "bottom",
+                        align: 'center'
+                    }
+                },
+                {
+                    element: '#tour-hse-rules',
+                    popover: {
+                        title: 'Prinsip Penilaian',
+                        description: 'Sebagai pengingat, ini adalah prinsip dasar penentuan kelayakan (*eligibility*) dan tiering yang Anda gunakan saat verifikasi.',
+                        side: "top",
+                        align: 'start'
+                    }
+                }
+            ];
+
+            if (!isMobile) {
+                steps.push({
+                    element: '#nav-verification',
+                    popover: {
+                        title: 'Verifikasi HSE',
+                        description: 'Anda dapat masuk ke menu ini untuk mulai memverifikasi data dan kendaraan driver.',
+                        side: "right",
+                        align: 'start'
+                    }
+                });
+            }
+
             const driverObj = driver({
                 showProgress: true,
                 animate: true,
@@ -142,54 +186,19 @@
                 closeBtnText: 'Skip Tutorial',
                 nextBtnText: 'Selanjutnya',
                 prevBtnText: 'Kembali',
-                steps: [
-                    {
-                        element: '#tour-hse-header',
-                        popover: {
-                            title: 'Dashboard HSE',
-                            description: 'Selamat datang di Dashboard HSE. Halaman ini memberikan ringkasan status keselamatan dan verifikasi armada.',
-                            side: "bottom",
-                            align: 'start'
-                        }
-                    },
-                    {
-                        element: '#tour-hse-kpi',
-                        popover: {
-                            title: 'Metrik Utama (KPI)',
-                            description: 'Di sini Anda dapat memantau jumlah total asesmen, skor rata-rata, dan distribusi Tier (Gold, Silver, Bronze) yang telah diberikan.',
-                            side: "bottom",
-                            align: 'center'
-                        }
-                    },
-                    {
-                        element: '#tour-hse-rules',
-                        popover: {
-                            title: 'Prinsip Penilaian',
-                            description: 'Sebagai pengingat, ini adalah prinsip dasar penentuan kelayakan (*eligibility*) dan tiering yang Anda gunakan saat verifikasi.',
-                            side: "top",
-                            align: 'start'
-                        }
-                    },
-                    {
-                        element: '#nav-verification',
-                        popover: {
-                            title: 'Verifikasi HSE',
-                            description: 'Anda dapat masuk ke menu ini untuk mulai memverifikasi data dan kendaraan driver.',
-                            side: "right",
-                            align: 'start'
-                        }
-                    }
-                ],
+                steps: steps,
                 onDestroyStarted: () => {
                     if (!driverObj.hasNextStep() || confirm("Skip tutorial ini?")) {
                         driverObj.destroy();
-                    }
-                },
+                            document.body.classList.remove('driver-active', 'driver-fix-stacking');
+                        }
+                    },
             });
             
+            window.dispatchEvent(new CustomEvent('close-sidebar'));
             setTimeout(() => {
                 driverObj.drive();
-            }, 500);
+            }, 400);
         }
     });
 </script>
