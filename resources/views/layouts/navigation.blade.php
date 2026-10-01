@@ -71,6 +71,16 @@
             <div class="pt-5 pb-2">
                 <p class="px-3 text-[0.7rem] font-bold text-gray-400 uppercase tracking-wider">Operasional</p>
             </div>
+            
+            <!-- WOW Feature Menu -->
+            <a @click="sidebarOpen = false" href="{{ route('3d-optimizer') }}" class="flex items-center gap-3 px-3 py-2.5 mt-1 rounded-lg transition-all {{ request()->routeIs('3d-optimizer') ? 'bg-gradient-to-r from-brand-blue to-blue-600 text-white shadow-md' : 'bg-blue-50/50 border border-blue-200 text-gray-700 hover:bg-blue-100 hover:text-brand-blue hover:shadow-sm' }}">
+                <svg class="w-5 h-5 {{ request()->routeIs('3d-optimizer') ? 'text-yellow-300' : 'text-brand-blue' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg>
+                <span class="font-bold tracking-wide {{ request()->routeIs('3d-optimizer') ? '' : 'text-brand-blue' }}">3D LTL Optimizer</span>
+                <span class="ml-auto flex h-2.5 w-2.5 relative">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full {{ request()->routeIs('3d-optimizer') ? 'bg-yellow-400' : 'bg-blue-400' }} opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 {{ request()->routeIs('3d-optimizer') ? 'bg-yellow-500' : 'bg-brand-blue' }}"></span>
+                </span>
+            </a>
         @endif
         
         @if(Auth::user()->hasRole('administrator') || Auth::user()->hasRole('merchant'))

@@ -29,6 +29,7 @@ use App\Livewire\SubscriptionPayment;
 use App\Livewire\TripHistory;
 use App\Livewire\UserProfile;
 use App\Livewire\WaybillView;
+use App\Livewire\Cargo3dVisualizer;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -69,6 +70,9 @@ Route::middleware(['auth', EnsureDeposit::class])->group(function () {
 
     // Electronic Waybill (Surat Jalan Elektronik)
     Route::get('/waybill/{trip_id}', WaybillView::class)->name('waybill');
+
+    // 3D Visualizer (For Presentation WOW Factor)
+    Route::get('/3d-optimizer', Cargo3dVisualizer::class)->name('3d-optimizer');
 
     // Admin Routes
     Route::middleware('role:administrator')->group(function () {
