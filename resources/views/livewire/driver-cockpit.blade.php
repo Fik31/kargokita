@@ -40,18 +40,42 @@
             <div id="tour-cockpit-content" class="space-y-6">
                 <!-- Tab 1: Proses Muat -->
                 @if($activeTab === 'loading')
-                    <div id="tour-loading-content" class="border border-gray-200 p-4 sm:p-6 rounded-2xl bg-white text-gray-800 shadow-sm">
+                    <div id="tour-loading-content" class="border border-gray-200 p-4 sm:p-6 rounded-2xl bg-white text-gray-800 shadow-sm" x-data="{ hseCleared: false }" @hse-completed.window="hseCleared = true">
                         <h3 class="font-bold mb-2 text-lg text-brand-blue">Instruksi Muat (Loading)</h3>
                         <p class="text-sm text-gray-500 mb-4">Silakan unggah foto barang saat dimuat ke truk untuk keperluan manifes Lion Parcel.</p>
 
-                        <div class="mb-6">
+                        <!-- AI HSE Trigger -->
+                        <div x-show="!hseCleared" class="bg-gray-900 border border-emerald-500 rounded-xl p-5 mb-6 text-center relative overflow-hidden shadow-lg">
+                            <div class="absolute inset-0 opacity-20" style="background-image: repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #1f2937 25%, #1f2937 75%, #000 75%, #000); background-position: 0 0, 10px 10px; background-size: 20px 20px;"></div>
+                            <div class="relative z-10">
+                                <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2 border-2 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                                    <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                </div>
+                                <h4 class="font-bold text-white text-lg">Inspeksi AI Pra-Keberangkatan</h4>
+                                <p class="text-xs text-gray-300 mb-4 mt-1">SOP Wajib: Verifikasi biometrik pengemudi & kondisi kendaraan sebelum memuat kargo.</p>
+                                <button type="button" @click="$dispatch('open-hse')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-6 rounded-lg shadow-[0_0_10px_rgba(16,185,129,0.5)] transition animate-bounce">Mulai AI Scanner &rarr;</button>
+                            </div>
+                        </div>
+
+                        <!-- HSE Cleared Badge -->
+                        <div x-show="hseCleared" style="display: none;" class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-emerald-700 text-sm">AI HSE Verified</h4>
+                                <p class="text-xs text-emerald-600">Pengemudi bugar & armada layak jalan. Akses muat kargo dibuka.</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-6" x-show="hseCleared" style="display: none;">
                             <a href="{{ route('waybill', ['trip_id' => $activeTrip->id]) }}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border border-yellow-200 font-bold py-2.5 px-4 rounded-xl transition">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                 Lihat / Tanda Tangan Surat Jalan
                             </a>
                         </div>
                         
-                        <form wire:submit.prevent="submitLoadingPhotos" class="flex flex-col space-y-4">
+                        <form x-show="hseCleared" style="display: none;" wire:submit.prevent="submitLoadingPhotos" class="flex flex-col space-y-4">
                             <x-camera-input modelName="photo_arrival" title="Bukti Kedatangan" requiredStatus="loading" :activeTrip="$activeTrip" :photoVar="$photo_arrival" />
                             <x-camera-input modelName="photo_loading" title="Bukti Proses Muat" requiredStatus="loading" :activeTrip="$activeTrip" :photoVar="$photo_loading" />
                             <x-camera-input modelName="photo_loaded" title="Bukti Selesai Muat" requiredStatus="loading" :activeTrip="$activeTrip" :photoVar="$photo_loaded" />
@@ -297,6 +321,119 @@
         </div>
     </div>
 
+    <!-- AI HSE Scanner Modal -->
+    <div x-data="aiHseScanner()" @open-hse.window="startFaceScan()" style="display: none;" x-show="isOpen">
+        <div class="fixed inset-0 z-[9999] bg-black text-white flex flex-col items-center justify-center overflow-hidden font-mono">
+            <!-- Overlay Grid / Scanline effect -->
+            <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 2px, 3px 100%;"></div>
+            
+            <!-- Step 1: Face Scan -->
+            <div x-show="step === 1" class="w-full h-full flex flex-col items-center justify-center relative">
+                <h2 class="absolute top-8 text-emerald-400 font-bold text-xl tracking-widest uppercase animate-pulse text-center">AI Fatigue & Identity<br>Scanner</h2>
+                
+                <div class="relative w-64 h-64 sm:w-80 sm:h-80 border-2 border-emerald-500/50 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.2)] mt-8">
+                    <!-- Fallback image if no webcam -->
+                    <div class="absolute inset-0 bg-gray-900 flex items-center justify-center text-gray-500 text-xs text-center p-4">
+                        Meminta akses kamera...
+                    </div>
+                    <video x-ref="hseVideo" autoplay playsinline class="absolute inset-0 w-full h-full object-cover transform scale-x-[-1]"></video>
+                    
+                    <!-- HUD Overlays -->
+                    <div class="absolute top-4 left-4 w-8 h-8 border-t-4 border-l-4 border-emerald-400"></div>
+                    <div class="absolute top-4 right-4 w-8 h-8 border-t-4 border-r-4 border-emerald-400"></div>
+                    <div class="absolute bottom-4 left-4 w-8 h-8 border-b-4 border-l-4 border-emerald-400"></div>
+                    <div class="absolute bottom-4 right-4 w-8 h-8 border-b-4 border-r-4 border-emerald-400"></div>
+                    
+                    <!-- Scanning Line -->
+                    <div class="absolute left-0 right-0 h-1 bg-emerald-400 shadow-[0_0_10px_#34d399]" :class="isScanning ? 'animate-scan-line' : 'hidden'"></div>
+                    
+                    <!-- Center Reticle -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-16 border border-emerald-400/50 rounded-lg flex items-center justify-center">
+                        <div class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></div>
+                    </div>
+                </div>
+
+                <!-- Terminal Logs -->
+                <div class="mt-8 w-11/12 max-w-md bg-black/80 border border-emerald-900 rounded p-4 h-32 overflow-y-auto text-emerald-500 text-xs font-mono text-left shadow-inner">
+                    <template x-for="log in faceLogs">
+                        <div x-text="log"></div>
+                    </template>
+                    <div x-show="isScanning" class="animate-pulse">_</div>
+                </div>
+                
+                <button x-show="faceDone" @click="startVehicleScan()" class="mt-8 px-6 py-2 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-500 transition shadow-[0_0_15px_rgba(16,185,129,0.5)]">Lanjut: AI Vehicle Scan &rarr;</button>
+                <button @click="closeHse()" class="absolute bottom-6 text-gray-500 hover:text-white underline text-xs">Batalkan</button>
+            </div>
+
+            <!-- Step 2: Vehicle Scan -->
+            <div x-show="step === 2" class="w-full h-full flex flex-col items-center justify-center relative">
+                <h2 class="absolute top-8 text-blue-400 font-bold text-xl tracking-widest uppercase animate-pulse text-center">AI Vehicle Condition<br>Audit</h2>
+                
+                <div class="relative w-64 h-80 sm:w-80 sm:h-96 border-2 border-blue-500/50 rounded-xl overflow-hidden shadow-[0_0_50px_rgba(59,130,246,0.2)] bg-gray-900 mt-8">
+                    <!-- Local Image for Presentation Reliability -->
+                    <img src="{{ asset('assets/images/tire.jpg') }}" onerror="this.src='https://dummyimage.com/600x800/1e293b/3b82f6&text=FOTO+KENDARAAN+(AI+VISION)'" class="absolute inset-0 w-full h-full object-cover opacity-80" alt="Tire">
+                    
+                    <!-- Scanning Line -->
+                    <div class="absolute left-0 right-0 h-1 bg-blue-400 shadow-[0_0_10px_#60a5fa]" :class="isScanning ? 'animate-scan-line-slow' : 'hidden'"></div>
+                    
+                    <!-- Dynamic Bounding Boxes (simulated CV) adjusted for Goodyear tire image -->
+                    <template x-if="vehicleProgress > 30">
+                        <div class="absolute top-[2%] left-[5%] w-48 h-16 border-2 border-yellow-400 bg-yellow-400/20 transition-all duration-500 shadow-[0_0_15px_rgba(250,204,21,0.5)]">
+                            <span class="absolute top-0 left-0 text-[10px] bg-yellow-400 text-black font-bold px-2 py-0.5 whitespace-nowrap rounded-br-sm">Tread Depth: 5.2mm</span>
+                        </div>
+                    </template>
+                    <template x-if="vehicleProgress > 60">
+                        <div class="absolute top-[40%] left-[5%] w-32 h-20 border-2 border-green-400 bg-green-400/20 transition-all duration-500 shadow-[0_0_15px_rgba(74,222,128,0.5)]">
+                            <span class="absolute top-0 left-0 text-[10px] bg-green-400 text-black font-bold px-2 py-0.5 whitespace-nowrap rounded-br-sm">Sidewall: OK</span>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Terminal Logs -->
+                <div class="mt-6 w-11/12 max-w-md bg-black/80 border border-blue-900 rounded p-4 h-32 overflow-y-auto text-blue-400 text-xs font-mono text-left shadow-inner">
+                    <template x-for="log in vehicleLogs">
+                        <div x-text="log"></div>
+                    </template>
+                    <div x-show="isScanning" class="animate-pulse">_</div>
+                </div>
+                
+                <button x-show="vehicleDone" @click="finishHse()" class="mt-6 px-6 py-2 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition shadow-[0_0_15px_rgba(59,130,246,0.5)]">Terbitkan Safety Clearance</button>
+                <button @click="closeHse()" class="absolute bottom-6 text-gray-500 hover:text-white underline text-xs">Batalkan</button>
+            </div>
+
+            <!-- Step 3: Success Clearance -->
+            <div x-show="step === 3" class="w-full h-full flex flex-col items-center justify-center p-4 relative">
+                <!-- Fireworks / Celebration effect background -->
+                <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-900/40 to-black"></div>
+                
+                <div class="bg-gray-900 border border-emerald-500 rounded-2xl p-6 sm:p-8 text-center max-w-sm shadow-[0_0_40px_rgba(16,185,129,0.3)] relative z-10 w-11/12">
+                    <div class="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-emerald-400">
+                        <svg class="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white mb-2 uppercase tracking-wide">HSE Cleared</h2>
+                    <div class="text-left bg-black/80 p-4 rounded-xl border border-gray-800 text-xs space-y-3 mb-6">
+                        <div class="flex justify-between items-center"><span class="text-gray-400">Identity Match:</span> <span class="text-emerald-400 font-bold bg-emerald-900/30 px-2 py-1 rounded">99.8% (Verified)</span></div>
+                        <div class="flex justify-between items-center"><span class="text-gray-400">Fatigue Level:</span> <span class="text-emerald-400 font-bold bg-emerald-900/30 px-2 py-1 rounded">12% (Safe)</span></div>
+                        <div class="flex justify-between items-center"><span class="text-gray-400">Tire Health:</span> <span class="text-emerald-400 font-bold bg-emerald-900/30 px-2 py-1 rounded">85% (Good)</span></div>
+                        <div class="border-t border-gray-800 pt-2 mt-2 flex justify-between items-center"><span class="text-gray-300">System Verdict:</span> <span class="text-blue-400 font-bold tracking-wider">READY TO DISPATCH</span></div>
+                    </div>
+                    <button @click="closeSuccess()" class="w-full px-6 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-500 transition shadow-[0_0_15px_rgba(16,185,129,0.5)]">Kembali & Mulai Muat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .animate-scan-line { animation: scan 2s linear infinite; }
+        .animate-scan-line-slow { animation: scan 3s linear infinite; }
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+    </style>
+
     <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('cameraModal', () => ({
@@ -371,6 +508,96 @@
                 context.fillText(text3, 10 + padding, canvas.height - boxHeight - 10 + padding + fontSize * 3.4);
             },
             closeCamera() { this.isOpen = false; if (this.stream) { this.stream.getTracks().forEach(track => track.stop()); this.stream = null; } }
+        }));
+
+        Alpine.data('aiHseScanner', () => ({
+            isOpen: false,
+            step: 0,
+            isScanning: false,
+            faceDone: false,
+            vehicleDone: false,
+            faceLogs: [],
+            vehicleLogs: [],
+            vehicleProgress: 0,
+            stream: null,
+            
+            async startFaceScan() {
+                this.isOpen = true;
+                this.step = 1;
+                this.faceDone = false;
+                this.faceLogs = [];
+                
+                // Try open camera (webcam front/user)
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                    this.$refs.hseVideo.srcObject = this.stream;
+                } catch(e) {
+                    this.faceLogs.push('[WARN] Kamera tidak terdeteksi, menggunakan mode simulasi...');
+                }
+
+                this.isScanning = true;
+                
+                const sequence = [
+                    {t: 500, m: 'Membuat koneksi aman ke KargoKita AI Engine... [OK]'},
+                    {t: 1500, m: 'Memindai topologi wajah & pupil mata...'},
+                    {t: 3000, m: 'Menganalisis rasio kedipan mata (Micro-sleep indicators)...'},
+                    {t: 4500, m: 'Analisis biometrik selesai. Face Match: 99.8%'},
+                    {t: 5500, m: 'Kalkulasi Fatigue Score: 12% (Kondisi Prima)'},
+                    {t: 6500, m: 'STATUS: FACE & FATIGUE CLEARED.'}
+                ];
+
+                sequence.forEach((item) => {
+                    setTimeout(() => {
+                        this.faceLogs.push(item.m);
+                        if(item.m.includes('CLEARED')) {
+                            this.isScanning = false;
+                            this.faceDone = true;
+                            if(this.stream) { this.stream.getTracks().forEach(t => t.stop()); }
+                        }
+                    }, item.t);
+                });
+            },
+            
+            startVehicleScan() {
+                this.step = 2;
+                this.vehicleDone = false;
+                this.vehicleLogs = [];
+                this.vehicleProgress = 0;
+                this.isScanning = true;
+
+                const sequence = [
+                    {t: 500, p: 10, m: 'Inisialisasi Computer Vision untuk Ban (Tire Segment)...'},
+                    {t: 2000, p: 35, m: 'Mengukur kedalaman alur ban (Tread Depth) -> Hasil: 5.2mm'},
+                    {t: 3500, p: 65, m: 'Memindai dinding luar ban untuk mendeteksi retakan halus...'},
+                    {t: 5000, p: 85, m: 'Pengecekan anomali tekanan angin secara visual... [OK]'},
+                    {t: 6000, p: 100, m: 'STATUS: VEHICLE CONDITION SECURED.'}
+                ];
+
+                sequence.forEach((item) => {
+                    setTimeout(() => {
+                        this.vehicleLogs.push(item.m);
+                        this.vehicleProgress = item.p;
+                        if(item.p === 100) {
+                            this.isScanning = false;
+                            this.vehicleDone = true;
+                        }
+                    }, item.t);
+                });
+            },
+            
+            finishHse() {
+                this.step = 3;
+            },
+            
+            closeSuccess() {
+                this.isOpen = false;
+                window.dispatchEvent(new CustomEvent('hse-completed'));
+            },
+            
+            closeHse() {
+                this.isOpen = false;
+                if(this.stream) this.stream.getTracks().forEach(t => t.stop());
+            }
         }));
     });
     </script>

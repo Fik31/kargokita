@@ -28,6 +28,84 @@
         </div>
     </div>
 
+    <!-- REAL-TIME AI SCAN MONITOR (NEW) -->
+    <div id="tour-hse-ai-monitor" class="mt-8 mb-6">
+        <div class="bg-gray-900 rounded-lg shadow-xl overflow-hidden border border-blue-500/30">
+            <div class="bg-gray-900 p-4 border-b border-blue-500/30 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-blue-400 flex items-center">
+                    <svg class="w-5 h-5 mr-2 animate-pulse text-red-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="5"/></svg>
+                    LIVE AI PRE-TRIP INSPECTIONS
+                </h3>
+                <span class="text-xs text-blue-300 font-mono border border-blue-500/50 px-2 py-1 rounded bg-blue-900/30">SYSTEM: ONLINE</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-800 text-sm font-mono text-gray-300">
+                    <thead class="bg-gray-800 text-blue-400">
+                        <tr>
+                            <th class="px-6 py-3 text-left">TIMESTAMP</th>
+                            <th class="px-6 py-3 text-left">DRIVER</th>
+                            <th class="px-6 py-3 text-left">VEHICLE</th>
+                            <th class="px-6 py-3 text-center">FACE MATCH</th>
+                            <th class="px-6 py-3 text-center">FATIGUE INDEX</th>
+                            <th class="px-6 py-3 text-center">TIRE TREAD (AI)</th>
+                            <th class="px-6 py-3 text-center">VERDICT</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800 bg-gray-900">
+                        <!-- Current Driver (User's presentation) -->
+                        <tr class="hover:bg-gray-800 transition-colors animate-[pulse_2s_ease-in-out_3]">
+                            <td class="px-6 py-4 whitespace-nowrap text-green-400">Just Now</td>
+                            <td class="px-6 py-4 whitespace-nowrap font-bold text-white">Budi Santoso</td>
+                            <td class="px-6 py-4 whitespace-nowrap">B 9182 TE (Fuso)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-green-400">99.8%</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-green-400">12% (Safe)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-green-400">5.2mm</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-sm border border-green-500/50 font-bold">CLEARED</span>
+                            </td>
+                        </tr>
+                        <!-- Dummy Data 1 -->
+                        <tr class="hover:bg-gray-800 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">10 mins ago</td>
+                            <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-400">Ahmad Fauzi</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-400">D 8291 QA (Hino)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-green-500/70">98.5%</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-green-500/70">20% (Safe)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-yellow-500/70">3.8mm (Warn)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <span class="px-2 py-1 bg-green-500/10 text-green-500/70 rounded-sm border border-green-500/30">CLEARED</span>
+                            </td>
+                        </tr>
+                        <!-- Dummy Data 2 (Failed Example - Fatigue) -->
+                        <tr class="hover:bg-gray-800 transition-colors bg-red-900/10">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">45 mins ago</td>
+                            <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-400">Riko Wijaya</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-400">B 1029 ZK (Canter)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-green-500/70">95.0%</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-red-500 font-bold">85% (Drowsy)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-green-500/70">6.0mm</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <span class="px-2 py-1 bg-red-500/20 text-red-500 rounded-sm border border-red-500/50 font-bold animate-pulse">BLOCKED</span>
+                            </td>
+                        </tr>
+                        <!-- Dummy Data 3 (Failed Vehicle - Bald Tire) -->
+                        <tr class="hover:bg-gray-800 transition-colors bg-red-900/10">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1 hour ago</td>
+                            <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-400">Slamet Riadi</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-400">L 8821 BB (Isuzu)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-green-500/70">97.2%</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-green-500/70">5% (Safe)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-red-500 font-bold">1.2mm (Bald)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <span class="px-2 py-1 bg-red-500/20 text-red-500 rounded-sm border border-red-500/50 font-bold">BLOCKED</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <!-- Tables and Chart -->
         <div class="col-span-1 space-y-6">
