@@ -81,6 +81,15 @@
                   <span class="relative inline-flex rounded-full h-2.5 w-2.5 {{ request()->routeIs('3d-optimizer') ? 'bg-yellow-500' : 'bg-brand-blue' }}"></span>
                 </span>
             </a>
+            
+            <a @click="sidebarOpen = false" href="{{ route('command-center') }}" class="flex items-center gap-3 px-3 py-2.5 mt-2 rounded-lg transition-all {{ request()->routeIs('command-center') ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-emerald-400 shadow-md ring-1 ring-gray-700' : 'bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 hover:shadow-sm' }}">
+                <svg class="w-5 h-5 {{ request()->routeIs('command-center') ? 'text-emerald-400' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span class="font-bold tracking-wide {{ request()->routeIs('command-center') ? '' : 'text-gray-600' }}">Command Center</span>
+                <span class="ml-auto flex h-2 w-2 relative">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full {{ request()->routeIs('command-center') ? 'bg-emerald-400' : 'bg-gray-400' }} opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 {{ request()->routeIs('command-center') ? 'bg-emerald-500' : 'bg-gray-500' }}"></span>
+                </span>
+            </a>
         @endif
         
         @if(Auth::user()->hasRole('administrator') || Auth::user()->hasRole('merchant'))

@@ -30,6 +30,7 @@ use App\Livewire\TripHistory;
 use App\Livewire\UserProfile;
 use App\Livewire\WaybillView;
 use App\Livewire\Cargo3dVisualizer;
+use App\Livewire\CommandCenter;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -73,6 +74,9 @@ Route::middleware(['auth', EnsureDeposit::class])->group(function () {
 
     // 3D Visualizer (For Presentation WOW Factor)
     Route::get('/3d-optimizer', Cargo3dVisualizer::class)->name('3d-optimizer');
+    
+    // Command Center (For Presentation WOW Factor)
+    Route::get('/command-center', CommandCenter::class)->name('command-center');
 
     // Admin Routes
     Route::middleware('role:administrator')->group(function () {
