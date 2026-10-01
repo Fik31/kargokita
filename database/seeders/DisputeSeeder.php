@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Bid;
 use App\Models\Dispute;
 use App\Models\Load;
 use App\Models\Trip;
 use App\Models\User;
-use App\Models\Bid;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -87,7 +87,7 @@ class DisputeSeeder extends Seeder
         Load::create([
             'merchant_id' => $merchant->id,
             'type' => 'FTL',
-            'title' => 'URGENT SOS: ' . $loadOriginal->title,
+            'title' => 'URGENT SOS: '.$loadOriginal->title,
             'item_name' => $loadOriginal->item_name,
             'weight_kg' => $loadOriginal->weight_kg,
             'vehicle_type_needed' => $loadOriginal->vehicle_type_needed,

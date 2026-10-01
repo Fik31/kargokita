@@ -95,6 +95,7 @@ Route::middleware(['auth', EnsureDeposit::class])->group(function () {
 
     // Merchant Routes
     Route::middleware('role:merchant')->group(function () {
+        Route::get('/bursa/create', LoadBidding::class)->name('bidding.create');
         Route::get('/merchant/ad-apply', MerchantAdApply::class)->name('merchant.ad-apply');
         Route::get('/merchant/loads', MerchantLoadList::class)->name('merchant.loads');
     });

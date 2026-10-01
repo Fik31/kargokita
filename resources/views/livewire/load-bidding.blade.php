@@ -41,7 +41,7 @@
         </div>
     @endif
 
-    @if($isMerchant)
+    @if($isMerchant && request()->routeIs('bidding.create'))
         <!-- Ad Banner for Merchant -->
         <div id="tour-merchant-ad" class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg p-6 mb-8 flex flex-col md:flex-row items-center justify-between border border-gray-700">
             <div class="text-white mb-4 md:mb-0">
@@ -320,14 +320,17 @@
             </div>
         @endif
 
-    @else
-        <div id="tour-bidding-header" class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
-            <h3 class="text-lg md:text-xl font-bold text-brand-black uppercase tracking-wide">Flash Market (Bursa Muatan)</h3>
-            <div class="w-full md:w-64">
-                <input type="text" wire:model.live="search" placeholder="Cari merchant atau tipe..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
-            </div>
-        </div>
+    @endif
 
+    @if(!request()->routeIs('bidding.create'))
+    <div id="tour-bidding-header" class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+        <h3 class="text-lg md:text-xl font-bold text-brand-black uppercase tracking-wide">Flash Market (Bursa Muatan)</h3>
+        <div class="w-full md:w-64">
+            <input type="text" wire:model.live="search" placeholder="Cari merchant atau tipe..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
+        </div>
+    </div>
+
+    @if(!$isMerchant)
         <!-- FIXED TOP BOXES (Top Bid & Iklan) -->
         <div id="tour-bidding-topcards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- 3 Top Bids -->
@@ -461,6 +464,7 @@
                 @endif
             </div>
         </div>
+    @endif
 
         <div id="tour-bidding-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($loads as $load)
@@ -563,23 +567,29 @@
                         <!-- Action -->
                         @if($load->status === 'open')
                             <div class="mt-4 pt-4 border-t border-gray-100">
-                                <label class="block text-xs font-bold text-gray-700 mb-2">Penawaran Anda (Bid)</label>
-                                <p class="text-[10px] text-gray-500 mb-2 leading-tight">Pastikan harga penawaran Anda <strong>lebih rendah</strong> dari tarif maksimal (Rp {{ number_format($load->max_price, 0, ',', '.') }}) yang ditetapkan merchant.</p>
-                                <div class="flex space-x-2">
-                                    <input type="number" wire:model="bid_amounts.{{ $load->id }}" placeholder="Cth: 800000" class="block w-full border-gray-200 bg-gray-50 rounded-xl shadow-sm focus:ring-brand-blue focus:border-brand-blue text-sm px-4">
-                                    <button wire:click="submitBid({{ $load->id }})" class="bg-brand-blue text-white px-6 py-2 rounded-xl hover:bg-blue-700 text-sm font-bold shadow-sm whitespace-nowrap transition-colors">Kirim Bid</button>
-                                </div>
-                                @error('bid_amounts.'.$load->id) <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                                
-                                <div class="mt-4 border-t border-gray-200 pt-4">
-                                    <label class="block text-xs font-bold text-gray-700 mb-2">Tolak & Beri Saran Harga</label>
-                                    <p class="text-[10px] text-gray-500 mb-2 leading-tight">Masukan ini bersifat wajib jika Anda menolak, ditujukan HANYA sebagai saran evaluasi untuk merchant agar harga bisa lebih menarik. Ini BUKAN penawaran bid.</p>
+                                @if(Auth::user()->hasRole('merchant') && $load->type === 'LTL')
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Ambil Muatan LTL (Booking)</label>
+                                    <p class="text-xs text-gray-500 mb-3 leading-tight">Harga otomatis diset <strong>Rp {{ number_format($load->max_price, 0, ',', '.') }}</strong> (Sistem Flash Sale 1000/kg). Tekan tombol di bawah untuk mengajukan pengambilan slot tebengan ini kepada driver.</p>
+                                    <button wire:click="submitBid({{ $load->id }})" class="w-full bg-brand-blue text-white px-6 py-3 rounded-xl hover:bg-blue-700 text-sm font-bold shadow-md transition-colors focus:ring focus:ring-blue-300">Booking Slot LTL Sekarang</button>
+                                @else
+                                    <label class="block text-xs font-bold text-gray-700 mb-2">Penawaran Anda (Bid)</label>
+                                    <p class="text-[10px] text-gray-500 mb-2 leading-tight">Pastikan harga penawaran Anda <strong>lebih rendah</strong> dari tarif maksimal (Rp {{ number_format($load->max_price, 0, ',', '.') }}) yang ditetapkan merchant.</p>
                                     <div class="flex space-x-2">
-                                        <input type="number" wire:model="suggested_prices.{{ $load->id }}" placeholder="Saran Harga, Cth: 900000" class="block w-full border-gray-200 bg-gray-50 rounded-xl shadow-sm focus:ring-gray-400 focus:border-gray-400 text-sm px-4">
-                                        <button wire:click="rejectBid({{ $load->id }})" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-xl hover:bg-gray-300 text-sm font-bold shadow-sm whitespace-nowrap transition-colors">Tolak Bid</button>
+                                        <input type="number" wire:model="bid_amounts.{{ $load->id }}" placeholder="Cth: 800000" class="block w-full border-gray-200 bg-gray-50 rounded-xl shadow-sm focus:ring-brand-blue focus:border-brand-blue text-sm px-4">
+                                        <button wire:click="submitBid({{ $load->id }})" class="bg-brand-blue text-white px-6 py-2 rounded-xl hover:bg-blue-700 text-sm font-bold shadow-sm whitespace-nowrap transition-colors">Kirim Bid</button>
                                     </div>
-                                    @error('suggested_prices.'.$load->id) <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                                </div>
+                                    @error('bid_amounts.'.$load->id) <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                    
+                                    <div class="mt-4 border-t border-gray-200 pt-4">
+                                        <label class="block text-xs font-bold text-gray-700 mb-2">Tolak & Beri Saran Harga</label>
+                                        <p class="text-[10px] text-gray-500 mb-2 leading-tight">Masukan ini bersifat wajib jika Anda menolak, ditujukan HANYA sebagai saran evaluasi untuk merchant agar harga bisa lebih menarik. Ini BUKAN penawaran bid.</p>
+                                        <div class="flex space-x-2">
+                                            <input type="number" wire:model="suggested_prices.{{ $load->id }}" placeholder="Saran Harga, Cth: 900000" class="block w-full border-gray-200 bg-gray-50 rounded-xl shadow-sm focus:ring-gray-400 focus:border-gray-400 text-sm px-4">
+                                            <button wire:click="rejectBid({{ $load->id }})" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-xl hover:bg-gray-300 text-sm font-bold shadow-sm whitespace-nowrap transition-colors">Tolak Bid</button>
+                                        </div>
+                                        @error('suggested_prices.'.$load->id) <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                    </div>
+                                @endif
                             </div>
                         @endif
                     </div>
@@ -599,6 +609,8 @@
     document.addEventListener('DOMContentLoaded', function () {
         const isCommonUser = @json(!Auth::user()->hasRole('administrator') && !Auth::user()->hasRole('hse') && !Auth::user()->hasRole('merchant') && !Auth::user()->hasRole('driver'));
         const isDriverUser = @json(Auth::user()->hasRole('driver'));
+        const isMerchantUser = @json(Auth::user()->hasRole('merchant'));
+        const isBiddingCreate = @json(request()->routeIs('bidding.create'));
         
         // UNTUK PRESENTASI: Nonaktifkan cek localStorage
         // const hasSeenTour = localStorage.getItem('hasSeenTour_bidding_common');
@@ -703,40 +715,65 @@
         } else if (isMerchantUser) {
             const driver = window.driver.js.driver;
             
-            let steps = [
-                {
-                    element: '#tour-merchant-form',
-                    popover: {
-                        title: 'Buat Order Muatan',
-                        description: 'Di sini Anda dapat mengisi detail muatan, menentukan tarif maksimal, serta memilih tipe layanan (FTL atau LTL).',
-                        side: "bottom",
-                        align: 'center'
+            let steps = [];
+
+            if (isBiddingCreate) {
+                steps = [
+                    {
+                        element: '#tour-merchant-form',
+                        popover: {
+                            title: 'Buat Order Muatan',
+                            description: 'Di sini Anda dapat mengisi detail muatan, menentukan tarif maksimal, serta memilih tipe layanan (FTL atau LTL).',
+                            side: "bottom",
+                            align: 'center'
+                        }
                     }
+                ];
+
+                if (document.querySelector('#tour-merchant-ad')) {
+                    steps.unshift({
+                        element: '#tour-merchant-ad',
+                        popover: {
+                            title: 'Tingkatkan Exposure',
+                            description: 'Gunakan fitur Iklan agar muatan Anda tampil di baris teratas Flash Market dan lebih cepat diambil driver.',
+                            side: "bottom",
+                            align: 'center'
+                        }
+                    });
                 }
-            ];
 
-            if (document.querySelector('#tour-merchant-ad')) {
-                steps.unshift({
-                    element: '#tour-merchant-ad',
-                    popover: {
-                        title: 'Tingkatkan Exposure',
-                        description: 'Gunakan fitur Iklan agar muatan Anda tampil di baris teratas Flash Market dan lebih cepat diambil driver.',
-                        side: "bottom",
-                        align: 'center'
+                if (document.querySelector('#tour-merchant-recommendation')) {
+                    steps.push({
+                        element: '#tour-merchant-recommendation',
+                        popover: {
+                            title: 'Rekomendasi Driver',
+                            description: 'Kami merekomendasikan beberapa driver terbaik di sekitar area Anda. Anda bisa langsung menghubungi mereka.',
+                            side: "top",
+                            align: 'center'
+                        }
+                    });
+                }
+            } else {
+                steps = [
+                    {
+                        element: '#tour-bidding-header',
+                        popover: {
+                            title: 'Bursa Muatan (LTL)',
+                            description: 'Selamat datang di Bursa Muatan LTL! Halaman ini tempat Anda mencari armada truk yang sedang dalam perjalanan dan menawarkan sisa ruang muatan (Flash Sale).',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#tour-bidding-list',
+                        popover: {
+                            title: 'Booking Slot Cepat & Murah',
+                            description: 'Di sini Anda akan melihat penawaran tebengan (LTL) dari driver. Anda bisa mem-booking sisa slot armada dengan harga yang lebih murah (sistem tarif Flash Sale otomatis). Cocok untuk pengiriman barang parsial yang tidak butuh sewa 1 truk penuh.',
+                            side: "top",
+                            align: 'center'
+                        }
                     }
-                });
-            }
-
-            if (document.querySelector('#tour-merchant-recommendation')) {
-                steps.push({
-                    element: '#tour-merchant-recommendation',
-                    popover: {
-                        title: 'Rekomendasi Driver',
-                        description: 'Kami merekomendasikan beberapa driver terbaik di sekitar area Anda. Anda bisa langsung menghubungi mereka.',
-                        side: "top",
-                        align: 'center'
-                    }
-                });
+                ];
             }
 
             const driverObj = driver({

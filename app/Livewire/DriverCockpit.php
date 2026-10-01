@@ -46,6 +46,7 @@ class DriverCockpit extends Component
 
     // Flash Sale Properties
     public $showFlashSaleForm = false;
+
     public $flash_sale_pickup_location = '';
 
     // Report properties
@@ -532,7 +533,7 @@ class DriverCockpit extends Component
 
     public function toggleFlashSaleForm()
     {
-        $this->showFlashSaleForm = !$this->showFlashSaleForm;
+        $this->showFlashSaleForm = ! $this->showFlashSaleForm;
     }
 
     public function openFlashSale()
@@ -561,7 +562,7 @@ class DriverCockpit extends Component
                 $flashLoad = Load::create([
                     'merchant_id' => Auth::id(), // Driver acts as merchant for this LTL
                     'type' => 'LTL',
-                    'title' => 'LTL Flash Sale ' . $this->flash_sale_pickup_location . ' - ' . ($cargo->receiver_address ?? 'Tujuan Akhir'),
+                    'title' => 'LTL Flash Sale '.$this->flash_sale_pickup_location.' - '.($cargo->receiver_address ?? 'Tujuan Akhir'),
                     'item_name' => 'Bebas',
                     'weight_kg' => $availableWeight,
                     'available_weight' => $availableWeight,

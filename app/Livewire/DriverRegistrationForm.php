@@ -27,7 +27,7 @@ class DriverRegistrationForm extends Component
     public $emergency_contact = '';
 
     public $profile_photo;
-    
+
     public $liveness_photo; // new field
 
     // SIM Verification (20%)
@@ -85,11 +85,11 @@ class DriverRegistrationForm extends Component
 
     // Bank/Payment Verification (5%)
     public $bank_account_photo;
-    
+
     public $bank_name = '';
-    
+
     public $bank_account_name = '';
-    
+
     public $bank_account_number = '';
 
     public function submit()
@@ -167,7 +167,7 @@ class DriverRegistrationForm extends Component
         $user->update([
             'bank_name' => $this->bank_name,
             'bank_account_name' => $this->bank_account_name,
-            'bank_account_number' => $this->bank_account_number
+            'bank_account_number' => $this->bank_account_number,
         ]);
 
         $data = [

@@ -39,7 +39,7 @@ return new class extends Migration
                 'is_sim_verified',
                 'is_stnk_verified',
                 'is_kir_verified',
-                'is_sim_matched_with_vehicle'
+                'is_sim_matched_with_vehicle',
             ]);
         });
     }

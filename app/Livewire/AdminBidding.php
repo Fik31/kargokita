@@ -71,7 +71,7 @@ class AdminBidding extends Component
             $appFee = $grossAmount * ($feePercentage / 100);
             $netToDriver = $grossAmount - $appFee;
 
-            session()->flash('message', "Dana Escrow diteruskan! Gross: Rp" . number_format($grossAmount, 0, ',', '.') . " | App Fee ($feePercentage%): Rp" . number_format($appFee, 0, ',', '.') . " | Net ke Driver: Rp" . number_format($netToDriver, 0, ',', '.'));
+            session()->flash('message', 'Dana Escrow diteruskan! Gross: Rp'.number_format($grossAmount, 0, ',', '.')." | App Fee ($feePercentage%): Rp".number_format($appFee, 0, ',', '.').' | Net ke Driver: Rp'.number_format($netToDriver, 0, ',', '.'));
         } else {
             session()->flash('message', "Status pembayaran (escrow) muatan {$load->title} berhasil diubah menjadi {$status}.");
         }

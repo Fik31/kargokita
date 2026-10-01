@@ -52,7 +52,13 @@ class MerchantLoadList extends Component
     {
         $user = Auth::user();
 
-        $query = Load::with(['merchant', 'bids.driver'])->where('merchant_id', $user->id);
+        $query = Load::with(['merchant', 'bids.driver'])
+            ->where(function ($q) use ($user) {
+                $q->where('merchant_id', $user->id)
+                    ->orWhereHas('bids', function ($bq) use ($user) {
+                        $bq->where('driver_id', $user->id)->where('status', 'accepted');
+                    });
+            });
 
         if (! empty($this->search)) {
             $query->where(function ($q) {

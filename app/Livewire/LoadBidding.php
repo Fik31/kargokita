@@ -5,6 +5,8 @@ namespace App\Livewire;
 use App\Models\AdApplication;
 use App\Models\Bid;
 use App\Models\Load;
+use App\Models\Post;
+use App\Models\Trip;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -126,10 +128,10 @@ class LoadBidding extends Component
         ]);
 
         $merchantTier = strtolower(Auth::user()->tier ?? 'common');
-        
+
         $appFeePercentage = 5.00;
         $slaType = 'Standard';
-        
+
         // SLA and App Fee based on Matrix
         if (in_array($merchantTier, ['trusted', 'premium'])) {
             $appFeePercentage = 20.00;
@@ -183,9 +185,9 @@ class LoadBidding extends Component
         ]);
 
         if ($slaType === 'Premium') {
-            \App\Models\Post::create([
+            Post::create([
                 'user_id' => Auth::id(),
-                'content' => '📢 BROADCAST PREMIUM: Ada muatan baru "' . $this->title . '" seberat ' . $this->weight_kg . ' KG dari ' . Auth::user()->name . '. Rute tujuan: ' . $this->receiver_address . '. Silakan segera masuk ke bursa untuk ambil penawaran spesial ini!',
+                'content' => '📢 BROADCAST PREMIUM: Ada muatan baru "'.$this->title.'" seberat '.$this->weight_kg.' KG dari '.Auth::user()->name.'. Rute tujuan: '.$this->receiver_address.'. Silakan segera masuk ke bursa untuk ambil penawaran spesial ini!',
             ]);
         }
 
@@ -203,26 +205,66 @@ class LoadBidding extends Component
 
     public function submitBid($loadId)
     {
-        if (! Auth::user()->hasRole('driver')) {
-            session()->flash('error', 'Silakan pilih role sebagai Driver terlebih dahulu untuk bisa melakukan bid.');
-
-            return;
-        }
-
         $load = Load::findOrFail($loadId);
 
-        $this->validate([
-            'bid_amounts.'.$loadId => 'required|numeric|lt:'.$load->max_price,
-        ], [
-            'bid_amounts.'.$loadId.'.lt' => 'Harga bid harus lebih rendah dari harga maksimum Merchant.',
-        ]);
+        if (Auth::user()->hasRole('merchant')) {
+            // Merchant bidding on LTL
+            if ($load->type !== 'LTL') {
+                session()->flash('error', 'Merchant hanya dapat mengambil muatan bertipe LTL (Flash Sale).');
 
-        Bid::updateOrCreate(
-            ['load_id' => $loadId, 'driver_id' => Auth::id()],
-            ['amount' => $this->bid_amounts[$loadId], 'status' => 'pending']
-        );
+                return;
+            }
 
-        session()->flash('message', 'Bid berhasil diajukan.');
+            // Auto-Approve First Come First Serve for LTL
+            $bid = Bid::updateOrCreate(
+                ['load_id' => $loadId, 'driver_id' => Auth::id()],
+                ['amount' => $load->max_price, 'status' => 'accepted']
+            );
+
+            // Reject other pending bids (if any)
+            Bid::where('load_id', $loadId)->where('id', '!=', $bid->id)->update(['status' => 'rejected']);
+
+            $load->update(['status' => 'in_transit']);
+
+            // Create Trip for the driver (the driver's ID is stored in the load's merchant_id)
+            if (! Trip::where('load_id', $loadId)->exists()) {
+                Trip::create([
+                    'load_id' => $loadId,
+                    'driver_id' => $load->merchant_id,
+                    'status' => 'loading',
+                ]);
+            }
+
+            $driverName = $load->merchant->name;
+            $driverPhone = $load->merchant->phone ?? 'Tidak ada nomor telepon';
+
+            session()->flash('message', "Booking Slot LTL Berhasil! Anda telah mengamankan slot tebengan ini. Silakan hubungi supir {$driverName} di {$driverPhone} untuk koordinasi penjemputan.");
+
+            return redirect()->route('merchant.loads');
+        } else {
+            // Driver bidding on merchant load
+            if (! Auth::user()->hasRole('driver')) {
+                session()->flash('error', 'Silakan pilih role sebagai Driver terlebih dahulu untuk bisa melakukan bid.');
+
+                return;
+            }
+
+            $this->validate([
+                'bid_amounts.'.$loadId => 'required|numeric|lt:'.$load->max_price,
+            ], [
+                'bid_amounts.'.$loadId.'.lt' => 'Harga bid harus lebih rendah dari harga maksimum.',
+                'bid_amounts.'.$loadId.'.required' => 'Harga penawaran wajib diisi.',
+            ]);
+
+            $bidAmount = $this->bid_amounts[$loadId];
+
+            Bid::updateOrCreate(
+                ['load_id' => $loadId, 'driver_id' => Auth::id()],
+                ['amount' => $bidAmount, 'status' => 'pending']
+            );
+
+            session()->flash('message', 'Bid berhasil diajukan.');
+        }
     }
 
     public function rejectBid($loadId)
@@ -340,7 +382,8 @@ class LoadBidding extends Component
         ]);
 
         if ($user->hasRole('merchant')) {
-            $query->where('merchant_id', $user->id)->where('id', -1); // don't load anything for merchant since we moved it
+            // For merchants, they can only see "LTL" type loads in Bursa Muatan (Flash Sale from Drivers).
+            $query->where('type', 'LTL')->where('status', 'open');
         } else {
             $query->where('status', 'open');
             // Remove VIP restriction
@@ -367,12 +410,12 @@ class LoadBidding extends Component
             // DO Value & Distance (Long Haul) Restriction based on Matrix
             if ($driverRank === 1) { // Bronze
                 $query->where('max_price', '<=', 2000000); // Low limit DO Value
-                $query->where(function($q) {
+                $query->where(function ($q) {
                     $q->whereNull('distance')->orWhere('distance', '<=', 100); // No long haul
                 });
             } elseif ($driverRank === 2) { // Silver
                 $query->where('max_price', '<=', 10000000); // Medium DO Value
-                $query->where(function($q) {
+                $query->where(function ($q) {
                     $q->whereNull('distance')->orWhere('distance', '<=', 500); // Limited long haul
                 });
             }
