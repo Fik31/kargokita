@@ -44,16 +44,16 @@
                         <h3 class="font-bold mb-2 text-lg text-brand-blue">Instruksi Muat (Loading)</h3>
                         <p class="text-sm text-gray-500 mb-4">Silakan unggah foto barang saat dimuat ke truk untuk keperluan manifes Lion Parcel.</p>
 
-                        <!-- AI HSE Trigger -->
+                        <!-- HSE Trigger -->
                         <div x-show="!hseCleared" class="bg-gray-900 border border-emerald-500 rounded-xl p-5 mb-6 text-center relative overflow-hidden shadow-lg">
                             <div class="absolute inset-0 opacity-20" style="background-image: repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #1f2937 25%, #1f2937 75%, #000 75%, #000); background-position: 0 0, 10px 10px; background-size: 20px 20px;"></div>
                             <div class="relative z-10">
                                 <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2 border-2 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]">
                                     <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                                 </div>
-                                <h4 class="font-bold text-white text-lg">Inspeksi AI Pra-Keberangkatan</h4>
+                                <h4 class="font-bold text-white text-lg">Inspeksi Pra-Keberangkatan</h4>
                                 <p class="text-xs text-gray-300 mb-4 mt-1">SOP Wajib: Verifikasi biometrik pengemudi & kondisi kendaraan sebelum memuat kargo.</p>
-                                <button type="button" @click="$dispatch('open-hse')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-6 rounded-lg shadow-[0_0_10px_rgba(16,185,129,0.5)] transition animate-bounce">Mulai AI Scanner &rarr;</button>
+                                <button type="button" @click="$dispatch('open-hse')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-6 rounded-lg shadow-[0_0_10px_rgba(16,185,129,0.5)] transition animate-bounce">Mulai Scanner &rarr;</button>
                             </div>
                         </div>
 
@@ -63,7 +63,7 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             </div>
                             <div>
-                                <h4 class="font-bold text-emerald-700 text-sm">AI HSE Verified</h4>
+                                <h4 class="font-bold text-emerald-700 text-sm">HSE Verified</h4>
                                 <p class="text-xs text-emerald-600">Pengemudi bugar & armada layak jalan. Akses muat kargo dibuka.</p>
                             </div>
                         </div>
@@ -305,7 +305,7 @@
         </div>
     </div>
 
-    <!-- AI HSE Scanner Modal -->
+    <!-- HSE Scanner Modal -->
     <div x-data="aiHseScanner()" @open-hse.window="startFaceScan()" style="display: none;" x-show="isOpen">
         <div class="fixed inset-0 z-[9999] bg-black text-white flex flex-col items-center justify-center overflow-hidden font-mono">
             <!-- Overlay Grid / Scanline effect -->
@@ -313,7 +313,7 @@
             
             <!-- Step 1: Face Scan -->
             <div x-show="step === 1" class="w-full h-full flex flex-col items-center justify-center relative">
-                <h2 class="absolute top-8 text-emerald-400 font-bold text-xl tracking-widest uppercase animate-pulse text-center">AI Fatigue & Identity<br>Scanner</h2>
+                <h2 class="absolute top-8 text-emerald-400 font-bold text-xl tracking-widest uppercase animate-pulse text-center">Smart Fatigue & Identity<br>Scanner</h2>
                 
                 <div class="relative w-64 h-64 sm:w-80 sm:h-80 border-2 border-emerald-500/50 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.2)] mt-8">
                     <!-- Fallback image if no webcam -->
@@ -345,17 +345,17 @@
                     <div x-show="isScanning" class="animate-pulse">_</div>
                 </div>
                 
-                <button x-show="faceDone" @click="startVehicleScan()" class="mt-8 px-6 py-2 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-500 transition shadow-[0_0_15px_rgba(16,185,129,0.5)]">Lanjut: AI Vehicle Scan &rarr;</button>
+                <button x-show="faceDone" @click="startVehicleScan()" class="mt-8 px-6 py-2 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-500 transition shadow-[0_0_15px_rgba(16,185,129,0.5)]">Lanjut: Vehicle Scan &rarr;</button>
                 <button @click="closeHse()" class="absolute bottom-6 text-gray-500 hover:text-white underline text-xs">Batalkan</button>
             </div>
 
             <!-- Step 2: Vehicle Scan -->
             <div x-show="step === 2" class="w-full h-full flex flex-col items-center justify-center relative">
-                <h2 class="absolute top-8 text-blue-400 font-bold text-xl tracking-widest uppercase animate-pulse text-center">AI Vehicle Condition<br>Audit</h2>
+                <h2 class="absolute top-8 text-blue-400 font-bold text-xl tracking-widest uppercase animate-pulse text-center">Vehicle Condition<br>Audit</h2>
                 
                 <div class="relative w-64 h-80 sm:w-80 sm:h-96 border-2 border-blue-500/50 rounded-xl overflow-hidden shadow-[0_0_50px_rgba(59,130,246,0.2)] bg-gray-900 mt-8">
                     <!-- Local Image for Presentation Reliability -->
-                    <img src="{{ asset('assets/images/tire.jpg') }}" onerror="this.src='https://dummyimage.com/600x800/1e293b/3b82f6&text=FOTO+KENDARAAN+(AI+VISION)'" class="absolute inset-0 w-full h-full object-cover opacity-80" alt="Tire">
+                    <img src="{{ asset('assets/images/tire.jpg') }}" onerror="this.src='https://dummyimage.com/600x800/1e293b/3b82f6&text=FOTO+KENDARAAN+(SMART+VISION)'" class="absolute inset-0 w-full h-full object-cover opacity-80" alt="Tire">
                     
                     <!-- Scanning Line -->
                     <div class="absolute left-0 right-0 h-1 bg-blue-400 shadow-[0_0_10px_#60a5fa]" :class="isScanning ? 'animate-scan-line-slow' : 'hidden'"></div>
@@ -522,7 +522,7 @@
                 this.isScanning = true;
                 
                 const sequence = [
-                    {t: 500, m: 'Membuat koneksi aman ke KargoKita AI Engine... [OK]'},
+                    {t: 500, m: 'Membuat koneksi aman ke KargoKita Engine... [OK]'},
                     {t: 1500, m: 'Memindai topologi wajah & pupil mata...'},
                     {t: 3000, m: 'Menganalisis rasio kedipan mata (Micro-sleep indicators)...'},
                     {t: 4500, m: 'Analisis biometrik selesai. Face Match: 99.8%'},

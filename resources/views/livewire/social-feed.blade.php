@@ -100,6 +100,8 @@
                             <div class="mb-4 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
                                 @if(Str::startsWith($post->image, 'http'))
                                     <img src="{{ $post->image }}" alt="Post image" class="w-full max-h-[500px] object-cover">
+                                @elseif(Str::startsWith($post->image, 'assets/'))
+                                    <img src="{{ asset($post->image) }}" alt="Post image" class="w-full max-h-[500px] object-cover">
                                 @else
                                     <img src="{{ Storage::url($post->image) }}" alt="Post image" class="w-full max-h-[500px] object-cover">
                                 @endif

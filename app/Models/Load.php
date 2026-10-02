@@ -17,7 +17,7 @@ class Load extends Model
         'sender_name', 'sender_phone', 'sender_address',
         'receiver_name', 'receiver_phone', 'receiver_address',
         'sender_notes', 'receiver_notes', 'is_urgent', 'required_equipments',
-        'app_fee_percentage', 'sla_type',
+        'app_fee_percentage', 'sla_type', 'is_instant',
     ];
 
     public function merchant()

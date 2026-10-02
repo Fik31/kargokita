@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Common\InstantLoadController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\EnsureDeposit;
 use App\Livewire\AdminBidding;
@@ -8,7 +9,9 @@ use App\Livewire\AdminDisputes;
 use App\Livewire\AdminVerification;
 use App\Livewire\AssessmentDashboard;
 use App\Livewire\AssessmentForm;
+use App\Livewire\Cargo3dVisualizer;
 use App\Livewire\ChatInterface;
+use App\Livewire\CommandCenter;
 use App\Livewire\DriverBranding;
 use App\Livewire\DriverCockpit;
 use App\Livewire\DriverRegistrationForm;
@@ -29,8 +32,6 @@ use App\Livewire\SubscriptionPayment;
 use App\Livewire\TripHistory;
 use App\Livewire\UserProfile;
 use App\Livewire\WaybillView;
-use App\Livewire\Cargo3dVisualizer;
-use App\Livewire\CommandCenter;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -74,7 +75,7 @@ Route::middleware(['auth', EnsureDeposit::class])->group(function () {
 
     // 3D Visualizer (For Presentation WOW Factor)
     Route::get('/3d-optimizer', Cargo3dVisualizer::class)->name('3d-optimizer');
-    
+
     // Command Center (For Presentation WOW Factor)
     Route::get('/command-center', CommandCenter::class)->name('command-center');
 
@@ -100,6 +101,7 @@ Route::middleware(['auth', EnsureDeposit::class])->group(function () {
 
     // Bidding Routes (Accessible by auth, handled inside component)
     Route::get('/bursa', LoadBidding::class)->name('bidding');
+    Route::get('/instant-order', \App\Livewire\CommonInstantOrder::class)->name('instant-order.create');
 
     // Merchant Routes
     Route::middleware('role:merchant')->group(function () {
@@ -120,6 +122,10 @@ Route::middleware(['auth', EnsureDeposit::class])->group(function () {
         Route::get('/wallet', MyWallet::class)->name('wallet');
         Route::get('/driver-branding', DriverBranding::class)->name('branding');
     });
+
+    // API Routes for Instant Loads (Quick Bid)
+    Route::post('/api/common/instant-loads', [InstantLoadController::class, 'store'])->name('api.common.instant-loads.store');
+    Route::post('/api/driver/instant-loads/{loadId}/take', [App\Http\Controllers\Api\Driver\InstantLoadController::class, 'take'])->name('api.driver.instant-loads.take');
 });
 
 require __DIR__.'/auth.php';

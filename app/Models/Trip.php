@@ -9,7 +9,7 @@ class Trip extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['load_id', 'driver_id', 'status', 'current_lat', 'current_lng'];
+    protected $fillable = ['load_id', 'driver_id', 'status', 'current_lat', 'current_lng', 'agreed_price'];
 
     public function cargo()
     {
