@@ -42,11 +42,7 @@ class ChatInterface extends Component
                 $driverId = $trip->driver_id;
                 $merchantId = $trip->cargo->merchant_id;
 
-                $lastMessage = Message::where(function ($q) use ($driverId, $merchantId) {
-                    $q->where('sender_id', $driverId)->where('receiver_id', $merchantId);
-                })->orWhere(function ($q) use ($driverId, $merchantId) {
-                    $q->where('sender_id', $merchantId)->where('receiver_id', $driverId);
-                })->latest()->first();
+                $lastMessage = Message::where('trip_id', $trip->id)->latest()->first();
 
                 $this->contacts[] = [
                     'id' => 'trip_'.$trip->id,
