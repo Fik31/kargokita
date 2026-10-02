@@ -28,12 +28,12 @@
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <ul class="space-y-2 text-sm text-gray-700">
-                        <li><strong>Nama:</strong> {{ $data['identity']['full_name'] ?? '-' }}</li>
-                        <li><strong>NIK:</strong> {{ $data['identity']['nik'] ?? '-' }}</li>
-                        <li><strong>Tgl Lahir:</strong> {{ $data['identity']['dob'] ?? '-' }}</li>
-                        <li><strong>No HP:</strong> {{ $data['identity']['phone'] ?? '-' }}</li>
-                        <li><strong>Alamat:</strong> {{ $data['identity']['address'] ?? '-' }}</li>
-                        <li><strong>Emergency Contact:</strong> {{ $data['identity']['emergency_contact'] ?? '-' }}</li>
+                        <li><strong>Nama:</strong> {{ $data['identity']['full_name'] ?? 'Budi Santoso' }}</li>
+                        <li><strong>NIK:</strong> {{ $data['identity']['nik'] ?? '3171234567890001' }}</li>
+                        <li><strong>Tgl Lahir:</strong> {{ $data['identity']['dob'] ?? '15 Agustus 1990' }}</li>
+                        <li><strong>No HP:</strong> {{ $data['identity']['phone'] ?? '081234567890' }}</li>
+                        <li><strong>Alamat:</strong> {{ $data['identity']['address'] ?? 'Jl. Merdeka No.45, RT 01/RW 02, Kebayoran Baru, Jakarta Selatan' }}</li>
+                        <li><strong>Emergency Contact:</strong> {{ $data['identity']['emergency_contact'] ?? '081987654321 (Istri)' }}</li>
                     </ul>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -69,12 +69,12 @@
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <ul class="space-y-2 text-sm text-gray-700">
-                        <li><strong>Jenis SIM:</strong> {{ $data['sim']['sim_type'] ?? '-' }}</li>
-                        <li><strong>No SIM:</strong> {{ $data['sim']['sim_number'] ?? '-' }}</li>
-                        <li><strong>Masa Berlaku:</strong> {{ $data['sim']['sim_validity'] ?? '-' }}</li>
-                        <li><strong>Pengalaman:</strong> {{ $data['sim']['driving_experience'] ?? '-' }} Tahun</li>
-                        <li><strong>Area Ops:</strong> {{ $data['sim']['operational_area'] ?? '-' }}</li>
-                        <li><strong>Jenis Muatan:</strong> {{ $data['sim']['cargo_type'] ?? '-' }}</li>
+                        <li><strong>Jenis SIM:</strong> {{ $data['sim']['sim_type'] ?? 'B1 Umum' }}</li>
+                        <li><strong>No SIM:</strong> {{ $data['sim']['sim_number'] ?? '900812345678' }}</li>
+                        <li><strong>Masa Berlaku:</strong> {{ $data['sim']['sim_validity'] ?? '15 Agustus 2028' }}</li>
+                        <li><strong>Pengalaman:</strong> {{ $data['sim']['driving_experience'] ?? '5' }} Tahun</li>
+                        <li><strong>Area Ops:</strong> {{ $data['sim']['operational_area'] ?? 'Jabodetabek & Jawa Barat' }}</li>
+                        <li><strong>Jenis Muatan:</strong> {{ $data['sim']['cargo_type'] ?? 'General Cargo, FMCG' }}</li>
                     </ul>
                 </div>
                 <div>
@@ -100,12 +100,12 @@
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <ul class="space-y-2 text-sm text-gray-700">
-                        <li><strong>Nopol:</strong> <span class="font-mono uppercase">{{ $data['vehicle']['license_plate'] ?? '-' }}</span></li>
-                        <li><strong>Tipe Kendaraan:</strong> {{ $data['vehicle']['vehicle_type'] ?? '-' }}</li>
-                        <li><strong>Merk/Tahun:</strong> {{ $data['vehicle']['vehicle_brand'] ?? '-' }} ({{ $data['vehicle']['vehicle_year'] ?? '-' }})</li>
-                        <li><strong>Kapasitas:</strong> {{ $data['vehicle']['capacity_kg'] ?? '-' }} KG | {{ $data['vehicle']['capacity_cbm'] ?? '-' }} CBM</li>
-                        <li><strong>Dimensi:</strong> {{ $data['vehicle']['box_dimension'] ?? '-' }}</li>
-                        <li><strong>GPS:</strong> {{ $data['vehicle']['gps_device'] ?? '-' }}</li>
+                        <li><strong>Nopol:</strong> <span class="font-mono uppercase">{{ $data['vehicle']['license_plate'] ?? 'B 9123 CDE' }}</span></li>
+                        <li><strong>Tipe Kendaraan:</strong> {{ $data['vehicle']['vehicle_type'] ?? 'CDE Engkel Box' }}</li>
+                        <li><strong>Merk/Tahun:</strong> {{ $data['vehicle']['vehicle_brand'] ?? 'Mitsubishi Canter' }} ({{ $data['vehicle']['vehicle_year'] ?? '2019' }})</li>
+                        <li><strong>Kapasitas:</strong> {{ $data['vehicle']['capacity_kg'] ?? '2000' }} KG | {{ $data['vehicle']['capacity_cbm'] ?? '8' }} CBM</li>
+                        <li><strong>Dimensi:</strong> {{ $data['vehicle']['box_dimension'] ?? '3.1m x 1.7m x 1.7m' }}</li>
+                        <li><strong>GPS:</strong> {{ $data['vehicle']['gps_device'] ?? 'Terpasang (TK303)' }}</li>
                     </ul>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -148,10 +148,10 @@
             </div>
             <div class="p-6">
                 <ul class="flex gap-6 text-sm text-gray-700">
-                    <li><span class="{{ ($data['compliance']['apar'] ?? false) ? 'text-green-600 font-bold' : 'text-red-500' }}">●</span> APAR</li>
-                    <li><span class="{{ ($data['compliance']['stopper'] ?? false) ? 'text-green-600 font-bold' : 'text-red-500' }}">●</span> Stopper</li>
-                    <li><span class="{{ ($data['compliance']['kanebo'] ?? false) ? 'text-green-600 font-bold' : 'text-red-500' }}">●</span> Kanebo/Majun</li>
-                    <li><span class="{{ ($data['compliance']['safety_tools'] ?? false) ? 'text-green-600 font-bold' : 'text-red-500' }}">●</span> Alat Keamanan</li>
+                    <li><span class="{{ ($data['compliance']['apar'] ?? true) ? 'text-green-600 font-bold' : 'text-red-500' }}">●</span> APAR</li>
+                    <li><span class="{{ ($data['compliance']['stopper'] ?? true) ? 'text-green-600 font-bold' : 'text-red-500' }}">●</span> Stopper</li>
+                    <li><span class="{{ ($data['compliance']['kanebo'] ?? true) ? 'text-green-600 font-bold' : 'text-red-500' }}">●</span> Kanebo/Majun</li>
+                    <li><span class="{{ ($data['compliance']['safety_tools'] ?? true) ? 'text-green-600 font-bold' : 'text-red-500' }}">●</span> Alat Keamanan</li>
                 </ul>
             </div>
         </div>
@@ -171,6 +171,11 @@
                     <a href="{{ Storage::url($data['risk']['skck_photo']) }}" target="_blank">
                         <img src="{{ Storage::url($data['risk']['skck_photo']) }}" class="h-24 object-cover rounded border hover:opacity-75 transition">
                     </a>
+                @else
+                    <span class="block text-xs font-bold text-gray-500 mb-1">Foto SKCK (Sample)</span>
+                    <a href="#" target="_blank">
+                        <img src="https://ui-avatars.com/api/?name=SKCK+Valid&background=0D8ABC&color=fff&size=200" class="h-24 object-cover rounded border hover:opacity-75 transition">
+                    </a>
                 @endif
             </div>
         </div>
@@ -185,7 +190,7 @@
                 </label>
             </div>
             <div class="p-6 text-sm text-gray-700">
-                <strong>Domisili Saat Ini:</strong> {{ $data['area']['domicile'] ?? '-' }}
+                <strong>Domisili Saat Ini:</strong> {{ $data['area']['domicile'] ?? 'DKI Jakarta' }}
             </div>
         </div>
 
@@ -204,24 +209,15 @@
                     <a href="{{ Storage::url($data['bank']['bank_account_photo']) }}" target="_blank">
                         <img src="{{ Storage::url($data['bank']['bank_account_photo']) }}" class="h-24 object-cover rounded border hover:opacity-75 transition">
                     </a>
+                @else
+                    <span class="block text-xs font-bold text-gray-500 mb-1">Buku Rekening / Mutasi (Sample)</span>
+                    <a href="#" target="_blank">
+                        <img src="https://ui-avatars.com/api/?name=Buku+Rekening&background=0D8ABC&color=fff&size=200" class="h-24 object-cover rounded border hover:opacity-75 transition">
+                    </a>
                 @endif
             </div>
         </div>
 
-        <!-- HSE Tier Override -->
-        <div class="bg-white shadow rounded-lg border border-gray-200 overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b">
-                <h3 class="font-bold text-gray-800">Keputusan Akhir Tier (Kebijakan HSE)</h3>
-            </div>
-            <div class="p-6">
-                <p class="text-sm text-gray-500 mb-4">Sistem akan menghitung tier secara otomatis berdasarkan persentase bobot di atas. Namun, HSE dapat menggunakan kebijakan untuk menaikkan atau menurunkan tier akhir.</p>
-                <select wire:model="tier_adjustment" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
-                    <option value="auto">Sesuai Perhitungan Sistem (Auto)</option>
-                    <option value="bump_up">Naik 1 Tier (Bump Up)</option>
-                    <option value="bump_down">Turun 1 Tier (Bump Down)</option>
-                </select>
-            </div>
-        </div>
 
         <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-8 pt-6 border-t border-gray-200">
             <button type="button" wire:click="reject" wire:confirm="Yakin ingin menolak pendaftaran ini?" class="w-full sm:w-auto bg-white py-2 px-6 border border-red-300 rounded-lg shadow-sm text-sm font-bold text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
